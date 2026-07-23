@@ -1,6 +1,4 @@
-# ============================================================
-# Python bytecode, packaging, and test/tool caches
-# ============================================================
+# Python bytecode, packages, and tool caches
 __pycache__/
 *.py[cod]
 *$py.class
@@ -9,7 +7,6 @@ __pycache__/
 .eggs/
 build/
 dist/
-
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -18,36 +15,27 @@ dist/
 htmlcov/
 coverage.xml
 
-# ============================================================
 # Virtual environments
-# ============================================================
 .venv/
 venv/
 env/
 ENV/
 
-# ============================================================
-# Environment files and secrets
-# Keep .env.example committed as a safe template.
-# ============================================================
+# Environment files and secrets; keep only the safe template
 .env
 .env.*
 !.env.example
-
 secrets/
 credentials/
 private_keys/
 api_keys/
 tokens/
-
 *.pem
 *.key
 *.p12
 *.pfx
 *.jks
 *.keystore
-
-# Common secret-bearing filenames
 *robinhood*private*key*
 *robinhood*api*key*
 *robinhood*secret*
@@ -56,9 +44,7 @@ tokens/
 *access*token*
 *refresh*token*
 
-# ============================================================
 # Local databases and runtime state
-# ============================================================
 *.db
 *.db-journal
 *.sqlite
@@ -68,25 +54,20 @@ tokens/
 *.pid
 *.pid.lock
 
-# ============================================================
-# Downloaded/generated market data
-# Keep only folder placeholders.
-# ============================================================
+# Downloaded/generated data; retain folder placeholders
+# Raw source responses and normalized datasets are reproducible and stay local.
 data/raw/*
 data/validated/*
 data/features/*
 data/cache/*
 data/tmp/*
-
 !data/raw/.gitkeep
 !data/validated/.gitkeep
 !data/features/.gitkeep
 !data/cache/.gitkeep
+!data/tmp/.gitkeep
 
-# ============================================================
-# Logs, reports, and generated outputs
-# Keep only folder placeholders.
-# ============================================================
+# Logs and generated reports
 logs/*
 reports/*
 output/*
@@ -95,38 +76,27 @@ artifacts/*
 runs/*
 models/*
 checkpoints/*
-
 !logs/.gitkeep
 !reports/.gitkeep
-
 *.log
 *.out
 
-# ============================================================
-# Jupyter
-# ============================================================
+# Notebooks
 .ipynb_checkpoints/
 
-# ============================================================
-# VS Code and IDE settings
-# Keep safe shared VS Code project configuration.
-# ============================================================
+# Editors
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/launch.json
 !.vscode/tasks.json
-
 .idea/
 *.code-workspace
 
-# ============================================================
-# Operating-system and temporary files
-# ============================================================
+# OS and temporary files
 .DS_Store
 Thumbs.db
 Desktop.ini
-
 *.tmp
 *.temp
 *.bak

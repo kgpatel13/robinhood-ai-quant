@@ -1,14 +1,12 @@
-# Phase 1 Success Criteria
-
-Phase 1 passes when:
+# Phase 1 and Phase 2 Success Criteria
 
 1. Python 3.11 or 3.12 is used.
-2. `pip install -e ".[dev]"` succeeds.
-3. `python -m src.main healthcheck` succeeds.
-4. `python -m src.main config-validate` succeeds.
-5. `pytest` succeeds.
-6. `ruff check .` succeeds.
-7. `ruff format --check .` succeeds.
-8. `mypy src` succeeds.
-9. GitHub Actions succeeds.
-10. No credential or secret exists in the repository.
+2. Editable installation succeeds.
+3. Health and six configuration checks pass.
+4. Offline Parquet demo succeeds.
+5. Unit and integration tests pass.
+6. Ruff lint and format checks pass.
+7. Mypy passes.
+8. GitHub Actions passes for Python 3.11 and 3.12.
+9. No credentials, local data, logs, virtual environment, or Git internals are committed.
+10. Live trading remains disabled.

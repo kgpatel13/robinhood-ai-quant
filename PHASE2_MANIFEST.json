@@ -1,0 +1,12 @@
+{
+  "project": "robinhood-ai-quant",
+  "phase": 2,
+  "version": "0.2.0",
+  "includes_phase_1": true,
+  "live_trading_capability": false,
+  "providers": [
+    "yahoo",
+    "coingecko"
+  ],
+  "storage": "parquet"
+}

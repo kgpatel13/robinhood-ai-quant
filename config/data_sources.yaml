@@ -1,0 +1,36 @@
+version: 1
+
+storage:
+  format: parquet
+  compression: snappy
+  raw_directory: data/raw
+  validated_directory: data/validated
+  cache_directory: data/cache
+  reports_directory: reports/data_quality
+
+providers:
+  yahoo:
+    enabled: true
+    asset_classes: [stock, crypto]
+    auto_adjust: false
+    repair: true
+    timeout_seconds: 30
+  coingecko:
+    enabled: true
+    asset_classes: [crypto]
+    base_url: https://api.coingecko.com/api/v3
+    vs_currency: usd
+    timeout_seconds: 30
+    coin_ids:
+      BTC-USD: bitcoin
+      ETH-USD: ethereum
+      SOL-USD: solana
+
+quality:
+  reject_duplicate_rows: true
+  reject_null_ohlcv: true
+  reject_negative_volume: true
+  reject_invalid_ohlc: true
+  maximum_missing_business_days_stocks: 10
+  maximum_missing_calendar_days_crypto: 3
+  minimum_rows: 2

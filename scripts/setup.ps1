@@ -1,25 +1,28 @@
 $ErrorActionPreference = "Stop"
 
-Write-Host "Creating Python virtual environment..."
-
-if (Get-Command py -ErrorAction SilentlyContinue) {
-    py -3.12 -m venv .venv
-}
-elseif (Get-Command python -ErrorAction SilentlyContinue) {
-    python -m venv .venv
-}
-else {
-    throw "Python was not found. Install Python 3.11 or 3.12."
+function Invoke-CheckedCommand {
+    param([string]$Description, [scriptblock]$Command)
+    Write-Host ""
+    Write-Host "Running: $Description"
+    & $Command
+    if ($LASTEXITCODE -ne 0) { throw "$Description failed with exit code $LASTEXITCODE." }
 }
 
-& .\.venv\Scripts\python.exe -m pip install --upgrade pip
-& .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-& .\.venv\Scripts\python.exe -m src.main healthcheck
-& .\.venv\Scripts\python.exe -m src.main config-validate
-& .\.venv\Scripts\python.exe -m pytest
-& .\.venv\Scripts\python.exe -m ruff check .
-& .\.venv\Scripts\python.exe -m mypy src
-
+Write-Host "Preparing Python 3.12 virtual environment..."
+if (Test-Path .venv) {
+    $version = & .\.venv\Scripts\python.exe --version 2>$null
+    if ($LASTEXITCODE -ne 0) { Remove-Item -Recurse -Force .venv }
+}
+if (-not (Test-Path .venv)) {
+    if (Get-Command py -ErrorAction SilentlyContinue) { py -3.12 -m venv .venv }
+    else { throw "Python launcher not found. Install Python 3.12." }
+    if ($LASTEXITCODE -ne 0) { throw "Unable to create Python 3.12 virtual environment." }
+}
+Invoke-CheckedCommand "Upgrade pip" { .\.venv\Scripts\python.exe -m pip install --upgrade pip }
+Invoke-CheckedCommand "Install project" { .\.venv\Scripts\python.exe -m pip install -e ".[dev]" }
+Invoke-CheckedCommand "Health check" { .\.venv\Scripts\python.exe -m src.main healthcheck }
+Invoke-CheckedCommand "Configuration validation" { .\.venv\Scripts\python.exe -m src.main config-validate }
+Invoke-CheckedCommand "Offline data demo" { .\.venv\Scripts\python.exe -m src.main data-demo --symbol SETUP-DEMO }
+Invoke-CheckedCommand "Quality checks" { .\scriptsun_checks.ps1 }
 Write-Host ""
-Write-Host "Phase 1 setup completed successfully."
-Write-Host "Activate later with: .\.venv\Scripts\Activate.ps1"
+Write-Host "Phase 1 and Phase 2 setup completed successfully."

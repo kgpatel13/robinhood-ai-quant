@@ -4,13 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "robinhood-ai-quant"
-version = "0.1.0"
-description = "Foundation for a broker-independent AI-assisted quantitative platform"
+version = "0.2.1"
+description = "Broker-independent AI-assisted quantitative research platform"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
+  "pandas>=2.2,<3",
+  "pyarrow>=16,<22",
   "PyYAML>=6.0.1,<7",
   "python-dotenv>=1.0.1,<2",
+  "requests>=2.32,<3",
+  "scipy>=1.13,<2",
+  "yfinance>=0.2.54,<1",
 ]
 
 [project.optional-dependencies]
@@ -19,7 +24,9 @@ dev = [
   "pytest-cov>=5,<7",
   "ruff>=0.6,<1",
   "mypy>=1.11,<2",
+  "pandas-stubs>=2.2",
   "types-PyYAML>=6.0.12",
+  "types-requests>=2.32",
 ]
 
 [project.scripts]
@@ -27,17 +34,9 @@ quant-platform = "src.main:main"
 
 [tool.setuptools]
 packages = [
-  "src",
-  "src.ai",
-  "src.backtest",
-  "src.common",
-  "src.data",
-  "src.execution",
-  "src.monitoring",
-  "src.portfolio",
-  "src.risk",
-  "src.strategies",
-  "src.tax",
+  "src", "src.ai", "src.backtest", "src.common", "src.data",
+  "src.data.providers", "src.execution", "src.monitoring", "src.portfolio",
+  "src.risk", "src.strategies", "src.tax"
 ]
 
 [tool.pytest.ini_options]
