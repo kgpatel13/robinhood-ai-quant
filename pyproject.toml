@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robinhood-ai-quant"
+version = "0.1.0"
+description = "Foundation for a broker-independent AI-assisted quantitative platform"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "PyYAML>=6.0.1,<7",
+  "python-dotenv>=1.0.1,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2,<9",
+  "pytest-cov>=5,<7",
+  "ruff>=0.6,<1",
+  "mypy>=1.11,<2",
+  "types-PyYAML>=6.0.12",
+]
+
+[project.scripts]
+quant-platform = "src.main:main"
+
+[tool.setuptools]
+packages = [
+  "src",
+  "src.ai",
+  "src.backtest",
+  "src.common",
+  "src.data",
+  "src.execution",
+  "src.monitoring",
+  "src.portfolio",
+  "src.risk",
+  "src.strategies",
+  "src.tax",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --disable-warnings --maxfail=1"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".venv", "data", "logs", "reports"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+exclude = ["tests/"]

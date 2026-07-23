@@ -1,0 +1,25 @@
+version: 1
+
+development:
+  broker_mode: disabled
+  database_url: sqlite:///data/development.db
+  log_level: DEBUG
+  allow_live_orders: false
+
+paper:
+  broker_mode: paper
+  database_url: sqlite:///data/paper.db
+  log_level: INFO
+  allow_live_orders: false
+
+shadow:
+  broker_mode: shadow
+  database_url: sqlite:///data/shadow.db
+  log_level: INFO
+  allow_live_orders: false
+
+production:
+  broker_mode: live
+  database_url: ${DATABASE_URL}
+  log_level: INFO
+  allow_live_orders: false

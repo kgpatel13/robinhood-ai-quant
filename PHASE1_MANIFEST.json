@@ -1,0 +1,6 @@
+{
+  "project": "robinhood-ai-quant",
+  "phase": 1,
+  "version": "0.1.0",
+  "live_trading_capability": false
+}

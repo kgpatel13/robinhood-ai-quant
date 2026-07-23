@@ -1,0 +1,16 @@
+version: 1
+
+stock_etf_universe:
+  enabled: true
+  symbols: [SPY, QQQ, IWM, XLK, XLF, XLV, XLE, GLD, IEF, SGOV]
+
+crypto_universe:
+  enabled: true
+  symbols: [BTC-USD, ETH-USD, SOL-USD]
+
+eligibility:
+  minimum_history_days: 365
+  minimum_stock_price_usd: 5.0
+  minimum_average_daily_dollar_volume_usd: 10000000
+  maximum_spread_bps: 50
+  allow_fractional_shares: true

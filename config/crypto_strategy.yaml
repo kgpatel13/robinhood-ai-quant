@@ -1,0 +1,17 @@
+version: 1
+strategy_name: crypto_trend_momentum_baseline
+enabled: true
+mode: research
+
+schedule:
+  scan_frequency: daily
+  rebalance_frequency: weekly
+
+parameters:
+  momentum_lookbacks_days: [30, 90, 180]
+  trend_filter_days: 200
+  maximum_positions: 2
+  weighting: inverse_volatility
+  volatility_lookback_days: 30
+  require_positive_90_day_momentum: true
+  move_to_cash_when_no_asset_qualifies: true

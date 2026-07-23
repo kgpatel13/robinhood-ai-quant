@@ -1,0 +1,136 @@
+# ============================================================
+# Python bytecode, packaging, and test/tool caches
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# ============================================================
+# Virtual environments
+# ============================================================
+.venv/
+venv/
+env/
+ENV/
+
+# ============================================================
+# Environment files and secrets
+# Keep .env.example committed as a safe template.
+# ============================================================
+.env
+.env.*
+!.env.example
+
+secrets/
+credentials/
+private_keys/
+api_keys/
+tokens/
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Common secret-bearing filenames
+*robinhood*private*key*
+*robinhood*api*key*
+*robinhood*secret*
+*api*key*
+*api*secret*
+*access*token*
+*refresh*token*
+
+# ============================================================
+# Local databases and runtime state
+# ============================================================
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.duckdb
+*.pid
+*.pid.lock
+
+# ============================================================
+# Downloaded/generated market data
+# Keep only folder placeholders.
+# ============================================================
+data/raw/*
+data/validated/*
+data/features/*
+data/cache/*
+data/tmp/*
+
+!data/raw/.gitkeep
+!data/validated/.gitkeep
+!data/features/.gitkeep
+!data/cache/.gitkeep
+
+# ============================================================
+# Logs, reports, and generated outputs
+# Keep only folder placeholders.
+# ============================================================
+logs/*
+reports/*
+output/*
+outputs/*
+artifacts/*
+runs/*
+models/*
+checkpoints/*
+
+!logs/.gitkeep
+!reports/.gitkeep
+
+*.log
+*.out
+
+# ============================================================
+# Jupyter
+# ============================================================
+.ipynb_checkpoints/
+
+# ============================================================
+# VS Code and IDE settings
+# Keep safe shared VS Code project configuration.
+# ============================================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+.idea/
+*.code-workspace
+
+# ============================================================
+# Operating-system and temporary files
+# ============================================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~

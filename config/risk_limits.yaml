@@ -1,0 +1,30 @@
+version: 1
+
+global:
+  live_trading_enabled: false
+  leverage_allowed: false
+  margin_allowed: false
+  short_selling_allowed: false
+  options_allowed: false
+  fail_closed: true
+
+portfolio:
+  maximum_single_position_pct: 20.0
+  maximum_stock_sleeve_pct: 80.0
+  maximum_crypto_sleeve_pct: 20.0
+  minimum_cash_pct: 5.0
+  maximum_daily_turnover_pct: 20.0
+  maximum_open_orders: 5
+
+loss_controls:
+  daily_loss_limit_pct: 2.0
+  weekly_loss_limit_pct: 4.0
+  monthly_drawdown_limit_pct: 8.0
+  absolute_kill_switch_drawdown_pct: 12.0
+
+execution:
+  maximum_spread_bps: 50
+  maximum_slippage_bps: 75
+  maximum_data_age_seconds_stocks: 900
+  maximum_data_age_seconds_crypto: 300
+  reject_unknown_order_state: true

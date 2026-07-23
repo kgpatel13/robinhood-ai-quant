@@ -1,0 +1,17 @@
+version: 1
+strategy_name: stock_dual_momentum_baseline
+enabled: true
+mode: research
+
+schedule:
+  scan_frequency: daily
+  rebalance_frequency: monthly
+
+parameters:
+  momentum_lookbacks_days: [63, 126, 252]
+  trend_filter_days: 200
+  maximum_positions: 3
+  weighting: inverse_volatility
+  volatility_lookback_days: 63
+  minimum_rebalance_change_pct: 5.0
+  defensive_asset: SGOV
