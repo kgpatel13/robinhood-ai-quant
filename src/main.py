@@ -25,6 +25,12 @@ from src.data.storage import ParquetBarStore
 from src.portfolio import PortfolioBacktestConfig, PortfolioBacktestEngine
 from src.portfolio.models import AllocationMethod, RebalanceFrequency
 from src.reporting import write_backtest_report, write_portfolio_report
+from src.research import (
+    OptimizationConfig,
+    OptimizationEngine,
+    ParameterSpec,
+    write_optimization_report,
+)
 from src.strategies import available_strategies, create_strategy
 
 LOGGER = logging.getLogger(__name__)
@@ -42,6 +48,20 @@ def key_value(value: str) -> tuple[str, str]:
     if not separator or not key or not item:
         raise argparse.ArgumentTypeError("Value must use KEY=VALUE")
     return key, item
+
+
+def parameter_spec(value: str) -> ParameterSpec:
+    name, separator, raw_values = value.partition("=")
+    if not separator or not name or not raw_values:
+        raise argparse.ArgumentTypeError("Parameter must use NAME=VALUE1,VALUE2")
+    try:
+        values = tuple(int(item.strip()) for item in raw_values.split(",") if item.strip())
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("Parameter values must be integers") from exc
+    try:
+        return ParameterSpec(name=name, values=values)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -104,6 +124,28 @@ def build_parser() -> argparse.ArgumentParser:
     portfolio.add_argument("--commission", type=float, default=None)
     portfolio.add_argument("--slippage-bps", type=float, default=None)
     portfolio.add_argument("--report-name", default="phase4_portfolio")
+
+    optimize = sub.add_parser("optimize-run")
+    optimize.add_argument("--path", type=Path, required=True)
+    optimize.add_argument(
+        "--strategy", choices=available_strategies(), default="moving_average_cross"
+    )
+    optimize.add_argument(
+        "--param", action="append", type=parameter_spec, required=True, metavar="NAME=V1,V2"
+    )
+    optimize.add_argument("--method", choices=("grid", "random"), default="grid")
+    optimize.add_argument(
+        "--objective",
+        choices=("sharpe", "cagr", "sortino", "calmar", "profit_factor", "max_drawdown"),
+        default="sharpe",
+    )
+    optimize.add_argument("--max-evaluations", type=int, default=None)
+    optimize.add_argument("--seed", type=int, default=42)
+    optimize.add_argument("--workers", type=int, default=1)
+    optimize.add_argument("--initial-cash", type=float, default=None)
+    optimize.add_argument("--commission", type=float, default=None)
+    optimize.add_argument("--slippage-bps", type=float, default=None)
+    optimize.add_argument("--report-name", default="phase5a_optimization")
     return parser
 
 
@@ -189,6 +231,50 @@ def _run_portfolio_backtest(
     return 0
 
 
+def _run_optimization(
+    args: argparse.Namespace, settings_config_dir: Path, reports_dir: Path
+) -> int:
+    bars = pd.read_parquet(args.path)
+    payload = load_yaml(settings_config_dir / "research.yaml")
+    defaults = payload["optimization"]
+    config = OptimizationConfig(
+        strategy=args.strategy,
+        parameters=tuple(args.param),
+        method=args.method,
+        objective=args.objective,
+        max_evaluations=args.max_evaluations,
+        seed=args.seed,
+        workers=args.workers,
+        initial_cash=float(args.initial_cash or defaults["initial_cash"]),
+        commission_per_trade=float(
+            defaults["commission_per_trade"] if args.commission is None else args.commission
+        ),
+        slippage_bps=float(
+            defaults["slippage_bps"] if args.slippage_bps is None else args.slippage_bps
+        ),
+    )
+    result = OptimizationEngine().run(bars, config)
+    output_root = _resolve_report_root(Path(str(payload["outputs"]["directory"])), reports_dir)
+    paths = write_optimization_report(result, output_root, args.report_name)
+    best = result.trials[0]
+    print(
+        json.dumps(
+            {
+                "strategy": config.strategy,
+                "method": config.method,
+                "objective": config.objective,
+                "evaluations": len(result.trials),
+                "best_parameters": best.parameters,
+                "best_score": best.score,
+                "best_metrics": best.metrics,
+                "reports": {key: str(value) for key, value in paths.items()},
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
 def _resolve_report_root(configured: Path, reports_dir: Path) -> Path:
     if not configured.is_absolute() and configured.parts and configured.parts[0] == "reports":
         return reports_dir / Path(*configured.parts[1:])
@@ -238,6 +324,8 @@ def run(args: argparse.Namespace) -> int:
         code = _run_portfolio_backtest(args, settings.config_dir, settings.reports_dir)
         runtime.events.publish(BacktestCompleted(run_id=context.run_id, strategy=args.strategy))
         return code
+    if args.command == "optimize-run":
+        return _run_optimization(args, settings.config_dir, settings.reports_dir)
     data_config = load_yaml(settings.config_dir / "data_sources.yaml")
     storage_config = data_config["storage"]
     validated_root = Path(str(storage_config["validated_directory"]))

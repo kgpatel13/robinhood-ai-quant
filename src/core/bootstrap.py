@@ -11,6 +11,8 @@ from src.data.providers.coingecko import CoinGeckoProvider
 from src.data.providers.yahoo import YahooFinanceProvider
 from src.portfolio.allocation import equal_weights, fixed_weights, inverse_volatility_weights
 from src.reporting import write_backtest_report, write_portfolio_report
+from src.research.engine import OptimizationEngine
+from src.research.objectives import OBJECTIVES
 from src.strategies.moving_average import MovingAverageCrossStrategy
 
 
@@ -34,9 +36,13 @@ def build_plugin_registry() -> PluginRegistry:
         PluginDescriptor("inverse_volatility", PluginType.ALLOCATOR, inverse_volatility_weights),
         PluginDescriptor("backtest", PluginType.REPORTER, write_backtest_report),
         PluginDescriptor("portfolio", PluginType.REPORTER, write_portfolio_report),
+        PluginDescriptor("grid", PluginType.OPTIMIZER, OptimizationEngine),
+        PluginDescriptor("random", PluginType.OPTIMIZER, OptimizationEngine),
     )
     for descriptor in entries:
         registry.register(descriptor)
+    for name, objective in OBJECTIVES.items():
+        registry.register(PluginDescriptor(name, PluginType.OBJECTIVE, objective))
     return registry
 
 

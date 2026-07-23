@@ -10,7 +10,7 @@ _REGISTRY.register(
 )
 
 
-def create_strategy(name: str, **parameters: int) -> Strategy:
+def create_strategy(name: str, **parameters: int | float) -> Strategy:
     factory = _REGISTRY.resolve(PluginType.STRATEGY, name)
     strategy = factory(**parameters)
     if not isinstance(strategy, Strategy):

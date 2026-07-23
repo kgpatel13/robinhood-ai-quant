@@ -78,3 +78,9 @@ The following remain disabled or absent:
 - Live or broker-connected paper order submission
 - Margin, leverage, short selling, and options
 - Autonomous AI trading decisions
+
+## Phase 5A: Research and Optimization
+
+Version 0.5.0 adds grid search, seeded random search, objective-based strategy ranking,
+optional multiprocessing, reproducible research metadata, and optimization reports.
+See `docs/PHASE5A_OPTIMIZATION.md` for usage.

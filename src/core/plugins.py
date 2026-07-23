@@ -21,6 +21,8 @@ class PluginType(StrEnum):
     BROKER = "broker"
     RISK_MODEL = "risk_model"
     AI_MODEL = "ai_model"
+    OPTIMIZER = "optimizer"
+    OBJECTIVE = "objective"
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,13 @@
+{
+  "phase": "5A",
+  "version": "0.5.0",
+  "name": "Research and Optimization Engine",
+  "capabilities": [
+    "grid search",
+    "seeded random search",
+    "parallel candidate evaluation",
+    "six optimization objectives",
+    "leaderboard and reproducibility reports",
+    "optimize-run CLI"
+  ]
+}

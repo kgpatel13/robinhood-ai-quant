@@ -19,6 +19,7 @@ REQUIRED_CONFIG_FILES = (
     "data_sources.yaml",
     "backtest.yaml",
     "portfolio.yaml",
+    "research.yaml",
 )
 
 

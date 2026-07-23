@@ -13,4 +13,4 @@ Invoke-CheckedCommand "Ruff linting" { .\.venv\Scripts\python.exe -m ruff check 
 Invoke-CheckedCommand "Ruff formatting" { .\.venv\Scripts\python.exe -m ruff format --check . }
 Invoke-CheckedCommand "mypy" { .\.venv\Scripts\python.exe -m mypy src }
 Write-Host ""
-Write-Host "All Phase 1 through Phase 4.5 checks passed."
+Write-Host "All Phase 1 through Phase 5A checks passed."

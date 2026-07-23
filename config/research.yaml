@@ -1,0 +1,11 @@
+version: 1
+optimization:
+  initial_cash: 100000.0
+  commission_per_trade: 0.0
+  slippage_bps: 0.0
+  default_method: grid
+  default_objective: sharpe
+  default_workers: 1
+  seed: 42
+outputs:
+  directory: reports/optimization
