@@ -12,6 +12,6 @@ def test_load_assets_config() -> None:
 
 def test_validate_all_configs() -> None:
     configs = validate_all_configs(Path("config"))
-    assert len(configs) == 6
+    assert len(configs) == 7
     assert configs["risk_limits.yaml"]["global"]["live_trading_enabled"] is False
     assert configs["data_sources.yaml"]["storage"]["format"] == "parquet"

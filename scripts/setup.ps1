@@ -22,7 +22,8 @@ Invoke-CheckedCommand "Upgrade pip" { .\.venv\Scripts\python.exe -m pip install 
 Invoke-CheckedCommand "Install project" { .\.venv\Scripts\python.exe -m pip install -e ".[dev]" }
 Invoke-CheckedCommand "Health check" { .\.venv\Scripts\python.exe -m src.main healthcheck }
 Invoke-CheckedCommand "Configuration validation" { .\.venv\Scripts\python.exe -m src.main config-validate }
-Invoke-CheckedCommand "Offline data demo" { .\.venv\Scripts\python.exe -m src.main data-demo --symbol SETUP-DEMO }
-Invoke-CheckedCommand "Quality checks" { .\scriptsun_checks.ps1 }
+Invoke-CheckedCommand "Offline data demo" { .\.venv\Scripts\python.exe -m src.main data-demo --symbol SETUP-DEMO --rows 400 }
+Invoke-CheckedCommand "Quality checks" { .\scripts\run_checks.ps1 }
+Invoke-CheckedCommand "Phase 3 smoke test" { .\scripts\phase3_smoke_test.ps1 }
 Write-Host ""
-Write-Host "Phase 1 and Phase 2 setup completed successfully."
+Write-Host "Phases 1, 2, and 3 setup completed successfully."

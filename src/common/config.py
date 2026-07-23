@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from dotenv import load_dotenv
 import yaml
+from dotenv import load_dotenv
 
 from src.common.exceptions import ConfigurationError
 
@@ -17,7 +17,9 @@ REQUIRED_CONFIG_FILES = (
     "risk_limits.yaml",
     "environments.yaml",
     "data_sources.yaml",
+    "backtest.yaml",
 )
+
 
 @dataclass(frozen=True)
 class AppSettings:
@@ -66,16 +68,19 @@ def validate_all_configs(config_dir: Path) -> dict[str, dict[str, Any]]:
     if not isinstance(risk_global, dict):
         raise ConfigurationError("risk_limits.yaml requires a global mapping")
     prohibited = (
-        "live_trading_enabled", "leverage_allowed", "margin_allowed",
-        "short_selling_allowed", "options_allowed",
+        "live_trading_enabled",
+        "leverage_allowed",
+        "margin_allowed",
+        "short_selling_allowed",
+        "options_allowed",
     )
     for key in prohibited:
         if risk_global.get(key) is not False:
-            raise ConfigurationError(f"Phase 2 requires {key}: false")
+            raise ConfigurationError(f"Phase 3 requires {key}: false")
     production = loaded["environments.yaml"].get("production")
     if not isinstance(production, dict) or production.get("allow_live_orders") is not False:
-        raise ConfigurationError("Phase 2 requires production allow_live_orders: false")
+        raise ConfigurationError("Phase 3 requires production allow_live_orders: false")
     storage = loaded["data_sources.yaml"].get("storage")
     if not isinstance(storage, dict) or storage.get("format") != "parquet":
-        raise ConfigurationError("Phase 2 requires Parquet storage")
+        raise ConfigurationError("Phase 3 requires Parquet storage")
     return loaded

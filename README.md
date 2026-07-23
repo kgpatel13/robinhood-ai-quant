@@ -1,99 +1,74 @@
-# Robinhood AI Quant — Phases 1 and 2
+# Robinhood AI Quant — Phases 1, 2, and 3
 
-A broker-independent quantitative research foundation. Phase 2 adds historical market-data
-providers, normalization, Parquet storage, manifests, quality validation, and an offline demo.
-It still cannot place orders and requires no Robinhood credentials.
+A broker-independent quantitative research platform. It downloads and validates daily market
+data, stores normalized Parquet datasets, runs reproducible strategy backtests, and produces
+performance reports. It cannot authenticate with a broker or place live orders.
 
-## Phase 2.0.1 compatibility fixes
+## Phase 3 capabilities
 
-- Adds SciPy because yfinance price repair uses it.
-- Corrects the Windows smoke-test path.
-- Produces a clear error when CoinGecko is used without an API key.
+- SMA, EMA, RSI, ATR, MACD, Bollinger Bands, and VWAP
+- Extensible strategy interface and registry
+- Long-only EMA crossover reference strategy
+- Signals calculated at bar close and executed at the next bar open
+- Configurable commissions and slippage
+- Cash, position, trade, and equity accounting
+- CAGR, annualized volatility, Sharpe, Sortino, maximum drawdown, win rate, and profit factor
+- JSON metrics, CSV ledgers, equity chart, and drawdown chart
 
-## Upgrade an existing Phase 1 folder on Windows
+See `docs/PHASE3_BACKTESTING.md` for design details.
 
-1. Commit or back up the existing Phase 1 folder.
-2. Extract this ZIP to a temporary folder.
-3. Copy the extracted project contents into `C:\Projects
-obinhood-ai-quant` and approve
-   replacement. Do **not** copy a `.git` or `.venv` folder; this package contains neither.
-4. Open PowerShell in the project root and run:
+## Replace or upgrade on Windows
+
+Keep the existing `.git` and `.venv` directories. Copy this package's project contents over the
+existing project and approve file replacement. The distribution ZIP intentionally excludes local
+secrets, generated data, caches, `.git`, and `.venv`.
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
+Get-ChildItem .\scripts\*.ps1 | Unblock-File
 python -m src.main config-validate
-.\scripts
-un_checks.ps1
-.\scripts\phase2_smoke_test.ps1
+.\scripts\run_checks.ps1
+.\scripts\phase3_smoke_test.ps1
 ```
 
-A clean installation can run:
+Configuration validation should report **7 files**.
+
+## Market data
 
 ```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-.\scripts\setup.ps1
+python -m src.main data-download `
+  --symbol SPY `
+  --asset-class stock `
+  --start 2020-01-01 `
+  --end 2026-07-22 `
+  --provider yahoo
 ```
 
-## Offline Phase 2 proof
+Yahoo remains the primary Phase 2 provider. CoinGecko is optional and can be ignored.
+
+## Backtest SPY
 
 ```powershell
-python -m src.main data-demo --symbol DEMO
-python -m src.main data-status
-python -m src.main data-validate --path dataalidated\stock\DEMO.parquet
+python -m src.main strategy-list
+python -m src.main backtest-run `
+  --path data\validated\stock\SPY.parquet `
+  --strategy moving_average_cross `
+  --fast 50 `
+  --slow 200 `
+  --initial-cash 100000 `
+  --commission 0 `
+  --slippage-bps 2
 ```
 
-## Download real daily data
+Reports are generated under `reports/backtests/` and are ignored by Git.
 
-Equity/ETF using Yahoo through yfinance:
+## Safety boundary
 
-```powershell
-python -m src.main data-download --symbol SPY --asset-class stock --start 2020-01-01 --end 2026-07-22 --provider yahoo
-```
+The following remain disabled or absent:
 
-Crypto using Yahoo:
-
-```powershell
-python -m src.main data-download --symbol BTC-USD --asset-class crypto --start 2020-01-01 --end 2026-07-22 --provider yahoo
-```
-
-Crypto using CoinGecko as an independent source:
-
-```powershell
-python -m src.main data-download --symbol BTC-USD --asset-class crypto --start 2025-01-01 --end 2025-12-31 --provider coingecko
-```
-
-CoinGecko public/demo limits can vary. Yahoo is the default Phase 2 provider; CoinGecko is
-included for source diversity and reconciliation work.
-
-## Storage
-
-Validated bars are written to:
-
-```text
-data/validated/<asset_class>/<symbol>.parquet
-```
-
-Each Parquet file receives a sibling SHA-256 manifest. Generated datasets and reports are
-ignored by Git because they are reproducible and may become large.
-
-## Normalized schema
-
-- timestamp (UTC)
-- symbol
-- asset_class
-- open, high, low, close, adj_close
-- volume
-- dividends, splits
-- source
-- ingested_at (UTC)
-
-## Phase 2 completion criteria
-
-- Six configuration files validate.
-- Offline demo writes and reads Parquet.
-- Data quality rejects duplicates, null OHLCV, negative volume, and invalid OHLC.
-- Provider tests run without internet by using mocks.
-- `pytest`, Ruff, formatting, and mypy pass.
-- At least one real SPY and one real BTC-USD dataset download successfully on the user's PC.
-- Live trading remains disabled.
+- Robinhood credentials
+- Brokerage authentication
+- Live and paper order submission
+- Margin, leverage, short selling, and options
+- Autonomous AI trading decisions

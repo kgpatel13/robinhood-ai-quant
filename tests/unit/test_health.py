@@ -6,8 +6,13 @@ from src.common.health import collect_health
 
 def test_health_disables_live_trading() -> None:
     settings = AppSettings(
-        app_env="test", log_level="INFO", config_dir=Path("config"), data_dir=Path("data"),
-        reports_dir=Path("reports"), logs_dir=Path("logs"), http_timeout_seconds=30,
+        app_env="test",
+        log_level="INFO",
+        config_dir=Path("config"),
+        data_dir=Path("data"),
+        reports_dir=Path("reports"),
+        logs_dir=Path("logs"),
+        http_timeout_seconds=30,
         http_max_retries=3,
     )
     result = collect_health(settings)

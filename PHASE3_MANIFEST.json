@@ -1,0 +1,15 @@
+{
+  "phase": 3,
+  "version": "0.3.0",
+  "name": "Strategy research and backtesting",
+  "live_trading_capability": false,
+  "features": [
+    "technical indicators",
+    "strategy registry",
+    "next-open long-only backtester",
+    "commission and slippage models",
+    "portfolio equity accounting",
+    "performance analytics",
+    "CSV and JSON reports"
+  ]
+}

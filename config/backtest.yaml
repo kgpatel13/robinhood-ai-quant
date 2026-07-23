@@ -1,0 +1,12 @@
+version: 1
+engine:
+  initial_cash: 100000.0
+  commission_per_trade: 0.0
+  slippage_bps: 2.0
+strategy:
+  name: moving_average_cross
+  parameters:
+    fast_period: 50
+    slow_period: 200
+outputs:
+  directory: reports/backtests

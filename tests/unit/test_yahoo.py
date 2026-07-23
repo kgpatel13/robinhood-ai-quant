@@ -10,9 +10,14 @@ def test_yahoo_normalizes_download() -> None:
     raw = pd.DataFrame(
         {
             "Date": pd.to_datetime(["2025-01-02", "2025-01-03"]),
-            "Open": [100.0, 101.0], "High": [102.0, 103.0], "Low": [99.0, 100.0],
-            "Close": [101.0, 102.0], "Adj Close": [100.5, 101.5], "Volume": [10, 20],
-            "Dividends": [0.0, 0.1], "Stock Splits": [0.0, 0.0],
+            "Open": [100.0, 101.0],
+            "High": [102.0, 103.0],
+            "Low": [99.0, 100.0],
+            "Close": [101.0, 102.0],
+            "Adj Close": [100.5, 101.5],
+            "Volume": [10, 20],
+            "Dividends": [0.0, 0.1],
+            "Stock Splits": [0.0, 0.0],
         }
     ).set_index("Date")
     with patch("src.data.providers.yahoo.yf.download", return_value=raw):
