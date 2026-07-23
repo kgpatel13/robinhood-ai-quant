@@ -1,10 +1,22 @@
 from __future__ import annotations
 
 from datetime import UTC, date, datetime, timedelta
+import importlib
 from typing import Any
 
 import pandas as pd
-import yfinance as yf
+
+try:
+    yf: Any = importlib.import_module("yfinance")
+except ModuleNotFoundError:
+
+    class _MissingYFinance:
+        @staticmethod
+        def download(**_: Any) -> pd.DataFrame:
+            raise RuntimeError("yfinance is required for Yahoo downloads")
+
+    yf = _MissingYFinance()
+
 
 from src.data.schema import empty_bars, normalize_bars
 

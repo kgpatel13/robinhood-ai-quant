@@ -18,6 +18,7 @@ REQUIRED_CONFIG_FILES = (
     "environments.yaml",
     "data_sources.yaml",
     "backtest.yaml",
+    "portfolio.yaml",
 )
 
 
@@ -76,11 +77,11 @@ def validate_all_configs(config_dir: Path) -> dict[str, dict[str, Any]]:
     )
     for key in prohibited:
         if risk_global.get(key) is not False:
-            raise ConfigurationError(f"Phase 3 requires {key}: false")
+            raise ConfigurationError(f"Phase 4 requires {key}: false")
     production = loaded["environments.yaml"].get("production")
     if not isinstance(production, dict) or production.get("allow_live_orders") is not False:
-        raise ConfigurationError("Phase 3 requires production allow_live_orders: false")
+        raise ConfigurationError("Phase 4 requires production allow_live_orders: false")
     storage = loaded["data_sources.yaml"].get("storage")
     if not isinstance(storage, dict) or storage.get("format") != "parquet":
-        raise ConfigurationError("Phase 3 requires Parquet storage")
+        raise ConfigurationError("Phase 4 requires Parquet storage")
     return loaded

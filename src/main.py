@@ -6,6 +6,7 @@ import logging
 import sys
 from datetime import date
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 
@@ -18,7 +19,9 @@ from src.data.catalog import build_catalog
 from src.data.demo import make_demo_bars
 from src.data.service import MarketDataService
 from src.data.storage import ParquetBarStore
-from src.reporting import write_backtest_report
+from src.portfolio import PortfolioBacktestConfig, PortfolioBacktestEngine
+from src.portfolio.models import AllocationMethod, RebalanceFrequency
+from src.reporting import write_backtest_report, write_portfolio_report
 from src.strategies import available_strategies, create_strategy
 
 LOGGER = logging.getLogger(__name__)
@@ -29,6 +32,13 @@ def iso_date(value: str) -> date:
         return date.fromisoformat(value)
     except ValueError as exc:
         raise argparse.ArgumentTypeError("Date must use YYYY-MM-DD") from exc
+
+
+def key_value(value: str) -> tuple[str, str]:
+    key, separator, item = value.partition("=")
+    if not separator or not key or not item:
+        raise argparse.ArgumentTypeError("Value must use KEY=VALUE")
+    return key, item
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -61,6 +71,35 @@ def build_parser() -> argparse.ArgumentParser:
     backtest.add_argument("--commission", type=float, default=None)
     backtest.add_argument("--slippage-bps", type=float, default=None)
     backtest.add_argument("--report-name", default=None)
+
+    portfolio = sub.add_parser("portfolio-backtest-run")
+    portfolio.add_argument(
+        "--asset",
+        action="append",
+        type=key_value,
+        required=True,
+        metavar="SYMBOL=PATH",
+        help="Repeat for each asset, for example --asset SPY=data/validated/stock/SPY.parquet",
+    )
+    portfolio.add_argument(
+        "--strategy", choices=available_strategies(), default="moving_average_cross"
+    )
+    portfolio.add_argument("--fast", type=int, default=50)
+    portfolio.add_argument("--slow", type=int, default=200)
+    portfolio.add_argument(
+        "--allocation", choices=("equal", "fixed", "inverse_volatility"), default=None
+    )
+    portfolio.add_argument(
+        "--weight", action="append", type=key_value, default=[], metavar="SYMBOL=WEIGHT"
+    )
+    portfolio.add_argument("--vol-lookback", type=int, default=None)
+    portfolio.add_argument("--rebalance", choices=("daily", "weekly", "monthly"), default=None)
+    portfolio.add_argument("--max-asset-weight", type=float, default=None)
+    portfolio.add_argument("--cash-buffer-pct", type=float, default=None)
+    portfolio.add_argument("--initial-cash", type=float, default=None)
+    portfolio.add_argument("--commission", type=float, default=None)
+    portfolio.add_argument("--slippage-bps", type=float, default=None)
+    portfolio.add_argument("--report-name", default="phase4_portfolio")
     return parser
 
 
@@ -80,9 +119,9 @@ def _run_backtest(args: argparse.Namespace, settings_config_dir: Path, reports_d
     )
     result = BacktestEngine().run(bars, strategy, config)
     report_name = args.report_name or f"{args.path.stem}_{strategy.metadata.name}"
-    output_root = Path(str(config_payload["outputs"]["directory"]))
-    if not output_root.is_absolute() and output_root.parts[0] == "reports":
-        output_root = reports_dir / Path(*output_root.parts[1:])
+    output_root = _resolve_report_root(
+        Path(str(config_payload["outputs"]["directory"])), reports_dir
+    )
     paths = write_backtest_report(result, output_root, report_name)
     print(
         json.dumps(
@@ -95,6 +134,61 @@ def _run_backtest(args: argparse.Namespace, settings_config_dir: Path, reports_d
         )
     )
     return 0
+
+
+def _run_portfolio_backtest(
+    args: argparse.Namespace, settings_config_dir: Path, reports_dir: Path
+) -> int:
+    asset_paths = dict(args.asset)
+    if len(asset_paths) < 2:
+        raise ValueError("Provide at least two unique --asset SYMBOL=PATH values")
+    datasets = {symbol: pd.read_parquet(Path(path)) for symbol, path in asset_paths.items()}
+    weights = {symbol: float(value) for symbol, value in args.weight}
+    payload = load_yaml(settings_config_dir / "portfolio.yaml")
+    defaults = payload["portfolio"]
+    allocation = args.allocation or str(defaults["allocation_method"])
+    config = PortfolioBacktestConfig(
+        initial_cash=float(args.initial_cash or defaults["initial_cash"]),
+        commission_per_order=float(
+            defaults["commission_per_order"] if args.commission is None else args.commission
+        ),
+        slippage_bps=float(
+            defaults["slippage_bps"] if args.slippage_bps is None else args.slippage_bps
+        ),
+        allocation_method=cast(AllocationMethod, allocation),
+        fixed_weights=weights,
+        volatility_lookback=int(args.vol_lookback or defaults["volatility_lookback"]),
+        rebalance_frequency=cast(
+            RebalanceFrequency, args.rebalance or str(defaults["rebalance_frequency"])
+        ),
+        max_asset_weight=float(args.max_asset_weight or defaults["max_asset_weight"]),
+        cash_buffer_pct=float(
+            defaults["cash_buffer_pct"] if args.cash_buffer_pct is None else args.cash_buffer_pct
+        ),
+    )
+    strategy = create_strategy(args.strategy, fast_period=args.fast, slow_period=args.slow)
+    result = PortfolioBacktestEngine().run(datasets, strategy, config)
+    output_root = _resolve_report_root(Path(str(payload["outputs"]["directory"])), reports_dir)
+    paths = write_portfolio_report(result, output_root, args.report_name)
+    print(
+        json.dumps(
+            {
+                "strategy": strategy.metadata.name,
+                "assets": sorted(asset_paths),
+                "allocation": config.allocation_method,
+                "metrics": result.metrics,
+                "reports": {key: str(value) for key, value in paths.items()},
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
+def _resolve_report_root(configured: Path, reports_dir: Path) -> Path:
+    if not configured.is_absolute() and configured.parts and configured.parts[0] == "reports":
+        return reports_dir / Path(*configured.parts[1:])
+    return configured
 
 
 def run(args: argparse.Namespace) -> int:
@@ -115,6 +209,8 @@ def run(args: argparse.Namespace) -> int:
         return 0
     if args.command == "backtest-run":
         return _run_backtest(args, settings.config_dir, settings.reports_dir)
+    if args.command == "portfolio-backtest-run":
+        return _run_portfolio_backtest(args, settings.config_dir, settings.reports_dir)
     data_config = load_yaml(settings.config_dir / "data_sources.yaml")
     storage_config = data_config["storage"]
     validated_root = Path(str(storage_config["validated_directory"]))

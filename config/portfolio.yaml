@@ -1,0 +1,14 @@
+version: 1
+
+portfolio:
+  initial_cash: 100000
+  allocation_method: equal
+  volatility_lookback: 20
+  rebalance_frequency: weekly
+  max_asset_weight: 0.60
+  cash_buffer_pct: 0.02
+  commission_per_order: 0
+  slippage_bps: 3
+
+outputs:
+  directory: reports/portfolios

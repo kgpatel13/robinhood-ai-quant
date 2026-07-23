@@ -1,0 +1,21 @@
+{
+  "phase": 4,
+  "version": "0.4.0",
+  "title": "Multi-Asset Portfolio Research Engine",
+  "capabilities": [
+    "multi_asset_backtesting",
+    "equal_weight_allocation",
+    "fixed_weight_allocation",
+    "inverse_volatility_allocation",
+    "scheduled_rebalancing",
+    "portfolio_holdings_and_trade_ledgers",
+    "html_portfolio_report"
+  ],
+  "safety": {
+    "live_trading": false,
+    "broker_authentication": false,
+    "leverage": false,
+    "short_selling": false,
+    "options": false
+  }
+}
