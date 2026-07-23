@@ -1,24 +1,22 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-
+from src.core.plugins import PluginDescriptor, PluginRegistry, PluginType
 from src.strategies.base import Strategy
 from src.strategies.moving_average import MovingAverageCrossStrategy
 
-StrategyFactory = Callable[..., Strategy]
-
-_STRATEGIES: dict[str, StrategyFactory] = {
-    "moving_average_cross": MovingAverageCrossStrategy,
-}
+_REGISTRY = PluginRegistry()
+_REGISTRY.register(
+    PluginDescriptor("moving_average_cross", PluginType.STRATEGY, MovingAverageCrossStrategy)
+)
 
 
 def create_strategy(name: str, **parameters: int) -> Strategy:
-    try:
-        factory = _STRATEGIES[name]
-    except KeyError as exc:
-        raise ValueError(f"Unknown strategy: {name}. Available: {sorted(_STRATEGIES)}") from exc
-    return factory(**parameters)
+    factory = _REGISTRY.resolve(PluginType.STRATEGY, name)
+    strategy = factory(**parameters)
+    if not isinstance(strategy, Strategy):
+        raise TypeError(f"Strategy plugin {name} did not create a Strategy")
+    return strategy
 
 
 def available_strategies() -> list[str]:
-    return sorted(_STRATEGIES)
+    return _REGISTRY.names(PluginType.STRATEGY)

@@ -4,7 +4,13 @@ A broker-independent quantitative research platform. It downloads and validates 
 stores normalized Parquet datasets, runs reproducible single-asset and multi-asset backtests, and
 produces performance reports. It cannot authenticate with a broker or place live orders.
 
-## Phase 4 capabilities
+## Phase 4.5 capabilities
+
+- Extensible plugin registry for strategies, providers, allocators, reporters, brokers, risk models, and AI models.
+- Dependency-injection service container.
+- Typed event bus and execution run IDs.
+- Runtime metrics collector and broker protocol foundation.
+- `plugin-list` CLI command for architecture inspection.
 
 - Multi-asset portfolio simulation on synchronized datasets
 - Equal, fixed, and inverse-volatility allocation

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "robinhood-ai-quant"
-version = "0.4.0"
+version = "0.4.5"
 description = "Broker-independent AI-assisted quantitative research platform"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -40,6 +40,7 @@ packages = [
   "src.analytics",
   "src.backtest",
   "src.common",
+  "src.core",
   "src.data",
   "src.data.providers",
   "src.execution",

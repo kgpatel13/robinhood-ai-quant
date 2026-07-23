@@ -15,6 +15,9 @@ from src.common.config import load_settings, load_yaml, validate_all_configs
 from src.common.exceptions import QuantPlatformError
 from src.common.health import collect_health
 from src.common.logging_config import configure_logging
+from src.core.bootstrap import build_runtime
+from src.core.context import ExecutionContext
+from src.core.events import BacktestCompleted, MarketDataLoaded
 from src.data.catalog import build_catalog
 from src.data.demo import make_demo_bars
 from src.data.service import MarketDataService
@@ -60,6 +63,7 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument("--symbol", default="DEMO")
     demo.add_argument("--rows", type=int, default=10)
     sub.add_parser("strategy-list")
+    sub.add_parser("plugin-list")
     backtest = sub.add_parser("backtest-run")
     backtest.add_argument("--path", type=Path, required=True)
     backtest.add_argument(
@@ -194,6 +198,8 @@ def _resolve_report_root(configured: Path, reports_dir: Path) -> Path:
 def run(args: argparse.Namespace) -> int:
     settings = load_settings()
     configure_logging(settings.log_level, settings.logs_dir)
+    runtime = build_runtime(settings)
+    context = ExecutionContext.create(args.command, settings.app_env)
     if args.command == "healthcheck":
         print(json.dumps(collect_health(settings), indent=2))
         return 0
@@ -207,10 +213,31 @@ def run(args: argparse.Namespace) -> int:
     if args.command == "strategy-list":
         print(json.dumps(available_strategies(), indent=2))
         return 0
+    if args.command == "plugin-list":
+        print(
+            json.dumps(
+                [
+                    {
+                        "name": item.name,
+                        "type": item.plugin_type.value,
+                        "version": item.version,
+                        "enabled": item.enabled,
+                        "description": item.description,
+                    }
+                    for item in runtime.plugins.list()
+                ],
+                indent=2,
+            )
+        )
+        return 0
     if args.command == "backtest-run":
-        return _run_backtest(args, settings.config_dir, settings.reports_dir)
+        code = _run_backtest(args, settings.config_dir, settings.reports_dir)
+        runtime.events.publish(BacktestCompleted(run_id=context.run_id, strategy=args.strategy))
+        return code
     if args.command == "portfolio-backtest-run":
-        return _run_portfolio_backtest(args, settings.config_dir, settings.reports_dir)
+        code = _run_portfolio_backtest(args, settings.config_dir, settings.reports_dir)
+        runtime.events.publish(BacktestCompleted(run_id=context.run_id, strategy=args.strategy))
+        return code
     data_config = load_yaml(settings.config_dir / "data_sources.yaml")
     storage_config = data_config["storage"]
     validated_root = Path(str(storage_config["validated_directory"]))
@@ -220,6 +247,13 @@ def run(args: argparse.Namespace) -> int:
             raise ValueError("--end cannot be before --start")
         path, report = service.download(
             args.symbol, args.asset_class, args.start, args.end, args.provider
+        )
+        runtime.events.publish(
+            MarketDataLoaded(
+                run_id=context.run_id,
+                symbols=(args.symbol.upper(),),
+                rows=report.rows,
+            )
         )
         print(json.dumps({"path": str(path), "quality": report.to_dict()}, indent=2))
         return 0
