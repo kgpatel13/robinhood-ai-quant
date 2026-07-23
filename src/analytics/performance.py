@@ -27,6 +27,26 @@ def calculate_metrics(equity_curve: pd.DataFrame, trades: pd.DataFrame) -> dict[
     losses = completed[completed["realized_pnl"] < 0] if not completed.empty else completed
     gross_profit = float(wins["realized_pnl"].sum()) if not wins.empty else 0.0
     gross_loss = abs(float(losses["realized_pnl"].sum())) if not losses.empty else 0.0
+    entries = int((trades["side"] == "BUY").sum()) if not trades.empty else 0
+    exits = int((trades["side"] == "SELL").sum()) if not trades.empty else 0
+    open_positions = max(entries - exits, 0)
+    realized_pnl = float(completed["realized_pnl"].sum()) if not completed.empty else 0.0
+    unrealized_pnl = (
+        float(equity_curve["unrealized_pnl"].iloc[-1])
+        if "unrealized_pnl" in equity_curve.columns
+        else 0.0
+    )
+    total_costs = 0.0
+    if not trades.empty:
+        total_costs = float(trades["commission"].sum())
+        if "fee" in trades.columns:
+            total_costs += float(trades["fee"].sum())
+    average_hold = (
+        float(completed["holding_days"].mean())
+        if not completed.empty and "holding_days" in completed.columns
+        else 0.0
+    )
+    calmar = 0.0 if drawdown.min() == 0.0 else float(cagr / abs(drawdown.min()))
     return {
         "initial_equity": float(equity.iloc[0]),
         "final_equity": float(equity.iloc[-1]),
@@ -37,6 +57,15 @@ def calculate_metrics(equity_curve: pd.DataFrame, trades: pd.DataFrame) -> dict[
         "sortino_ratio": float(sortino),
         "max_drawdown": float(drawdown.min()),
         "trade_count": int(len(completed)),
+        "entries": entries,
+        "exits": exits,
+        "completed_trades": exits,
+        "open_positions": open_positions,
+        "realized_pnl": realized_pnl,
+        "unrealized_pnl": unrealized_pnl,
+        "total_costs": total_costs,
+        "average_holding_days": average_hold,
+        "calmar_ratio": calmar,
         "win_rate": float(len(wins) / len(completed)) if len(completed) else 0.0,
         "profit_factor": float(gross_profit / gross_loss) if gross_loss else 0.0,
     }

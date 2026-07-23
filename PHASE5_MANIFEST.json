@@ -1,0 +1,15 @@
+{
+  "version": "0.5.9",
+  "phase": "5 complete",
+  "components": [
+    "optimization",
+    "dataset validation",
+    "benchmark analytics",
+    "trade accounting",
+    "transaction cost modeling",
+    "walk-forward out-of-sample validation",
+    "parameter stability",
+    "multi-asset tournament",
+    "research scorecard"
+  ]
+}

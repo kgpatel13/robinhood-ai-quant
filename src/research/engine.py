@@ -11,30 +11,56 @@ from src.research.objectives import score_metrics
 from src.research.search import generate_candidates
 from src.strategies import create_strategy
 
+Candidate = dict[str, int | float]
+Evaluation = tuple[Candidate, float, dict[str, float | int], pd.DataFrame]
+
+
+def _is_valid_candidate(strategy_name: str, parameters: Candidate) -> bool:
+    try:
+        strategy = create_strategy(strategy_name, **parameters)
+        strategy.validate_parameters()
+    except (TypeError, ValueError):
+        return False
+    return True
+
 
 def _evaluate_candidate(
     bars: pd.DataFrame,
     strategy_name: str,
-    parameters: dict[str, int | float],
+    parameters: Candidate,
     backtest_config: BacktestConfig,
     objective: str,
-) -> tuple[dict[str, int | float], float, dict[str, float | int], pd.DataFrame]:
+) -> Evaluation:
     strategy = create_strategy(strategy_name, **parameters)
+    strategy.validate_parameters()
     result = BacktestEngine().run(bars, strategy, backtest_config)
-    return parameters, score_metrics(result.metrics, objective), result.metrics, result.equity_curve
+    return (
+        parameters,
+        score_metrics(result.metrics, objective),
+        result.metrics,
+        result.equity_curve,
+    )
 
 
 class OptimizationEngine:
     def run(self, bars: pd.DataFrame, config: OptimizationConfig) -> OptimizationResult:
-        candidates = generate_candidates(config)
+        generated = generate_candidates(config)
+        candidates = [
+            parameters
+            for parameters in generated
+            if _is_valid_candidate(config.strategy, parameters)
+        ]
         if not candidates:
-            raise ValueError("optimization generated no candidates")
+            raise ValueError(
+                "optimization generated no valid candidates; check the strategy parameter space"
+            )
         backtest_config = BacktestConfig(
             initial_cash=config.initial_cash,
             commission_per_trade=config.commission_per_trade,
             slippage_bps=config.slippage_bps,
+            fee_bps=config.fee_bps,
         )
-        raw: list[tuple[dict[str, int | float], float, dict[str, float | int], pd.DataFrame]]
+        raw: list[Evaluation]
         if config.workers == 1:
             raw = [
                 _evaluate_candidate(

@@ -32,12 +32,15 @@ class OptimizationConfig:
     initial_cash: float = 100_000.0
     commission_per_trade: float = 0.0
     slippage_bps: float = 0.0
+    fee_bps: float = 0.0
 
     def __post_init__(self) -> None:
         if not self.parameters:
             raise ValueError("at least one parameter is required")
         if self.workers < 1:
             raise ValueError("workers must be at least 1")
+        if self.fee_bps < 0:
+            raise ValueError("fee_bps cannot be negative")
         if self.max_evaluations is not None and self.max_evaluations < 1:
             raise ValueError("max_evaluations must be positive")
 

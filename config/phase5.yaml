@@ -1,0 +1,46 @@
+version: 1
+data:
+  root: data/validated
+  timeframe: 1d
+  symbols:
+    - SPY
+    - QQQ
+    - IWM
+    - DIA
+    - VTI
+    - TLT
+    - GLD
+    - AAPL
+    - MSFT
+    - NVDA
+    - BTC-USD
+    - ETH-USD
+    - SOL-USD
+costs:
+  equity:
+    commission_per_trade: 0.0
+    fee_bps: 0.0
+    slippage_bps: 5.0
+  crypto:
+    commission_per_trade: 0.0
+    fee_bps: 25.0
+    slippage_bps: 10.0
+walk_forward:
+  training_years: 5
+  testing_years: 1
+  step_years: 1
+  minimum_test_rows: 100
+acceptance:
+  minimum_completed_trades: 20
+  minimum_oos_sharpe: 0.75
+  maximum_oos_drawdown: 0.25
+optimization:
+  strategy: moving_average_cross
+  objective: sharpe
+  workers: 1
+  initial_cash: 100000.0
+  parameters:
+    fast_period: [5, 10, 20, 50]
+    slow_period: [50, 100, 150, 200]
+outputs:
+  directory: reports/phase5

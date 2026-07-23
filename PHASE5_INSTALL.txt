@@ -1,0 +1,22 @@
+PHASE 5 COMPLETE BUNDLE (v0.5.9)
+
+1. Extract this ZIP directly into C:\Projects\robinhood-ai-quant
+2. Choose Replace files when prompted.
+3. Activate the existing virtual environment.
+4. Reinstall editable dependencies:
+
+   python -m pip install -e ".[dev]"
+
+5. Run the quality gate:
+
+   .\scripts\phase5_smoke_test.ps1
+
+For a faster first functional run:
+
+   python .\scripts\phase5_bundle.py --symbols SPY QQQ BTC-USD
+
+For the complete configured universe:
+
+   python .\scripts\phase5_bundle.py
+
+Reports are written to reports\phase5.

@@ -20,5 +20,9 @@ class Strategy(ABC):
         """Describe the strategy and its warm-up requirement."""
 
     @abstractmethod
+    def validate_parameters(self) -> None:
+        """Raise ValueError when the configured strategy parameters are invalid."""
+
+    @abstractmethod
     def generate_signals(self, bars: pd.DataFrame) -> pd.Series:
         """Return target exposure in [0, 1] indexed like bars."""

@@ -1,0 +1,11 @@
+Phase 5 Stabilization v0.5.10
+
+1. Extract this ZIP into C:\Projects\robinhood-ai-quant and replace files.
+2. Activate the existing virtual environment.
+3. Run:
+   python -m pip install -e ".[dev]"
+4. Run:
+   Set-ExecutionPolicy -Scope Process Bypass
+   .\scripts\phase5_smoke_test.ps1
+
+The smoke script now stops on every failed external command and prints PASSED only after the functional run succeeds.
