@@ -1,0 +1,24 @@
+version: 0.7.9
+seed: 42
+monte_carlo_runs: 1000
+confidence_level: 0.95
+weights:
+  return_score: 0.15
+  sharpe: 0.20
+  drawdown: 0.15
+  benchmark: 0.15
+  trades: 0.10
+  stability: 0.10
+  consistency: 0.10
+  regime: 0.05
+promotion_gates:
+  minimum_sharpe: 0.75
+  minimum_excess_cagr: 0.0
+  maximum_drawdown: -0.30
+  minimum_trades: 20
+  minimum_parameter_stability: 0.60
+  minimum_cost_resilience: 0.70
+  minimum_cross_asset_consistency: 0.50
+  minimum_regime_score: 0.45
+  minimum_monte_carlo_survival: 0.80
+  minimum_composite_score: 70.0

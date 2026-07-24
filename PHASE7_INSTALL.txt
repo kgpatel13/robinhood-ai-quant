@@ -1,0 +1,10 @@
+Phase 7 installation
+
+1. Back up or commit the validated Phase 6.9 project.
+2. Extract this bundle into the project root and replace files.
+3. Run:
+   python -m pip install -e ".[dev]"
+   ruff format .
+   .\scripts\phase7_smoke_test.ps1
+4. Generate Phase 7 reports:
+   python .\scripts\phase7_bundle.py --tournament reports\phase6_9_smoke\tournament\strategy_tournament.csv --output reports\phase7_smoke

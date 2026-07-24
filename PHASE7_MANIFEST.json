@@ -1,0 +1,15 @@
+{
+  "version": "0.7.9",
+  "phase": "Phase 7 Tournament Selection and Promotion",
+  "capabilities": [
+    "composite scoring",
+    "promotion gates",
+    "cross-asset consistency",
+    "parameter stability integration",
+    "regime validation primitives",
+    "Monte Carlo validation primitives",
+    "champion/challenger lifecycle",
+    "paper-trading eligibility reports",
+    "deterministic manifests"
+  ]
+}
