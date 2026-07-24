@@ -1,0 +1,26 @@
+version: 0.8.9
+symbols: [SPY, QQQ, BTC-USD]
+strategies: []
+max_candidates_per_strategy: 12
+search_method: hybrid
+objective: sharpe
+seed: 42
+workers: 1
+initial_cash: 100000
+costs:
+  commission_per_trade: 0
+  equity_slippage_bps: 2
+  equity_fee_bps: 0
+  crypto_slippage_bps: 10
+  crypto_fee_bps: 25
+walk_forward:
+  training_years: 5
+  testing_years: 1
+  step_years: 1
+  minimum_test_rows: 100
+stability:
+  score_tolerance: 0.25
+  minimum_neighbors: 1
+promotion:
+  monte_carlo_runs: 1000
+resume: true

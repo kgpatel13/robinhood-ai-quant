@@ -1,0 +1,35 @@
+Phase 8.9 installation
+======================
+
+1. Back up the current project.
+2. Extract this archive over C:\Projects\robinhood-ai-quant and replace files.
+3. Activate the virtual environment:
+
+   .\.venv\Scripts\Activate.ps1
+
+4. Install the editable package:
+
+   python -m pip install -e ".[dev]"
+
+5. Run the quality gate:
+
+   ruff format .
+   .\scripts\phase8_smoke_test.ps1
+
+6. Run a controlled validation first:
+
+   python .\scripts\phase8_bundle.py `
+     --symbols SPY QQQ BTC-USD `
+     --strategies moving_average_cross rsi_mean_reversion `
+     --max-candidates 3 `
+     --monte-carlo-runs 200 `
+     --output reports\phase8_smoke
+
+7. After validation, run the full discovery universe:
+
+   python .\scripts\phase8_bundle.py `
+     --symbols SPY QQQ BTC-USD `
+     --max-candidates 12 `
+     --output reports\phase8_full
+
+Phase 8 is research-only. It does not connect to Robinhood or place orders.

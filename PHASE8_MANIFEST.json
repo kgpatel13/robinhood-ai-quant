@@ -1,0 +1,18 @@
+{
+  "phase": "8.9.0",
+  "version": "0.8.9",
+  "title": "Complete 8.x Robust Strategy Discovery",
+  "components": [
+    "diagnostics",
+    "experiment_store",
+    "candidate_generation",
+    "walk_forward_candidate_evaluation",
+    "neighborhood_stability",
+    "cross_asset_discovery",
+    "feature_snapshots",
+    "explainable_ranking",
+    "phase7_10_promotion_loop",
+    "resume_and_reproducibility"
+  ],
+  "execution_boundary": "research_only"
+}
