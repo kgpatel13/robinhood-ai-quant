@@ -84,3 +84,15 @@ The following remain disabled or absent:
 Version 0.5.0 adds grid search, seeded random search, objective-based strategy ranking,
 optional multiprocessing, reproducible research metadata, and optimization reports.
 See `docs/PHASE5A_OPTIMIZATION.md` for usage.
+
+## Phase 9: Cross-Market Opportunity Scanner
+
+Version 0.9.0 adds separate stock and crypto research profiles, broad symbol scanning,
+soft opportunity scoring, hard liquidity/risk controls, ATR-based position plans, and
+symbol-level failure isolation. See `docs/PHASE9_OPPORTUNITY_SCANNER.md`.
+
+```powershell
+python .\scripts\phase9_bundle.py --symbols SPY QQQ BTC-USD --top-n 10 --output reports\phase9_smoke
+```
+
+Omit `--symbols` to scan every validated dataset. Phase 9 is research-only and does not place orders.

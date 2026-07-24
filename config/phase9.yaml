@@ -1,0 +1,30 @@
+version: 0.9.0
+mode: research_scanner
+symbols: []  # empty scans every validated symbol
+account_equity: 100000
+top_n_per_market: 25
+maximum_total_exposure: 0.85
+maximum_daily_loss: 0.02
+news_risk_default: 0.0
+stock:
+  minimum_price: 3.0
+  minimum_dollar_volume: 5000000
+  minimum_history: 220
+  entry_score: 62
+  strong_entry_score: 75
+  max_positions: 8
+  risk_per_trade: 0.005
+  stop_atr_multiple: 1.5
+  target_atr_multiple: 2.4
+  maximum_position_weight: 0.15
+crypto:
+  minimum_price: 0.000001
+  minimum_dollar_volume: 1000000
+  minimum_history: 180
+  entry_score: 64
+  strong_entry_score: 78
+  max_positions: 5
+  risk_per_trade: 0.004
+  stop_atr_multiple: 2.0
+  target_atr_multiple: 3.0
+  maximum_position_weight: 0.12

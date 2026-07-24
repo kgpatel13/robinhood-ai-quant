@@ -1,0 +1,9 @@
+Phase 9 installation
+
+1. Activate the Python 3.12 environment.
+2. Install editable dependencies:
+   python -m pip install -e ".[dev]"
+3. Run the smoke gate:
+   powershell -ExecutionPolicy Bypass -File .\scripts\phase9_smoke_test.ps1
+4. Run all available validated symbols:
+   python .\scripts\phase9_bundle.py --output reports\phase9_full

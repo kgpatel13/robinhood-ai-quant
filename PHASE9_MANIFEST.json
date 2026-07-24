@@ -1,0 +1,14 @@
+{
+  "phase": "9.0.0",
+  "name": "Cross-Market Opportunity Scanner",
+  "status": "research-only",
+  "capabilities": [
+    "scan all validated symbols",
+    "separate stock and crypto scoring profiles",
+    "soft opportunity scoring",
+    "hard liquidity and risk filters",
+    "ATR-based position plans",
+    "symbol-level failure isolation",
+    "ranked CSV and JSON diagnostics"
+  ]
+}
