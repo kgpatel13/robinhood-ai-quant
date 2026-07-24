@@ -1,0 +1,7 @@
+Phase 7.10 Promotion Engine Completion
+
+1. Extract into the project root and replace files.
+2. Run: python -m pip install -e ".[dev]"
+3. Run: ruff format .
+4. Run: .\scripts\phase7_smoke_test.ps1
+5. Regenerate Phase 7 reports with scripts\phase7_bundle.py.

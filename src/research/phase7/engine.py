@@ -11,6 +11,7 @@ from src.research.phase7.consistency import add_cross_asset_consistency
 from src.research.phase7.gates import evaluate_gates
 from src.research.phase7.lifecycle import assign_lifecycle
 from src.research.phase7.models import EvaluationResult, Phase7Config
+from src.research.phase7.promotion_metrics import enrich_promotion_metrics
 from src.research.phase7.scoring import composite_score
 
 _REQUIRED_COLUMNS = {
@@ -37,8 +38,6 @@ def _defaults(frame: pd.DataFrame) -> pd.DataFrame:
     defaults: dict[str, float] = {
         "parameter_stability": 0.0,
         "cost_resilience": 0.0,
-        "regime_score": 0.0,
-        "monte_carlo_survival": 0.0,
     }
     for column, value in defaults.items():
         if column not in result:
@@ -120,10 +119,19 @@ def run_phase7_selection(
     if missing:
         raise ValueError(f"tournament report missing columns: {sorted(missing)}")
     frame = add_cross_asset_consistency(frame)
+    frame, regime_rows, monte_carlo_rows = enrich_promotion_metrics(
+        frame,
+        tournament_csv,
+        runs=active.monte_carlo_runs,
+        seed=active.seed,
+        confidence=active.confidence_level,
+    )
     finalized, ranked_rows = _finalize(_initial_evaluations(frame, active))
     leaderboard = pd.DataFrame(ranked_rows).sort_values(["symbol", "rank"])
     output_root.mkdir(parents=True, exist_ok=True)
     leaderboard.to_csv(output_root / "phase7_leaderboard.csv", index=False)
+    pd.DataFrame(regime_rows).to_csv(output_root / "regime_validation.csv", index=False)
+    pd.DataFrame(monte_carlo_rows).to_csv(output_root / "monte_carlo_validation.csv", index=False)
     promotion = leaderboard[leaderboard["paper_eligible"].astype(bool)]
     promotion.to_csv(output_root / "paper_trading_eligible.csv", index=False)
     rejection = leaderboard[~leaderboard["paper_eligible"].astype(bool)]
@@ -143,11 +151,12 @@ def run_phase7_selection(
     report = json.dumps(payload, indent=2, default=str)
     (output_root / "promotion_report.json").write_text(report, encoding="utf-8")
     manifest = {
-        "phase": "7.9.0",
+        "phase": "7.10.0",
         "source_report": str(tournament_csv),
         "source_sha256": _fingerprint(tournament_csv),
         "rows": len(leaderboard),
         "eligible": len(promotion),
+        "promotion_metrics_complete": True,
         "seed": active.seed,
         "monte_carlo_runs": active.monte_carlo_runs,
         "config": asdict(active),
@@ -157,5 +166,6 @@ def run_phase7_selection(
     return {
         "evaluations": len(leaderboard),
         "eligible": len(promotion),
+        "promotion_metrics_complete": True,
         "output": str(output_root),
     }
