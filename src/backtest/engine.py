@@ -31,12 +31,15 @@ class BacktestEngine:
         entry_price = 0.0
 
         for position, (_, row) in enumerate(ordered.iterrows()):
-            target = float(targets.iloc[position])
+            target = min(float(targets.iloc[position]), config.max_exposure)
             open_price = float(row["open"])
             if target > 0.0 and previous_target == 0.0:
                 fill = open_price * (1.0 + slippage)
-                quantity = max(cash - config.commission_per_trade, 0.0) / (fill * (1.0 + fee_rate))
+                allocation = cash * target
+                available = max(allocation - config.commission_per_trade, 0.0)
+                quantity = available / (fill * (1.0 + fee_rate))
                 fee = quantity * fill * fee_rate
+                slippage_cost = quantity * max(fill - open_price, 0.0)
                 entry_cost = quantity * fill + fee + config.commission_per_trade
                 cash -= entry_cost
                 trades.append(
@@ -47,6 +50,7 @@ class BacktestEngine:
                         "quantity": quantity,
                         "commission": config.commission_per_trade,
                         "fee": fee,
+                        "slippage_cost": slippage_cost,
                         "realized_pnl": 0.0,
                         "holding_days": 0,
                     }
@@ -56,6 +60,7 @@ class BacktestEngine:
             elif target == 0.0 and previous_target > 0.0 and quantity > 0.0:
                 fill = open_price * (1.0 - slippage)
                 fee = quantity * fill * fee_rate
+                slippage_cost = quantity * max(open_price - fill, 0.0)
                 proceeds = quantity * fill - fee - config.commission_per_trade
                 realized = proceeds - entry_cost
                 holding_days = (
@@ -70,6 +75,7 @@ class BacktestEngine:
                         "quantity": quantity,
                         "commission": config.commission_per_trade,
                         "fee": fee,
+                        "slippage_cost": slippage_cost,
                         "realized_pnl": realized,
                         "holding_days": holding_days,
                         "entry_price": entry_price,
@@ -88,6 +94,10 @@ class BacktestEngine:
                     "cash": cash,
                     "quantity": quantity,
                     "equity": equity,
+                    "gross_exposure": quantity * float(row["close"]),
+                    "exposure_ratio": (
+                        quantity * float(row["close"]) / equity if equity > 0.0 else 0.0
+                    ),
                     "unrealized_pnl": (
                         quantity * float(row["close"]) - entry_cost if quantity > 0 else 0.0
                     ),
@@ -105,6 +115,7 @@ class BacktestEngine:
                 "quantity",
                 "commission",
                 "fee",
+                "slippage_cost",
                 "realized_pnl",
                 "holding_days",
                 "entry_price",

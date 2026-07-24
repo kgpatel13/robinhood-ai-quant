@@ -1,0 +1,12 @@
+{
+  "version": "0.6.9",
+  "phase": "Phase 6.9 Research Hardening",
+  "changes": [
+    "Apply equity and crypto transaction costs consistently",
+    "Record slippage cost explicitly in trades and metrics",
+    "Add configurable entry exposure limit",
+    "Add average and peak exposure metrics",
+    "Expose cost and exposure assumptions through the Phase 6 CLI",
+    "Add regression tests for costs and exposure configuration"
+  ]
+}

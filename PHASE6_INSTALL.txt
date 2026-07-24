@@ -1,0 +1,13 @@
+Phase 6.0-6.8 overlay for robinhood-ai-quant v0.5.10
+
+1. Back up or commit your current project.
+2. Extract this ZIP into C:\Projects\robinhood-ai-quant and replace files.
+3. Run:
+   python -m pip install -e ".[dev]"
+   python -m ruff format .
+   Set-ExecutionPolicy -Scope Process Bypass
+   .\scripts\phase6_smoke_test.ps1
+4. Functional smoke run:
+   python .\scripts\phase6_bundle.py --symbols SPY QQQ BTC-USD --strategies moving_average_cross rsi_mean_reversion donchian_breakout --output reports\phase6_smoke
+5. Full Phase 6 run:
+   python .\scripts\phase6_bundle.py --output reports\phase6

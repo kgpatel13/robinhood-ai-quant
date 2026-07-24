@@ -1,0 +1,11 @@
+Phase 6.9 Research Hardening
+
+1. Back up or commit your current v0.6.8 project.
+2. Extract this ZIP into C:\Projects\robinhood-ai-quant and replace files.
+3. Run:
+
+   python -m pip install -e ".[dev]"
+   ruff format .
+   .\scripts\phase6_smoke_test.ps1
+
+4. Run the Phase 6.9 functional smoke command from docs/PHASE6_9.md.

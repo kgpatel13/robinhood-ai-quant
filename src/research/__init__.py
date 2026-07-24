@@ -10,6 +10,8 @@ from src.research.phase5 import run_phase5_bundle
 from src.research.report import write_optimization_report
 from src.research.scorecard import Scorecard, build_scorecard
 from src.research.stability import parameter_stability
+from src.research.strategy_portfolio import run_strategy_portfolio
+from src.research.tournament import run_strategy_tournament
 from src.research.validation import (
     DatasetValidation,
     discover_datasets,
@@ -38,6 +40,8 @@ __all__ = [
     "discover_datasets",
     "parameter_stability",
     "run_phase5_bundle",
+    "run_strategy_portfolio",
+    "run_strategy_tournament",
     "validate_dataset",
     "write_optimization_report",
 ]

@@ -41,6 +41,8 @@ def calculate_metrics(equity_curve: pd.DataFrame, trades: pd.DataFrame) -> dict[
         total_costs = float(trades["commission"].sum())
         if "fee" in trades.columns:
             total_costs += float(trades["fee"].sum())
+        if "slippage_cost" in trades.columns:
+            total_costs += float(trades["slippage_cost"].sum())
     average_hold = (
         float(completed["holding_days"].mean())
         if not completed.empty and "holding_days" in completed.columns
@@ -65,6 +67,16 @@ def calculate_metrics(equity_curve: pd.DataFrame, trades: pd.DataFrame) -> dict[
         "unrealized_pnl": unrealized_pnl,
         "total_costs": total_costs,
         "average_holding_days": average_hold,
+        "average_exposure": (
+            float(equity_curve["exposure_ratio"].mean())
+            if "exposure_ratio" in equity_curve.columns
+            else 0.0
+        ),
+        "peak_exposure": (
+            float(equity_curve["exposure_ratio"].max())
+            if "exposure_ratio" in equity_curve.columns
+            else 0.0
+        ),
         "calmar_ratio": calmar,
         "win_rate": float(len(wins) / len(completed)) if len(completed) else 0.0,
         "profit_factor": float(gross_profit / gross_loss) if gross_loss else 0.0,
