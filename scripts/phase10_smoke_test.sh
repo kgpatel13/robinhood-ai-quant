@@ -5,4 +5,4 @@ python -m ruff format --check .
 python -m ruff check .
 python -m mypy src scripts
 python -m pytest
-echo "Phase 10 quality gate passed."
+echo "Phase 10.1 quality gate passed."

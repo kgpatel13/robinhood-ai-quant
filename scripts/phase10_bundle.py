@@ -9,7 +9,7 @@ from src.research.phase10 import Phase10Config, run_phase10_replay
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run Phase 10 historical signal replay")
+    parser = argparse.ArgumentParser(description="Run Phase 10.2 robustness validation replay")
     parser.add_argument("--data-root", type=Path, default=Path("data/validated"))
     parser.add_argument("--output", type=Path, default=Path("reports/phase10"))
     parser.add_argument("--symbols", nargs="*", default=[])

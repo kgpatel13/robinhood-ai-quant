@@ -49,3 +49,25 @@ python .\scripts\phase10_bundle.py `
 ## Interpretation
 
 A convincing Phase 10 result should show positive after-cost expectancy, acceptable drawdown, adequate sample size, robustness across symbols and regimes, and generally improving returns as score bands rise. No single metric is sufficient for promotion.
+
+## Phase 10.1 portfolio-aware validation
+
+Phase 10.1 adds chronological portfolio simulation and removes the risk of interpreting
+sequentially compounded replay rows as a real portfolio. Each asset class and holding period
+is simulated independently with cash, position sizing, one-position-per-symbol controls,
+portfolio capacity, cooldowns, daily mark-to-market equity, and true portfolio drawdown.
+
+New artifacts:
+
+- `portfolio_trades.csv`
+- `daily_equity.csv`
+- `portfolio_summary.csv`
+- `skipped_signals.csv`
+- `year_performance.csv`
+- `monthly_performance.csv`
+- `exposure_analysis.csv`
+- `walk_forward_results.csv`
+
+The former grouped `maximum_drawdown` field is retained only under the explicit name
+`sequential_trade_drawdown_not_portfolio`. Production risk decisions must use the drawdown in
+`portfolio_summary.csv`.

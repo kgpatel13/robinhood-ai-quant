@@ -1,0 +1,35 @@
+{
+  "phase": "10.1.0",
+  "project_version": "0.10.1",
+  "description": "Portfolio-aware historical replay and walk-forward validation patch",
+  "added": [
+    "src/research/phase10/portfolio.py",
+    "src/research/phase10/walk_forward.py",
+    "PHASE10_1_INSTALL_README.txt",
+    "PHASE10_1_MANIFEST.json"
+  ],
+  "modified": [
+    "pyproject.toml",
+    "config/phase10.yaml",
+    "docs/PHASE10_HISTORICAL_REPLAY.md",
+    "scripts/phase10_bundle.py",
+    "scripts/phase10_smoke_test.ps1",
+    "scripts/phase10_smoke_test.sh",
+    "src/research/phase10/__init__.py",
+    "src/research/phase10/analytics.py",
+    "src/research/phase10/engine.py",
+    "src/research/phase10/models.py",
+    "src/research/phase10/replay.py",
+    "tests/unit/test_phase10.py"
+  ],
+  "new_artifacts": [
+    "portfolio_trades.csv",
+    "daily_equity.csv",
+    "portfolio_summary.csv",
+    "skipped_signals.csv",
+    "year_performance.csv",
+    "monthly_performance.csv",
+    "exposure_analysis.csv",
+    "walk_forward_results.csv"
+  ]
+}

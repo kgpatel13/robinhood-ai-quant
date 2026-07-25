@@ -1,5 +1,5 @@
-version: 0.10.0
-mode: historical_signal_replay
+version: 0.10.2
+mode: robustness_validated_historical_signal_replay
 symbols: []
 warmup_bars: 220
 signal_stride: 1
@@ -26,3 +26,26 @@ crypto:
   spread_bps: 15
   fee_bps: 10
   minimum_trades_per_band: 20
+
+etf_symbols: [SPY, QQQ, IWM, DIA, VOO, VTI, VXUS, SCHD, VGT, GLD, SLV, TLT, EEM, XLE, XLF, XLK]
+portfolio:
+  initial_capital: 100000
+  risk_per_trade: 0.01
+  maximum_position_percent: 0.10
+  maximum_concurrent_positions: 10
+  one_position_per_symbol: true
+  cooldown_bars_after_exit: 1
+walk_forward:
+  train_end_year: 2022
+  validation_end_year: 2024
+
+rolling_walk_forward:
+  train_years: 5
+  validation_years: 1
+  test_years: 1
+  step_years: 1
+promotion:
+  minimum_profitable_window_fraction: 0.60
+  minimum_median_profit_factor: 1.10
+  minimum_test_trades: 100
+  maximum_threshold_range: 15
