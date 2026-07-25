@@ -15,6 +15,8 @@ class LabelIntelligenceConfig:
     maximum_extreme_return_fraction: float = 0.02
     extreme_return_threshold: float = 0.25
     minimum_quality_index: float = 0.55
+    secondary_quality_index: float = 0.85
+    primary_quality_index: float = 0.90
     random_seed: int = 12
 
     def __post_init__(self) -> None:
@@ -30,6 +32,13 @@ class LabelIntelligenceConfig:
             raise ValueError("extreme_return_threshold must be positive")
         if not 0.0 <= self.minimum_quality_index <= 1.0:
             raise ValueError("minimum_quality_index must be in [0, 1]")
+        if not (
+            self.minimum_quality_index
+            <= self.secondary_quality_index
+            <= self.primary_quality_index
+            <= 1.0
+        ):
+            raise ValueError("quality priority thresholds are invalid")
 
 
 @dataclass(frozen=True)

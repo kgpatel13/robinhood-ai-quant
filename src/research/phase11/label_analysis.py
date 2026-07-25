@@ -29,9 +29,25 @@ def _as_holding_period(value: object) -> int:
 
 
 def deterministic_label_sample(frame: pd.DataFrame, maximum_rows: int, seed: int) -> pd.DataFrame:
+    """Sample complete timestamp-symbol events without splitting horizon panels."""
     if len(frame) <= maximum_rows:
         return frame.copy()
-    return frame.sample(n=maximum_rows, random_state=seed).sort_index().reset_index(drop=True)
+
+    event_columns = ["timestamp", "symbol"]
+    event_sizes = (
+        frame.groupby(event_columns, sort=False, dropna=False)
+        .size()
+        .rename("rows")
+        .reset_index()
+        .sample(frac=1.0, random_state=seed)
+        .reset_index(drop=True)
+    )
+    selected_events = event_sizes.loc[event_sizes["rows"].cumsum() <= maximum_rows, event_columns]
+    if selected_events.empty:
+        selected_events = event_sizes.loc[[0], event_columns]
+
+    sampled = frame.merge(selected_events, on=event_columns, how="inner", validate="many_to_one")
+    return sampled.sort_values(["timestamp", "symbol", "holding_period"]).reset_index(drop=True)
 
 
 def _entropy(rate: float) -> float:
@@ -206,9 +222,8 @@ def horizon_quality_index(
         balance_score = max(0.0, 1.0 - abs(positive_rate - 0.5) / 0.5)
         sample_score = min(1.0, float(record["rows"]) / float(minimum_rows))
         std = float(record["net_return_std"])
-        signal_score = (
-            min(1.0, abs(float(record["mean_net_return"])) / std * 10.0) if std > 0 else 0.0
-        )
+        mean_net_return = float(record["mean_net_return"])
+        signal_score = min(1.0, max(0.0, mean_net_return) / std * 10.0) if std > 0 else 0.0
         noise_row = noise.loc[noise["holding_period"] == horizon].iloc[0]
         noise_score = max(
             0.0,

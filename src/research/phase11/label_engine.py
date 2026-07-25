@@ -21,10 +21,24 @@ from src.research.phase11.label_analysis import (
 )
 from src.research.phase11.label_models import LabelIntelligenceConfig, LabelIntelligenceResult
 
+PHASE = "11.2.2"
+VERSION = "0.11.4"
+
 
 def _write_json(payload: object, path: Path) -> str:
     path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
     return str(path)
+
+
+def _recommend_horizon(row: pd.Series, config: LabelIntelligenceConfig) -> str:
+    if not bool(row["guardrails_passed"]):
+        return "REVIEW"
+    quality = float(row["label_quality_index"])
+    if quality >= config.primary_quality_index:
+        return "PRIMARY"
+    if quality >= config.secondary_quality_index:
+        return "SECONDARY"
+    return "EXPLORATORY"
 
 
 def run_label_intelligence(config: LabelIntelligenceConfig) -> LabelIntelligenceResult:
@@ -43,6 +57,7 @@ def run_label_intelligence(config: LabelIntelligenceConfig) -> LabelIntelligence
     missing = sorted(required - set(dataset.columns))
     if missing:
         raise ValueError(f"Dataset is missing required columns: {missing}")
+
     sample = deterministic_label_sample(dataset, config.maximum_analysis_rows, config.random_seed)
     summary = label_summary(sample)
     balance = class_balance(sample)
@@ -53,13 +68,42 @@ def run_label_intelligence(config: LabelIntelligenceConfig) -> LabelIntelligence
     asset = grouped_quality(sample, "asset_class")
     regime = grouped_quality(sample, "regime")
     quality = horizon_quality_index(summary, noise, asset, regime, config.minimum_horizon_rows)
-    quality["recommendation"] = quality["label_quality_index"].map(
-        lambda value: "APPROVE" if value >= config.minimum_quality_index else "REVIEW"
+    quality = quality.merge(
+        summary[["holding_period", "rows", "positive_rate"]],
+        on="holding_period",
+        how="left",
+        validate="one_to_one",
+    ).merge(
+        noise[["holding_period", "extreme_return_fraction"]],
+        on="holding_period",
+        how="left",
+        validate="one_to_one",
     )
+    quality["minimum_rows_passed"] = quality["rows"] >= config.minimum_horizon_rows
+    quality["positive_rate_passed"] = quality["positive_rate"].between(
+        config.minimum_positive_rate, config.maximum_positive_rate, inclusive="both"
+    )
+    quality["extreme_return_passed"] = (
+        quality["extreme_return_fraction"] <= config.maximum_extreme_return_fraction
+    )
+    quality["quality_index_passed"] = quality["label_quality_index"] >= config.minimum_quality_index
+    # Extreme-return frequency is horizon-dependent and remains diagnostic only.
+    # It must not reject an otherwise valid label horizon by itself.
+    quality["guardrails_passed"] = quality[
+        [
+            "minimum_rows_passed",
+            "positive_rate_passed",
+            "quality_index_passed",
+        ]
+    ].all(axis=1)
+    quality["recommendation"] = quality.apply(_recommend_horizon, axis=1, config=config)
+
     leakage = leakage_checks(sample)
-    diagnostics_passed = bool(leakage["passed"].all()) and bool(
-        (summary["rows"] >= config.minimum_horizon_rows).all()
-    )
+    diagnostics_passed = bool(leakage["passed"].all())
+    eligible = quality["recommendation"] != "REVIEW"
+    approved = int(eligible.sum())
+    review = int((~eligible).sum())
+
     reports = {
         "label_summary": summary,
         "horizon_quality": quality,
@@ -78,24 +122,29 @@ def run_label_intelligence(config: LabelIntelligenceConfig) -> LabelIntelligence
         path = config.output_root / f"{name}.csv"
         frame.to_csv(path, index=False)
         artifacts[name] = str(path)
-    approved = int((quality["recommendation"] == "APPROVE").sum())
+
+    priority_counts = {
+        name.lower(): int((quality["recommendation"] == name).sum())
+        for name in ("PRIMARY", "SECONDARY", "EXPLORATORY", "REVIEW")
+    }
     dashboard = {
-        "phase": "11.2.0",
-        "version": "0.11.2",
+        "phase": PHASE,
+        "version": VERSION,
         "dataset": str(config.dataset_path),
         "dataset_rows": len(dataset),
         "rows_analyzed": len(sample),
         "horizons_analyzed": int(summary["holding_period"].nunique()),
         "approved_horizons": approved,
-        "review_horizons": int((quality["recommendation"] == "REVIEW").sum()),
+        "review_horizons": review,
+        "priority_counts": priority_counts,
         "best_horizon": int(quality.iloc[0]["holding_period"]),
         "diagnostics_passed": diagnostics_passed,
     }
     artifacts["dashboard"] = _write_json(dashboard, config.output_root / "label_dashboard.json")
     manifest = {
-        "phase": "11.2.0",
-        "version": "0.11.2",
-        "purpose": "label intelligence and target validation",
+        "phase": PHASE,
+        "version": VERSION,
+        "purpose": "hardened label intelligence and target validation",
         "config": {
             key: str(value) if isinstance(value, Path) else value
             for key, value in asdict(config).items()
@@ -103,11 +152,21 @@ def run_label_intelligence(config: LabelIntelligenceConfig) -> LabelIntelligence
         **dashboard,
     }
     artifacts["manifest"] = _write_json(manifest, config.output_root / "manifest.json")
+
     training_approved = diagnostics_passed and approved > 0
+    horizons_by_priority = {
+        priority.lower() + "_horizons": [
+            int(value)
+            for value in quality.loc[
+                quality["recommendation"] == priority, "holding_period"
+            ].tolist()
+        ]
+        for priority in ("PRIMARY", "SECONDARY", "EXPLORATORY", "REVIEW")
+    }
     signoff = {
-        "phase": "11.2.0",
-        "status": "LABEL_INTELLIGENCE_COMPLETE"
-        if diagnostics_passed
+        "phase": PHASE,
+        "status": "LABEL_INTELLIGENCE_HARDENING_COMPLETE"
+        if training_approved
         else "LABEL_INTELLIGENCE_REVIEW_REQUIRED",
         "diagnostics_passed": diagnostics_passed,
         "approved_for_baseline_models": training_approved,
@@ -115,19 +174,15 @@ def run_label_intelligence(config: LabelIntelligenceConfig) -> LabelIntelligence
         "approved_for_paper_trading": False,
         "approved_for_live_trading": False,
         "approved_horizons": [
-            int(value)
-            for value in quality.loc[
-                quality["recommendation"] == "APPROVE", "holding_period"
-            ].tolist()
+            int(value) for value in quality.loc[eligible, "holding_period"].tolist()
         ],
-        "review_horizons": [
-            int(value)
-            for value in quality.loc[
-                quality["recommendation"] == "REVIEW", "holding_period"
-            ].tolist()
-        ],
+        **horizons_by_priority,
         "notes": [
-            "Horizon recommendations are research guidance.",
+            "Horizon priorities are research guidance, not evidence of model profitability.",
+            "Configured class-balance, sample-size, and quality guardrails are "
+            "enforced per horizon.",
+            "Extreme-return frequency remains a reported diagnostic and does not "
+            "independently reject a horizon.",
             "Paper and live trading remain blocked until later validation phases.",
         ],
     }
@@ -136,7 +191,7 @@ def run_label_intelligence(config: LabelIntelligenceConfig) -> LabelIntelligence
         len(sample),
         int(summary["holding_period"].nunique()),
         approved,
-        int((quality["recommendation"] == "REVIEW").sum()),
+        review,
         str(config.output_root),
         diagnostics_passed,
         artifacts,

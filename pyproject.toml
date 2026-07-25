@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "robinhood-ai-quant"
-version = "0.11.2"
+version = "0.11.10"
 description = "Broker-independent AI-assisted quantitative research platform"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -17,6 +17,8 @@ dependencies = [
   "python-dotenv>=1.0.1,<2",
   "requests>=2.32,<3",
   "scipy>=1.13,<2",
+  "scikit-learn>=1.6,<2",
+  "joblib>=1.4,<2",
   "yfinance>=0.2.54,<1",
 ]
 
@@ -86,6 +88,6 @@ show_error_codes = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["yfinance", "yfinance.*"]
+module = ["yfinance", "yfinance.*", "sklearn", "sklearn.*", "joblib", "joblib.*"]
 ignore_missing_imports = true
 
