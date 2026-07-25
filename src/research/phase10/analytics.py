@@ -33,7 +33,7 @@ def summarize_group(group: pd.DataFrame) -> pd.Series:
         "return_to_risk": (
             float(returns.mean() / standard_deviation) if standard_deviation > 0 else 0.0
         ),
-        "maximum_drawdown": _max_drawdown(returns),
+        "sequential_trade_drawdown_not_portfolio": _max_drawdown(returns),
         "average_mfe": float(group["mfe"].mean()),
         "average_mae": float(group["mae"].mean()),
         "target_rate": float((group["exit_reason"] == "target").mean()),

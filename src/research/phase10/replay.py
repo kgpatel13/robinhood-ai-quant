@@ -26,7 +26,8 @@ def _round_trip_cost(profile: ReplayProfile) -> float:
 
 def _score_row(row: pd.Series, asset_class: AssetClass) -> ScoreBreakdown:
     features = {column: float(row[column]) for column in FEATURE_COLUMNS}
-    return score_opportunity(features, asset_class)
+    scoring_asset = "stock" if asset_class == "etf" else asset_class
+    return score_opportunity(features, scoring_asset)
 
 
 def _barrier_outcome(
@@ -98,6 +99,7 @@ def replay_symbol(
             "threshold": profile.entry_score,
             "eligible": score.total >= profile.entry_score,
             "regime": classify_regime(row),
+            **{column: float(row[column]) for column in FEATURE_COLUMNS},
             **{f"{key}_score": value for key, value in asdict(score).items() if key != "total"},
         }
         for horizon in profile.holding_periods:

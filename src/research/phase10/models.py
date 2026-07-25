@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
-AssetClass = Literal["stock", "crypto"]
+AssetClass = Literal["stock", "etf", "crypto"]
 ExitReason = Literal["target", "stop", "time", "ambiguous"]
 
 
@@ -44,6 +44,24 @@ class ReplayProfile:
 @dataclass(frozen=True)
 class Phase10Config:
     symbols: tuple[str, ...] = ()
+    etf_symbols: tuple[str, ...] = (
+        "DIA",
+        "EEM",
+        "GLD",
+        "IWM",
+        "QQQ",
+        "SCHD",
+        "SLV",
+        "SPY",
+        "TLT",
+        "VGT",
+        "VOO",
+        "VTI",
+        "VXUS",
+        "XLE",
+        "XLF",
+        "XLK",
+    )
     stock_profile: ReplayProfile = field(
         default_factory=lambda: ReplayProfile(
             asset_class="stock",
@@ -77,6 +95,27 @@ class Phase10Config:
     primary_holding_period: int = 5
     same_bar_policy: Literal["conservative", "optimistic", "ambiguous"] = "conservative"
     include_below_threshold: bool = True
+    portfolio_initial_capital: float = 100_000.0
+    portfolio_risk_per_trade: float = 0.01
+    portfolio_maximum_position_percent: float = 0.10
+    portfolio_maximum_concurrent_positions: int = 10
+    portfolio_one_position_per_symbol: bool = True
+    portfolio_cooldown_bars_after_exit: int = 1
+    walk_forward_train_end_year: int = 2022
+    walk_forward_validation_end_year: int = 2024
+    rolling_train_years: int = 5
+    rolling_validation_years: int = 1
+    rolling_test_years: int = 1
+    rolling_step_years: int = 1
+    promotion_minimum_profitable_window_fraction: float = 0.60
+    promotion_minimum_median_profit_factor: float = 1.10
+    promotion_minimum_test_trades: int = 100
+    promotion_maximum_threshold_range: float = 15.0
+    final_minimum_recent_average_return: float = 0.0
+    final_minimum_bootstrap_positive_probability: float = 0.60
+    final_minimum_cross_sectional_top_quantile_lift: float = 0.0
+    final_minimum_feature_stability_fraction: float = 0.50
+    bootstrap_samples: int = 1000
     output_root: Path = Path("reports/phase10")
 
     def __post_init__(self) -> None:
@@ -87,6 +126,42 @@ class Phase10Config:
         periods = set(self.stock_profile.holding_periods) & set(self.crypto_profile.holding_periods)
         if self.primary_holding_period not in periods:
             raise ValueError("primary_holding_period must exist in both profiles")
+        if self.portfolio_initial_capital <= 0:
+            raise ValueError("portfolio_initial_capital must be positive")
+        if not 0 < self.portfolio_risk_per_trade <= 1:
+            raise ValueError("portfolio_risk_per_trade must be in (0, 1]")
+        if not 0 < self.portfolio_maximum_position_percent <= 1:
+            raise ValueError("portfolio_maximum_position_percent must be in (0, 1]")
+        if self.portfolio_maximum_concurrent_positions < 1:
+            raise ValueError("portfolio_maximum_concurrent_positions must be positive")
+        if self.portfolio_cooldown_bars_after_exit < 0:
+            raise ValueError("portfolio_cooldown_bars_after_exit cannot be negative")
+        if self.walk_forward_train_end_year >= self.walk_forward_validation_end_year:
+            raise ValueError("walk-forward train year must precede validation year")
+        if (
+            min(
+                self.rolling_train_years,
+                self.rolling_validation_years,
+                self.rolling_test_years,
+                self.rolling_step_years,
+            )
+            < 1
+        ):
+            raise ValueError("rolling walk-forward periods must be positive")
+        if not 0 < self.promotion_minimum_profitable_window_fraction <= 1:
+            raise ValueError("promotion window fraction must be in (0, 1]")
+        if self.promotion_minimum_median_profit_factor <= 1:
+            raise ValueError("promotion profit factor must be greater than 1")
+        if self.promotion_minimum_test_trades < 1:
+            raise ValueError("promotion minimum test trades must be positive")
+        if self.promotion_maximum_threshold_range < 0:
+            raise ValueError("promotion threshold range cannot be negative")
+        if not 0 <= self.final_minimum_bootstrap_positive_probability <= 1:
+            raise ValueError("bootstrap probability must be in [0, 1]")
+        if not 0 <= self.final_minimum_feature_stability_fraction <= 1:
+            raise ValueError("feature stability fraction must be in [0, 1]")
+        if self.bootstrap_samples < 100:
+            raise ValueError("bootstrap_samples must be at least 100")
 
 
 @dataclass(frozen=True)
