@@ -96,3 +96,10 @@ python .\scripts\phase9_bundle.py --symbols SPY QQQ BTC-USD --top-n 10 --output 
 ```
 
 Omit `--symbols` to scan every validated dataset. Phase 9 is research-only and does not place orders.
+
+## Phase 12: Walk-Forward Research Validation
+
+Version 0.12.0 adds purged expanding walk-forward testing, dedicated probability calibration,
+feature-family experiments, non-overlapping per-symbol trade simulation, realistic exposure and
+transaction-cost assumptions, and a strict paper-trading review gate. See
+`docs/PHASE12_RESEARCH_VALIDATION.md`.
