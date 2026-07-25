@@ -9,8 +9,8 @@ import pandas as pd
 
 from src.research.phase13.models import Phase13Config, Phase13Result
 
-PHASE = "13.0-13.9"
-VERSION = "0.13.0"
+PHASE = "13.5"
+VERSION = "0.14.5"
 
 
 class _CandidateRow(Protocol):
@@ -36,6 +36,7 @@ class _CandidateTrade:
 
 @dataclass(frozen=True)
 class _OpenPosition:
+    trade_id: int
     symbol: str
     asset_class: str
     entry_timestamp: pd.Timestamp
@@ -95,9 +96,7 @@ def _normalize_trades(frame: pd.DataFrame) -> pd.DataFrame:
             holding = pd.to_numeric(result["holding_period"], errors="coerce").fillna(1)
         else:
             holding = pd.Series(1, index=result.index, dtype="int64")
-        result["exit_timestamp"] = result["entry_timestamp"] + pd.to_timedelta(
-            holding, unit="D"
-        )
+        result["exit_timestamp"] = result["entry_timestamp"] + pd.to_timedelta(holding, unit="D")
     result["exit_timestamp"] = pd.to_datetime(result["exit_timestamp"], utc=True)
     result["net_return"] = pd.to_numeric(result["net_return"], errors="coerce")
     if "probability" not in result:
@@ -107,8 +106,9 @@ def _normalize_trades(frame: pd.DataFrame) -> pd.DataFrame:
     if "volatility" not in result:
         result["volatility"] = result["net_return"].abs().rolling(20, min_periods=2).std()
     result["volatility"] = pd.to_numeric(result["volatility"], errors="coerce").fillna(0.02)
-    return result.dropna(subset=["entry_timestamp", "exit_timestamp", "net_return"]).sort_values(
-        ["entry_timestamp", "probability"], ascending=[True, False]
+    result = result.dropna(subset=["entry_timestamp", "exit_timestamp", "net_return"])
+    return result.sort_values(
+        ["entry_timestamp", "probability", "symbol"], ascending=[True, False, True]
     )
 
 
@@ -117,12 +117,8 @@ def _candidate_from_row(row: object) -> _CandidateTrade:
     return _CandidateTrade(
         symbol=str(typed_row.symbol),
         asset_class=str(typed_row.asset_class),
-        entry_timestamp=_as_timestamp(
-            typed_row.entry_timestamp, field="entry_timestamp"
-        ),
-        exit_timestamp=_as_timestamp(
-            typed_row.exit_timestamp, field="exit_timestamp"
-        ),
+        entry_timestamp=_as_timestamp(typed_row.entry_timestamp, field="entry_timestamp"),
+        exit_timestamp=_as_timestamp(typed_row.exit_timestamp, field="exit_timestamp"),
         probability=_as_float(typed_row.probability, field="probability"),
         volatility=_as_float(typed_row.volatility, field="volatility"),
         net_return=_as_float(typed_row.net_return, field="net_return"),
@@ -131,6 +127,7 @@ def _candidate_from_row(row: object) -> _CandidateTrade:
 
 def _position_record(position: _OpenPosition) -> dict[str, object]:
     return {
+        "trade_id": position.trade_id,
         "symbol": position.symbol,
         "asset_class": position.asset_class,
         "entry_timestamp": position.entry_timestamp,
@@ -149,8 +146,14 @@ def simulate_portfolio(
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[str, float | int]]:
     candidates = _normalize_trades(trades)
     capital = config.initial_capital
-    peak = capital
+    reporting_peak = capital
+    risk_peak = capital
     halted = False
+    halt_started: pd.Timestamp | None = None
+    halt_periods = 0
+    circuit_breaker_resets = 0
+    maximum_halt_days = 0
+    next_trade_id = 1
     open_positions: list[_OpenPosition] = []
     executed: list[dict[str, object]] = []
     rejected: list[dict[str, object]] = []
@@ -159,42 +162,88 @@ def simulate_portfolio(
     current_day: date | None = None
     cost_rate = (config.slippage_bps + config.commission_bps) / 10_000.0
 
+    def drawdown_from(peak: float) -> float:
+        return 1.0 - capital / peak if peak > 0.0 else 0.0
+
+    def gross_exposure() -> float:
+        if capital <= 0.0:
+            return 0.0
+        return sum(position.allocated_capital for position in open_positions) / capital
+
+    def snapshot(timestamp: pd.Timestamp, event: str) -> None:
+        equity_rows.append(
+            {
+                "timestamp": timestamp,
+                "event": event,
+                "capital": capital,
+                "open_positions": len(open_positions),
+                "gross_exposure": gross_exposure(),
+                "drawdown": drawdown_from(reporting_peak),
+                "risk_drawdown": drawdown_from(risk_peak),
+                "halted": halted,
+            }
+        )
+
+    def settle_positions(up_to: pd.Timestamp) -> None:
+        nonlocal capital, reporting_peak, risk_peak, open_positions, halted, halt_started
+        due = sorted(
+            (position for position in open_positions if position.exit_timestamp <= up_to),
+            key=lambda item: (item.exit_timestamp, item.trade_id),
+        )
+        if not due:
+            return
+        due_ids = {position.trade_id for position in due}
+        open_positions = [
+            position for position in open_positions if position.trade_id not in due_ids
+        ]
+        for position in due:
+            pnl = position.allocated_capital * position.net_return
+            capital += pnl
+            reporting_peak = max(reporting_peak, capital)
+            risk_peak = max(risk_peak, capital)
+            executed.append({**_position_record(position), "pnl": pnl, "capital_after": capital})
+            if halted and drawdown_from(risk_peak) <= config.recovery_drawdown:
+                halted = False
+                halt_started = None
+            snapshot(position.exit_timestamp, "exit")
+
     for raw_row in candidates.itertuples(index=False):
         row = _candidate_from_row(raw_row)
         entry = row.entry_timestamp
+        settle_positions(entry)
+
         day = entry.date()
         if day != current_day:
             current_day = day
             day_start_capital = capital
 
-        still_open: list[_OpenPosition] = []
-        for position in open_positions:
-            if position.exit_timestamp <= entry:
-                pnl = position.allocated_capital * position.net_return
-                capital += pnl
-                executed.append(
-                    {**_position_record(position), "pnl": pnl, "capital_after": capital}
-                )
-            else:
-                still_open.append(position)
-        open_positions = still_open
-        peak = max(peak, capital)
-        drawdown = 1.0 - capital / peak if peak else 0.0
-        if halted and drawdown <= config.recovery_drawdown:
-            halted = False
-        if drawdown >= config.portfolio_drawdown_limit:
-            halted = True
+        reporting_peak = max(reporting_peak, capital)
+        risk_peak = max(risk_peak, capital)
+        risk_drawdown = drawdown_from(risk_peak)
 
-        reason = ""
+        if halted and halt_started is not None:
+            halted_days = max((entry - halt_started).days, 0)
+            maximum_halt_days = max(maximum_halt_days, halted_days)
+            recovered = risk_drawdown <= config.recovery_drawdown
+            cooldown_complete = halted_days >= config.drawdown_cooldown_days
+            if recovered or cooldown_complete:
+                halted = False
+                halt_started = None
+                circuit_breaker_resets += 1
+                if cooldown_complete and config.reset_risk_peak_after_cooldown:
+                    risk_peak = capital
+                    risk_drawdown = 0.0
+
+        if not halted and risk_drawdown >= config.portfolio_drawdown_limit:
+            halted = True
+            halt_started = entry
+            halt_periods += 1
+
         probability = row.probability
         asset_class = row.asset_class
         symbol = row.symbol
         daily_return = capital / day_start_capital - 1.0 if day_start_capital else 0.0
-        gross_exposure = (
-            sum(position.allocated_capital for position in open_positions) / capital
-            if capital > 0.0
-            else 0.0
-        )
+        current_gross_exposure = gross_exposure()
         asset_exposure = (
             sum(
                 position.allocated_capital
@@ -206,6 +255,7 @@ def simulate_portfolio(
             else 0.0
         )
 
+        reason = ""
         if halted:
             reason = "drawdown_circuit_breaker"
         elif daily_return <= -config.daily_loss_limit:
@@ -216,7 +266,7 @@ def simulate_portfolio(
             reason = "position_limit"
         elif any(position.symbol == symbol for position in open_positions):
             reason = "symbol_overlap"
-        elif gross_exposure >= config.maximum_gross_exposure:
+        elif current_gross_exposure >= config.maximum_gross_exposure:
             reason = "gross_exposure_limit"
         elif asset_exposure >= config.maximum_asset_class_exposure:
             reason = "asset_class_exposure_limit"
@@ -224,7 +274,7 @@ def simulate_portfolio(
         fraction = volatility_position_fraction(probability, row.volatility, config)
         fraction = min(
             fraction,
-            max(config.maximum_gross_exposure - gross_exposure, 0.0),
+            max(config.maximum_gross_exposure - current_gross_exposure, 0.0),
             max(config.maximum_asset_class_exposure - asset_exposure, 0.0),
         )
         if not reason and fraction <= 0.0:
@@ -233,9 +283,14 @@ def simulate_portfolio(
             rejected.append(
                 {
                     "symbol": symbol,
+                    "asset_class": asset_class,
                     "entry_timestamp": entry,
+                    "exit_timestamp": row.exit_timestamp,
                     "reason": reason,
                     "probability": probability,
+                    "capital": capital,
+                    "drawdown": drawdown_from(reporting_peak),
+                    "risk_drawdown": drawdown_from(risk_peak),
                 }
             )
             continue
@@ -244,6 +299,7 @@ def simulate_portfolio(
         net_return = row.net_return - 2.0 * cost_rate
         open_positions.append(
             _OpenPosition(
+                trade_id=next_trade_id,
                 symbol=symbol,
                 asset_class=asset_class,
                 entry_timestamp=entry,
@@ -256,42 +312,23 @@ def simulate_portfolio(
                 net_return=net_return,
             )
         )
-        equity_rows.append(
-            {
-                "timestamp": entry,
-                "capital": capital,
-                "open_positions": len(open_positions),
-                "gross_exposure": (
-                    sum(position.allocated_capital for position in open_positions) / capital
-                    if capital > 0.0
-                    else 0.0
-                ),
-                "drawdown": drawdown,
-                "halted": halted,
-            }
-        )
+        next_trade_id += 1
+        snapshot(entry, "entry")
 
-    for position in sorted(open_positions, key=lambda item: item.exit_timestamp):
-        pnl = position.allocated_capital * position.net_return
-        capital += pnl
-        executed.append({**_position_record(position), "pnl": pnl, "capital_after": capital})
-        peak = max(peak, capital)
-        equity_rows.append(
-            {
-                "timestamp": position.exit_timestamp,
-                "capital": capital,
-                "open_positions": 0,
-                "gross_exposure": 0.0,
-                "drawdown": 1.0 - capital / peak if peak else 0.0,
-                "halted": halted,
-            }
-        )
+    if open_positions:
+        settle_positions(max(position.exit_timestamp for position in open_positions))
 
     executed_frame = pd.DataFrame(executed)
     rejected_frame = pd.DataFrame(rejected)
-    equity = pd.DataFrame(equity_rows).sort_values("timestamp") if equity_rows else pd.DataFrame()
+    equity = pd.DataFrame(equity_rows)
+    if not equity.empty:
+        equity = equity.sort_values(["timestamp", "event"], kind="stable").reset_index(drop=True)
     maximum_drawdown = float(equity["drawdown"].max()) if not equity.empty else 0.0
     wins = int((executed_frame["pnl"] > 0).sum()) if not executed_frame.empty else 0
+    reconciled_capital = config.initial_capital + (
+        float(executed_frame["pnl"].sum()) if not executed_frame.empty else 0.0
+    )
+    reconciliation_difference = capital - reconciled_capital
     metrics: dict[str, float | int] = {
         "initial_capital": config.initial_capital,
         "final_capital": capital,
@@ -300,6 +337,10 @@ def simulate_portfolio(
         "executed_trades": len(executed_frame),
         "rejected_trades": len(rejected_frame),
         "win_rate": wins / len(executed_frame) if len(executed_frame) else 0.0,
+        "halt_periods": halt_periods,
+        "circuit_breaker_resets": circuit_breaker_resets,
+        "maximum_halt_days": maximum_halt_days,
+        "equity_reconciliation_difference": reconciliation_difference,
     }
     return executed_frame, rejected_frame, equity, metrics
 
@@ -308,10 +349,17 @@ def run_phase13(config: Phase13Config) -> Phase13Result:
     config.output_root.mkdir(parents=True, exist_ok=True)
     source = pd.read_csv(config.trades_path)
     executed, rejected, equity, metrics = simulate_portfolio(source, config)
+    reconciled = abs(float(metrics["equity_reconciliation_difference"])) <= 1e-8
+    equity_final_matches = bool(
+        not equity.empty
+        and abs(float(equity.iloc[-1]["capital"]) - float(metrics["final_capital"])) <= 1e-8
+    )
     diagnostics = bool(
-        metrics["executed_trades"] >= 0
+        int(metrics["executed_trades"]) >= 0
         and 0.0 <= float(metrics["maximum_drawdown"]) <= 1.0
         and float(metrics["final_capital"]) >= 0.0
+        and reconciled
+        and equity_final_matches
     )
     approved = bool(
         diagnostics
@@ -340,19 +388,25 @@ def run_phase13(config: Phase13Config) -> Phase13Result:
     }
     signoff = {
         "phase": PHASE,
-        "status": "PHASE13_PORTFOLIO_ENGINE_COMPLETE",
+        "status": "PHASE14_5_PORTFOLIO_ENGINE_REPAIR_COMPLETE",
         "diagnostics_passed": diagnostics,
         "approved_for_phase14_review": approved,
         "approved_for_paper_trading": False,
         "approved_for_live_trading": False,
         "notes": [
-            "Volatility- and confidence-adjusted position sizing is applied.",
-            "Gross, asset-class, symbol-overlap, and concurrent-position limits are enforced.",
-            "Daily-loss and portfolio-drawdown circuit breakers are enforced.",
-            "No broker orders are submitted by Phase 13.",
+            "Circuit-breaker recovery uses a bounded cooldown and a separate risk peak.",
+            "The all-time equity peak remains intact for maximum-drawdown reporting.",
+            "Every realized exit is written to the equity curve.",
+            "Final equity is reconciled exactly against cumulative realized trade P&L.",
+            "No broker orders are submitted by this repair phase.",
         ],
     }
-    manifest = {"phase": PHASE, "version": VERSION, "config": asdict(config), "artifacts": artifacts}
+    manifest = {
+        "phase": PHASE,
+        "version": VERSION,
+        "config": asdict(config),
+        "artifacts": artifacts,
+    }
     for filename, payload in (
         ("phase13_dashboard.json", dashboard),
         ("phase13_final_signoff.json", signoff),

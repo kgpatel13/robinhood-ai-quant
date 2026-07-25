@@ -21,6 +21,8 @@ class Phase13Config:
     daily_loss_limit: float = 0.03
     portfolio_drawdown_limit: float = 0.20
     recovery_drawdown: float = 0.10
+    drawdown_cooldown_days: int = 30
+    reset_risk_peak_after_cooldown: bool = True
     slippage_bps: float = 5.0
     commission_bps: float = 0.0
     minimum_trades: int = 50
@@ -42,6 +44,10 @@ class Phase13Config:
             value = float(getattr(self, name))
             if not 0.0 < value <= 1.0:
                 raise ValueError(f"{name} must be in (0, 1]")
+        if self.recovery_drawdown >= self.portfolio_drawdown_limit:
+            raise ValueError("recovery_drawdown must be below portfolio_drawdown_limit")
+        if self.drawdown_cooldown_days < 1:
+            raise ValueError("drawdown_cooldown_days must be positive")
         if self.maximum_open_positions < 1:
             raise ValueError("maximum_open_positions must be positive")
         if not 0.0 <= self.confidence_floor < self.confidence_ceiling <= 1.0:

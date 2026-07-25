@@ -1,0 +1,17 @@
+{
+  "phase": "14.0-14.9",
+  "version": "0.14.0",
+  "purpose": "Research intelligence, annualized performance, attribution, regime diagnostics, and Phase 13 reconciliation",
+  "files": [
+    "src/research/phase14/__init__.py",
+    "src/research/phase14/models.py",
+    "src/research/phase14/engine.py",
+    "scripts/phase14_research_intelligence.py",
+    "scripts/phase14_smoke_test.ps1",
+    "scripts/phase14_smoke_test.sh",
+    "tests/unit/test_phase14.py",
+    "docs/PHASE14_RESEARCH_INTELLIGENCE.md",
+    "pyproject.toml",
+    "PHASE14_INSTALL_README.txt"
+  ]
+}

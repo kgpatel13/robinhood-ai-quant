@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+python scripts/phase14_research_intelligence.py --executed-trades reports/phase13_portfolio_engine_smoke/executed_trades.csv --rejected-signals reports/phase13_portfolio_engine_smoke/rejected_signals.csv --equity-curve reports/phase13_portfolio_engine_smoke/portfolio_equity_curve.csv --output reports/phase14_research_intelligence_smoke
+python -m ruff format --check .
+python -m ruff check .
+python -m mypy .
+python -m pytest
+echo "Phase 14.9 quality gate passed."

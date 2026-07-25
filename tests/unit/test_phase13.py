@@ -58,3 +58,44 @@ def test_phase13_pipeline(tmp_path: Path, monkeypatch) -> None:
     assert result.diagnostics_passed
     assert result.executed_trades > 0
     assert (tmp_path / "reports" / "phase13_final_signoff.json").exists()
+
+
+def test_drawdown_circuit_breaker_recovers_after_cooldown() -> None:
+    timestamps = pd.to_datetime(
+        ["2024-01-01", "2024-01-03", "2024-01-04", "2024-02-15", "2024-02-16"],
+        utc=True,
+    )
+    frame = pd.DataFrame(
+        {
+            "symbol": ["A", "B", "C", "D", "E"],
+            "asset_class": ["stock"] * 5,
+            "entry_timestamp": timestamps,
+            "exit_timestamp": timestamps + pd.Timedelta(days=1),
+            "probability": [0.75] * 5,
+            "volatility": [0.02] * 5,
+            "net_return": [-0.80, 0.01, 0.01, 0.02, 0.02],
+        }
+    )
+    config = Phase13Config(
+        target_risk_per_trade=0.01,
+        maximum_position_fraction=0.50,
+        maximum_gross_exposure=0.50,
+        maximum_asset_class_exposure=0.50,
+        portfolio_drawdown_limit=0.20,
+        recovery_drawdown=0.10,
+        drawdown_cooldown_days=30,
+    )
+    executed, rejected, _, metrics = simulate_portfolio(frame, config)
+    assert "D" in set(executed["symbol"])
+    assert "drawdown_circuit_breaker" in set(rejected["reason"])
+    assert int(metrics["circuit_breaker_resets"]) >= 1
+
+
+def test_equity_curve_reconciles_every_realized_exit() -> None:
+    config = Phase13Config(maximum_open_positions=3)
+    executed, _, equity, metrics = simulate_portfolio(_trades(), config)
+    expected = config.initial_capital + float(executed["pnl"].sum())
+    assert abs(float(metrics["final_capital"]) - expected) <= 1e-8
+    assert abs(float(metrics["equity_reconciliation_difference"])) <= 1e-8
+    assert abs(float(equity.iloc[-1]["capital"]) - expected) <= 1e-8
+    assert int((equity["event"] == "exit").sum()) == len(executed)
