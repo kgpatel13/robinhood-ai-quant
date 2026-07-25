@@ -1,12 +1,16 @@
-Phase 12 typing and lint fix
+Phase 15.5 Quality Fix
+======================
 
-Replace these files in the project root:
-- src/research/phase12/analysis.py
-- src/research/phase12/engine.py
+Replace:
+  src/research/phase15/engine.py
 
-Then run:
-python -m ruff format .
-python -m ruff check .
-python -m mypy .
-python -m pytest
-powershell -ExecutionPolicy Bypass -File .\scripts\phase12_smoke_test.ps1
+Fixes:
+- Ruff E501 long string lines.
+- MyPy pandas groupby/sort_values inference error in _proxy_benchmark.
+- No algorithm, threshold, model, or report behavior changes.
+
+After replacement run:
+  python -m ruff format .
+  python -m ruff check .
+  python -m mypy .
+  python -m pytest
