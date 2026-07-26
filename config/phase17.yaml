@@ -1,0 +1,20 @@
+phase: 17.4
+version: 0.17.4
+mode: research_only
+execution:
+  base_cost_bps: 10
+  maximum_incremental_slippage_bps: 45
+  minimum_execution_score: 0.42
+capital_efficiency:
+  maximum_position_fraction: 0.15
+  maximum_gross_exposure: 0.75
+  maximum_asset_class_exposure: 0.50
+  maximum_open_positions: 8
+promotion:
+  minimum_sharpe_improvement: 0.01
+  minimum_profit_factor_improvement: 0.0
+  maximum_drawdown_deterioration: 0.01
+  minimum_positive_fold_rate: 0.60
+  minimum_bootstrap_probability: 0.60
+  paper_trading: false
+  live_trading: false
