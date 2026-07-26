@@ -20,12 +20,20 @@ class AtlasConfig:
     universe_registry_path: Path = Path("data/universe/registry.json")
     universe_registry_csv_path: Path = Path("data/universe/registry.csv")
     universe_report_path: Path = Path("reports/atlas_v2/universe_update.json")
-    nasdaq_listed_url: str = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
-    other_listed_url: str = "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
+    nasdaq_listed_url: str = (
+        "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
+    )
+    other_listed_url: str = (
+        "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt"
+    )
     coingecko_markets_url: str = "https://api.coingecko.com/api/v3/coins/markets"
     coingecko_api_key_env: str = "COINGECKO_DEMO_API_KEY"
     maximum_crypto_universe_assets: int = 250
     universe_request_timeout_seconds: float = 30.0
+    market_history_root: Path = Path("data/market/daily")
+    market_feature_store_path: Path = Path("data/market/features.csv")
+    market_snapshot_path: Path = Path("reports/atlas_v2/market_snapshot.json")
+    market_report_path: Path = Path("reports/atlas_v2/market_intelligence.json")
     random_seed: int = 42
     top_candidates: int = 100
     minimum_price: float = 1.0

@@ -12,6 +12,10 @@ coingecko_markets_url: https://api.coingecko.com/api/v3/coins/markets
 coingecko_api_key_env: COINGECKO_DEMO_API_KEY
 maximum_crypto_universe_assets: 250
 universe_request_timeout_seconds: 30.0
+market_history_root: data/market/daily
+market_feature_store_path: data/market/features.csv
+market_snapshot_path: reports/atlas_v2/market_snapshot.json
+market_report_path: reports/atlas_v2/market_intelligence.json
 random_seed: 42
 top_candidates: 100
 minimum_price: 1.0

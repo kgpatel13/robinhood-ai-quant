@@ -76,7 +76,9 @@ def score_opportunity(snapshot: MarketSnapshot) -> OpportunityScore:
     )
     alpha_score = 0.0 if strategy == "cash" else round(100.0 * weighted, 4)
     confidence = round(100.0 * _clip(0.65 * weighted + 0.35 * min(liquidity, execution)), 4)
-    hold = {"intraday_momentum": 1, "mean_reversion": 3, "momentum_swing": 5, "cash": 0}[strategy]
+    hold = {"intraday_momentum": 1, "mean_reversion": 3, "momentum_swing": 5, "cash": 0}[
+        strategy
+    ]
 
     explanation = (
         f"Regime classified as {regime}.",

@@ -12,7 +12,7 @@ from src.atlas.intelligence import score_opportunity
 from src.atlas.models import AssetClass, AtlasConfig, AtlasRunResult, MarketSnapshot
 from src.atlas.research import create_manifest, file_sha256
 
-PLATFORM_VERSION = "2.1.0"
+PLATFORM_VERSION = "2.2.0"
 _REQUIRED_COLUMNS = {
     "symbol",
     "price",
@@ -34,20 +34,36 @@ def load_config(path: Path) -> AtlasConfig:
     return AtlasConfig(
         output_root=Path(raw.get("output_root", defaults.output_root)),
         experiment_root=Path(raw.get("experiment_root", defaults.experiment_root)),
-        baseline_signoff=Path(raw.get("baseline_signoff", defaults.baseline_signoff)),
-        stock_universe_path=Path(raw.get("stock_universe_path", defaults.stock_universe_path)),
-        crypto_universe_path=Path(raw.get("crypto_universe_path", defaults.crypto_universe_path)),
+        baseline_signoff=Path(
+            raw.get("baseline_signoff", defaults.baseline_signoff)
+        ),
+        stock_universe_path=Path(
+            raw.get("stock_universe_path", defaults.stock_universe_path)
+        ),
+        crypto_universe_path=Path(
+            raw.get("crypto_universe_path", defaults.crypto_universe_path)
+        ),
         universe_registry_path=Path(
             raw.get("universe_registry_path", defaults.universe_registry_path)
         ),
         universe_registry_csv_path=Path(
             raw.get("universe_registry_csv_path", defaults.universe_registry_csv_path)
         ),
-        universe_report_path=Path(raw.get("universe_report_path", defaults.universe_report_path)),
-        nasdaq_listed_url=str(raw.get("nasdaq_listed_url", defaults.nasdaq_listed_url)),
-        other_listed_url=str(raw.get("other_listed_url", defaults.other_listed_url)),
-        coingecko_markets_url=str(raw.get("coingecko_markets_url", defaults.coingecko_markets_url)),
-        coingecko_api_key_env=str(raw.get("coingecko_api_key_env", defaults.coingecko_api_key_env)),
+        universe_report_path=Path(
+            raw.get("universe_report_path", defaults.universe_report_path)
+        ),
+        nasdaq_listed_url=str(
+            raw.get("nasdaq_listed_url", defaults.nasdaq_listed_url)
+        ),
+        other_listed_url=str(
+            raw.get("other_listed_url", defaults.other_listed_url)
+        ),
+        coingecko_markets_url=str(
+            raw.get("coingecko_markets_url", defaults.coingecko_markets_url)
+        ),
+        coingecko_api_key_env=str(
+            raw.get("coingecko_api_key_env", defaults.coingecko_api_key_env)
+        ),
         maximum_crypto_universe_assets=int(
             raw.get(
                 "maximum_crypto_universe_assets",
@@ -59,6 +75,18 @@ def load_config(path: Path) -> AtlasConfig:
                 "universe_request_timeout_seconds",
                 defaults.universe_request_timeout_seconds,
             )
+        ),
+        market_history_root=Path(
+            raw.get("market_history_root", defaults.market_history_root)
+        ),
+        market_feature_store_path=Path(
+            raw.get("market_feature_store_path", defaults.market_feature_store_path)
+        ),
+        market_snapshot_path=Path(
+            raw.get("market_snapshot_path", defaults.market_snapshot_path)
+        ),
+        market_report_path=Path(
+            raw.get("market_report_path", defaults.market_report_path)
         ),
         random_seed=int(raw.get("random_seed", defaults.random_seed)),
         top_candidates=int(raw.get("top_candidates", defaults.top_candidates)),
