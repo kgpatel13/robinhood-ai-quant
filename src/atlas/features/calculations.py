@@ -50,7 +50,7 @@ def rolling_max(values: Sequence[float], period: int) -> float | None:
 def true_ranges(bars: Sequence[PriceBar], period: int) -> list[float] | None:
     if len(bars) < period + 1:
         return None
-    selected = bars[-(period + 1):]
+    selected = bars[-(period + 1) :]
     values: list[float] = []
     for previous, current in zip(selected[:-1], selected[1:], strict=True):
         values.append(
@@ -73,7 +73,7 @@ def rsi(values: Sequence[float], period: int) -> float | None:
         return None
     changes = [
         current - previous
-        for previous, current in zip(values[-period - 1:-1], values[-period:], strict=True)
+        for previous, current in zip(values[-period - 1 : -1], values[-period:], strict=True)
     ]
     gains = sum(max(change, 0.0) for change in changes) / period
     losses = sum(max(-change, 0.0) for change in changes) / period
@@ -85,7 +85,7 @@ def rsi(values: Sequence[float], period: int) -> float | None:
 def log_volatility(values: Sequence[float], period: int) -> float | None:
     if len(values) < period + 1:
         return None
-    selected = values[-period - 1:]
+    selected = values[-period - 1 :]
     returns: list[float] = []
     for previous, current in zip(selected[:-1], selected[1:], strict=True):
         if previous <= 0.0 or current <= 0.0:

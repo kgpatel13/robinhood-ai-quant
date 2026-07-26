@@ -4,6 +4,7 @@ import csv
 import json
 import tempfile
 from collections.abc import Mapping, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -180,17 +181,27 @@ def write_history(path: Path, bars: Sequence[PriceBar]) -> None:
     temporary_path.replace(path)
 
 
-def _select_assets(config: AtlasConfig, registry: Sequence[UniverseAsset]) -> list[UniverseAsset]:
-    active = [asset for asset in registry if asset.active and asset.tradable]
-    stocks = sorted(
-        (asset for asset in active if asset.asset_class == "stock"),
-        key=lambda item: item.symbol,
-    )[: config.history_stock_limit]
-    crypto = sorted(
-        (asset for asset in active if asset.asset_class == "crypto"),
-        key=lambda item: (-(item.market_cap or 0.0), item.symbol),
-    )[: config.history_crypto_limit]
-    return stocks + crypto
+def _select_assets(
+    config: AtlasConfig,
+    registry: Sequence[UniverseAsset],
+    *,
+    stock_limit: int | None = None,
+    crypto_limit: int | None = None,
+    offset: int = 0,
+    batch_size: int | None = None,
+) -> list[UniverseAsset]:
+    from src.atlas.scaling import select_universe_batch
+
+    resolved_stock_limit = config.history_stock_limit if stock_limit is None else stock_limit
+    resolved_crypto_limit = config.history_crypto_limit if crypto_limit is None else crypto_limit
+    batch = select_universe_batch(
+        registry,
+        stock_limit=resolved_stock_limit,
+        crypto_limit=resolved_crypto_limit,
+        offset=offset,
+        batch_size=batch_size,
+    )
+    return list(batch.assets)
 
 
 def _incremental_start(existing: Sequence[PriceBar], fallback: date) -> date:
@@ -219,73 +230,85 @@ def update_history(
     *,
     provider: HistoryProvider | None = None,
     today: date | None = None,
+    stock_limit: int | None = None,
+    crypto_limit: int | None = None,
+    offset: int = 0,
+    batch_size: int | None = None,
+    workers: int = 1,
 ) -> HistoryUpdateResult:
+    if workers <= 0:
+        raise ValueError("workers must be positive")
     generated_at = datetime.now(UTC).isoformat()
     current_day = today or datetime.now(UTC).date()
     end = current_day + timedelta(days=1)
     fallback_start = current_day - timedelta(days=config.history_lookback_days)
     registry = load_registry(config.universe_registry_path)
-    selected = _select_assets(config, registry)
+    selected = _select_assets(
+        config,
+        registry,
+        stock_limit=stock_limit,
+        crypto_limit=crypto_limit,
+        offset=offset,
+        batch_size=batch_size,
+    )
     data_provider = provider or YFinanceHistoryProvider()
-    results: list[AssetHistoryResult] = []
 
-    for asset in selected:
+    def process_asset(asset: UniverseAsset) -> AssetHistoryResult:
         output = history_path(config.market_history_root, asset)
         existing = load_history(output)
         start = _incremental_start(existing, fallback_start)
         symbol = provider_symbol(asset)
         if start >= end:
-            results.append(
-                AssetHistoryResult(
-                    asset_id=asset.asset_id,
-                    symbol=asset.symbol,
-                    provider_symbol=symbol,
-                    status="current",
-                    existing_rows=len(existing),
-                    downloaded_rows=0,
-                    final_rows=len(existing),
-                    first_timestamp=existing[0].timestamp if existing else None,
-                    last_timestamp=existing[-1].timestamp if existing else None,
-                    output_path=str(output),
-                )
+            return AssetHistoryResult(
+                asset_id=asset.asset_id,
+                symbol=asset.symbol,
+                provider_symbol=symbol,
+                status="current",
+                existing_rows=len(existing),
+                downloaded_rows=0,
+                final_rows=len(existing),
+                first_timestamp=existing[0].timestamp if existing else None,
+                last_timestamp=existing[-1].timestamp if existing else None,
+                output_path=str(output),
             )
-            continue
         try:
             downloaded = data_provider.fetch_daily(symbol, start=start, end=end)
             merged = merge_history(existing, downloaded)
             if merged:
                 write_history(output, merged)
             status = "updated" if downloaded else ("current" if existing else "no_data")
-            results.append(
-                AssetHistoryResult(
-                    asset_id=asset.asset_id,
-                    symbol=asset.symbol,
-                    provider_symbol=symbol,
-                    status=status,
-                    existing_rows=len(existing),
-                    downloaded_rows=len(downloaded),
-                    final_rows=len(merged),
-                    first_timestamp=merged[0].timestamp if merged else None,
-                    last_timestamp=merged[-1].timestamp if merged else None,
-                    output_path=str(output),
-                )
+            return AssetHistoryResult(
+                asset_id=asset.asset_id,
+                symbol=asset.symbol,
+                provider_symbol=symbol,
+                status=status,
+                existing_rows=len(existing),
+                downloaded_rows=len(downloaded),
+                final_rows=len(merged),
+                first_timestamp=merged[0].timestamp if merged else None,
+                last_timestamp=merged[-1].timestamp if merged else None,
+                output_path=str(output),
             )
         except (HistoryProviderError, ValueError, OSError) as exc:
-            results.append(
-                AssetHistoryResult(
-                    asset_id=asset.asset_id,
-                    symbol=asset.symbol,
-                    provider_symbol=symbol,
-                    status="failed",
-                    existing_rows=len(existing),
-                    downloaded_rows=0,
-                    final_rows=len(existing),
-                    first_timestamp=existing[0].timestamp if existing else None,
-                    last_timestamp=existing[-1].timestamp if existing else None,
-                    output_path=str(output),
-                    error=str(exc),
-                )
+            return AssetHistoryResult(
+                asset_id=asset.asset_id,
+                symbol=asset.symbol,
+                provider_symbol=symbol,
+                status="failed",
+                existing_rows=len(existing),
+                downloaded_rows=0,
+                final_rows=len(existing),
+                first_timestamp=existing[0].timestamp if existing else None,
+                last_timestamp=existing[-1].timestamp if existing else None,
+                output_path=str(output),
+                error=str(exc),
             )
+
+    if workers == 1:
+        results = [process_asset(asset) for asset in selected]
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            results = list(executor.map(process_asset, selected))
 
     failed = sum(item.status == "failed" for item in results)
     skipped = sum(item.status in {"current", "no_data"} for item in results)

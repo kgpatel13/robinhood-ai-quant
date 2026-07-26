@@ -72,9 +72,7 @@ def _read_feature_store(
                 "timestamp": row.get("timestamp", ""),
             }
             features[asset_id] = {
-                key: _number(value)
-                for key, value in row.items()
-                if key not in required
+                key: _number(value) for key, value in row.items() if key not in required
             }
     return features, metadata
 
@@ -108,9 +106,7 @@ def _write_factor_scores(
 
 
 def _write_rankings(path: Path, ranked_assets: tuple[RankedAsset, ...]) -> None:
-    factors = sorted(
-        {name for asset in ranked_assets for name in asset.factor_scores}
-    )
+    factors = sorted({name for asset in ranked_assets for name in asset.factor_scores})
     columns = [
         "rank",
         "asset_id",
@@ -187,9 +183,7 @@ def run_alpha_pipeline(config: AlphaPipelineConfig | None = None) -> AlphaPipeli
             factor_statistics_path,
             {
                 name: asdict(statistic)
-                for name, statistic in factor_statistics(
-                    factor_result.normalized_scores
-                ).items()
+                for name, statistic in factor_statistics(factor_result.normalized_scores).items()
             },
         )
         _write_json(

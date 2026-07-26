@@ -40,7 +40,7 @@ def _zero_volume_ratio(context: FeatureContext, period: int) -> float | None:
 def _gap_ratio(context: FeatureContext, period: int) -> float | None:
     if len(context.bars) < 2:
         return None
-    selected = context.bars[-(period + 1):]
+    selected = context.bars[-(period + 1) :]
     gaps: list[float] = []
     for previous, current in zip(selected[:-1], selected[1:], strict=True):
         if previous.close > 0.0:

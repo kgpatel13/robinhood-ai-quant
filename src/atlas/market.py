@@ -5,6 +5,7 @@ import json
 import math
 import tempfile
 from collections.abc import Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -260,19 +261,35 @@ def _history_path(root: Path, asset: UniverseAsset) -> Path:
     return root / f"{safe_id}.csv"
 
 
-def run_market_intelligence(config: AtlasConfig) -> MarketIntelligenceResult:
+def run_market_intelligence(
+    config: AtlasConfig, *, max_workers: int = 1
+) -> MarketIntelligenceResult:
+    if max_workers <= 0:
+        raise ValueError("max_workers must be positive")
     generated_at = _utc_now()
     registry = [asset for asset in load_registry(config.universe_registry_path) if asset.active]
-    features: list[MarketFeatures] = []
-    errors: dict[str, str] = {}
-    for asset in registry:
-        history_path = _history_path(config.market_history_root, asset)
-        if not history_path.exists():
-            continue
+    candidates = [
+        asset for asset in registry if _history_path(config.market_history_root, asset).exists()
+    ]
+
+    def process_asset(asset: UniverseAsset) -> tuple[MarketFeatures | None, str | None]:
+        path = _history_path(config.market_history_root, asset)
         try:
-            features.append(compute_market_features(asset, load_price_bars(history_path)))
+            return compute_market_features(asset, load_price_bars(path)), None
         except ValueError as exc:
-            errors[asset.asset_id] = str(exc)
+            return None, str(exc)
+
+    if max_workers == 1:
+        processed = [process_asset(asset) for asset in candidates]
+    else:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            processed = list(executor.map(process_asset, candidates))
+    features = [feature for feature, _ in processed if feature is not None]
+    errors = {
+        asset.asset_id: error
+        for asset, (_, error) in zip(candidates, processed, strict=True)
+        if error is not None
+    }
 
     features.sort(key=lambda item: (-item.market_quality_score, item.asset_id))
     _write_feature_csv(config.market_feature_store_path, features)

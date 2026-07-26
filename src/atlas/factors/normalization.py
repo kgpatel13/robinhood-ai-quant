@@ -12,9 +12,7 @@ def winsorize(
     if not 0.0 <= lower < upper <= 1.0:
         raise ValueError("Winsorization bounds must satisfy 0 <= lower < upper <= 1")
     finite = sorted(
-        value
-        for value in values.values()
-        if value is not None and math.isfinite(value)
+        value for value in values.values() if value is not None and math.isfinite(value)
     )
     if not finite:
         return dict(values)

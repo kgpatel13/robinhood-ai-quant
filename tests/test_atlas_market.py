@@ -84,30 +84,39 @@ def test_indicator_validation() -> None:
 
 
 def test_regime_classification() -> None:
-    assert classify_market_regime(
-        return_20d=0.12,
-        volatility_20d=0.20,
-        close=120.0,
-        sma_20=115.0,
-        sma_50=105.0,
-        rsi_14=70.0,
-    ) == "strong_bull"
-    assert classify_market_regime(
-        return_20d=-0.25,
-        volatility_20d=0.60,
-        close=70.0,
-        sma_20=80.0,
-        sma_50=90.0,
-        rsi_14=20.0,
-    ) == "crash"
-    assert classify_market_regime(
-        return_20d=None,
-        volatility_20d=None,
-        close=100.0,
-        sma_20=None,
-        sma_50=None,
-        rsi_14=None,
-    ) == "insufficient_data"
+    assert (
+        classify_market_regime(
+            return_20d=0.12,
+            volatility_20d=0.20,
+            close=120.0,
+            sma_20=115.0,
+            sma_50=105.0,
+            rsi_14=70.0,
+        )
+        == "strong_bull"
+    )
+    assert (
+        classify_market_regime(
+            return_20d=-0.25,
+            volatility_20d=0.60,
+            close=70.0,
+            sma_20=80.0,
+            sma_50=90.0,
+            rsi_14=20.0,
+        )
+        == "crash"
+    )
+    assert (
+        classify_market_regime(
+            return_20d=None,
+            volatility_20d=None,
+            close=100.0,
+            sma_20=None,
+            sma_50=None,
+            rsi_14=None,
+        )
+        == "insufficient_data"
+    )
 
 
 def test_load_price_bars_and_feature_computation(tmp_path: Path) -> None:

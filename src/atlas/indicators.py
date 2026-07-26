@@ -43,7 +43,7 @@ def annualized_volatility(values: Sequence[float], period: int = 20) -> float | 
     if len(values) < period + 1:
         return None
     returns: list[float] = []
-    window = values[-(period + 1):]
+    window = values[-(period + 1) :]
     for previous, current in zip(window[:-1], window[1:], strict=True):
         if previous <= 0.0:
             return None
@@ -59,7 +59,7 @@ def average_true_range(bars: Sequence[PriceBar], period: int = 14) -> float | No
     if len(bars) < period + 1:
         return None
     true_ranges: list[float] = []
-    selected = bars[-(period + 1):]
+    selected = bars[-(period + 1) :]
     for previous, current in zip(selected[:-1], selected[1:], strict=True):
         true_ranges.append(
             max(
@@ -76,7 +76,7 @@ def relative_strength_index(values: Sequence[float], period: int = 14) -> float 
         return None
     gains = 0.0
     losses = 0.0
-    selected = values[-(period + 1):]
+    selected = values[-(period + 1) :]
     for previous, current in zip(selected[:-1], selected[1:], strict=True):
         change = current - previous
         if change >= 0.0:
@@ -94,7 +94,7 @@ def relative_strength_index(values: Sequence[float], period: int = 14) -> float 
 def relative_volume(volumes: Sequence[float], period: int = 20) -> float | None:
     if len(volumes) < period + 1:
         return None
-    baseline = sum(volumes[-(period + 1):-1]) / period
+    baseline = sum(volumes[-(period + 1) : -1]) / period
     if baseline <= 0.0:
         return None
     return volumes[-1] / baseline
