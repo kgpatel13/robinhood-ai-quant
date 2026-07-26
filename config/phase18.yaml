@@ -1,5 +1,5 @@
-phase: 18.5
-version: 0.18.5
+phase: 18.6
+version: 0.18.6
 mode: research_only
 soft_optimizer:
   confidence_weight: 0.50
@@ -16,11 +16,23 @@ capital_allocator:
   maximum_gross_exposure: 0.75
   maximum_asset_class_exposure: 0.50
   maximum_open_positions: 8
+institutional_validation:
+  bootstrap_samples: 5000
+  bootstrap_block_size: 10
+  monte_carlo_samples: 5000
+  maximum_cost_shock_bps: 5.0
+  minimum_block_bootstrap_probability: 0.60
+  minimum_monte_carlo_profitable_probability: 0.95
+  minimum_composite_score: 0.80
+  score_weights:
+    performance: 0.40
+    statistical: 0.30
+    robustness: 0.20
+    engineering: 0.10
 promotion:
   minimum_sharpe_improvement: 0.01
   minimum_profit_factor_improvement: 0.0
   maximum_drawdown_deterioration: 0.005
   minimum_positive_fold_rate: 0.60
-  minimum_bootstrap_probability: 0.60
   paper_trading: false
   live_trading: false

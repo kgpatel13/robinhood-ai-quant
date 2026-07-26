@@ -11,8 +11,8 @@ from src.research.phase13.engine import simulate_portfolio
 from src.research.phase13.models import Phase13Config
 from src.research.phase18.models import Phase18Config, Phase18Result
 
-PHASE = "18.5"
-VERSION = "0.18.5"
+PHASE = "18.6"
+VERSION = "0.18.6"
 
 
 def _safe_float(value: object, default: float = 0.0) -> float:
@@ -189,38 +189,163 @@ def _metrics(
     }
 
 
-def _bootstrap_difference(
-    phase18: pd.DataFrame, phase17: pd.DataFrame, samples: int, seed: int
+def _daily_return_series(equity: pd.DataFrame) -> pd.Series:
+    if equity.empty:
+        return pd.Series(dtype=float)
+    curve = equity.copy()
+    curve["timestamp"] = pd.to_datetime(curve["timestamp"], utc=True)
+    daily = curve.sort_values("timestamp").groupby(curve["timestamp"].dt.date).tail(1)
+    result = daily.set_index(daily["timestamp"].dt.date)["capital"].pct_change().dropna()
+    result.index = pd.Index(result.index, name="date")
+    return result.astype(float)
+
+
+def _moving_block_bootstrap(
+    phase18_equity: pd.DataFrame,
+    phase17_equity: pd.DataFrame,
+    samples: int,
+    block_size: int,
+    seed: int,
 ) -> pd.DataFrame:
-    new = phase18["net_return"].to_numpy(dtype=float) if not phase18.empty else np.array([])
-    old_col = "net_return" if "net_return" in phase17.columns else "net_return_after_costs"
-    old = phase17[old_col].to_numpy(dtype=float) if not phase17.empty else np.array([])
-    if len(new) == 0 or len(old) == 0:
+    new = _daily_return_series(phase18_equity).rename("phase18")
+    old = _daily_return_series(phase17_equity).rename("phase17")
+    paired = pd.concat([new, old], axis=1, join="inner").dropna()
+    excess = (paired["phase18"] - paired["phase17"]).to_numpy(dtype=float)
+    if len(excess) < 2:
         return pd.DataFrame(
             [
                 {
-                    "mean_difference": 0.0,
+                    "observations": len(excess),
+                    "block_size": block_size,
+                    "mean_daily_difference": 0.0,
+                    "annualized_mean_difference": 0.0,
                     "ci_low": 0.0,
                     "ci_high": 0.0,
                     "probability_improvement": 0.0,
                 }
             ]
         )
+    effective_block = max(1, min(block_size, len(excess)))
+    starts = np.arange(0, len(excess) - effective_block + 1)
     rng = np.random.default_rng(seed)
-    differences = np.array(
-        [
-            rng.choice(new, size=len(new), replace=True).mean()
-            - rng.choice(old, size=len(old), replace=True).mean()
-            for _ in range(samples)
+    means = np.empty(samples, dtype=float)
+    blocks_needed = int(np.ceil(len(excess) / effective_block))
+    for sample in range(samples):
+        chosen = rng.choice(starts, size=blocks_needed, replace=True)
+        draw = np.concatenate([excess[index : index + effective_block] for index in chosen])[
+            : len(excess)
         ]
+        means[sample] = draw.mean()
+    return pd.DataFrame(
+        [
+            {
+                "observations": len(excess),
+                "block_size": effective_block,
+                "mean_daily_difference": float(excess.mean()),
+                "annualized_mean_difference": float(excess.mean() * 252.0),
+                "ci_low": float(np.quantile(means, 0.025)),
+                "ci_high": float(np.quantile(means, 0.975)),
+                "probability_improvement": float((means > 0.0).mean()),
+            }
+        ]
+    )
+
+
+def _monte_carlo_robustness(
+    executed: pd.DataFrame,
+    samples: int,
+    seed: int,
+    maximum_cost_shock_bps: float,
+) -> pd.DataFrame:
+    if executed.empty:
+        return pd.DataFrame(
+            [
+                {
+                    "samples": samples,
+                    "probability_profitable": 0.0,
+                    "median_total_return": 0.0,
+                    "p05_total_return": 0.0,
+                    "median_maximum_drawdown": 0.0,
+                    "p95_maximum_drawdown": 0.0,
+                }
+            ]
+        )
+    returns = executed["net_return"].to_numpy(dtype=float)
+    fractions = executed["position_fraction"].to_numpy(dtype=float)
+    rng = np.random.default_rng(seed)
+    total_returns = np.empty(samples, dtype=float)
+    drawdowns = np.empty(samples, dtype=float)
+    for sample in range(samples):
+        order = rng.permutation(len(returns))
+        cost_shock = rng.uniform(0.0, maximum_cost_shock_bps / 10_000.0, len(returns))
+        portfolio_returns = fractions[order] * (returns[order] - cost_shock)
+        curve = np.cumprod(1.0 + portfolio_returns)
+        peak = np.maximum.accumulate(curve)
+        total_returns[sample] = curve[-1] - 1.0
+        drawdowns[sample] = np.max(1.0 - curve / peak)
+    return pd.DataFrame(
+        [
+            {
+                "samples": samples,
+                "maximum_cost_shock_bps": maximum_cost_shock_bps,
+                "probability_profitable": float((total_returns > 0.0).mean()),
+                "median_total_return": float(np.median(total_returns)),
+                "p05_total_return": float(np.quantile(total_returns, 0.05)),
+                "median_maximum_drawdown": float(np.median(drawdowns)),
+                "p95_maximum_drawdown": float(np.quantile(drawdowns, 0.95)),
+            }
+        ]
+    )
+
+
+def _validation_scorecard(
+    diagnostics: bool,
+    sharpe_improvement: float,
+    profit_factor_improvement: float,
+    drawdown_deterioration: float,
+    positive_fold_rate: float,
+    block_probability: float,
+    monte_carlo_probability: float,
+    capital_utilization_ratio: float,
+    config: Phase18Config,
+) -> pd.DataFrame:
+    performance_score = float(
+        np.mean(
+            [
+                sharpe_improvement >= config.minimum_sharpe_improvement,
+                profit_factor_improvement >= config.minimum_profit_factor_improvement,
+                drawdown_deterioration <= config.maximum_drawdown_deterioration,
+                capital_utilization_ratio >= config.minimum_capital_utilization_ratio,
+            ]
+        )
+    )
+    statistical_score = float(
+        np.mean(
+            [
+                positive_fold_rate >= config.minimum_positive_fold_rate,
+                block_probability >= config.minimum_block_bootstrap_probability,
+            ]
+        )
+    )
+    robustness_score = float(
+        monte_carlo_probability >= config.minimum_monte_carlo_profitable_probability
+    )
+    engineering_score = float(diagnostics)
+    composite = (
+        config.performance_score_weight * performance_score
+        + config.statistical_score_weight * statistical_score
+        + config.robustness_score_weight * robustness_score
+        + config.engineering_score_weight * engineering_score
     )
     return pd.DataFrame(
         [
             {
-                "mean_difference": float(new.mean() - old.mean()),
-                "ci_low": float(np.quantile(differences, 0.025)),
-                "ci_high": float(np.quantile(differences, 0.975)),
-                "probability_improvement": float((differences > 0.0).mean()),
+                "performance_score": performance_score,
+                "statistical_score": statistical_score,
+                "robustness_score": robustness_score,
+                "engineering_score": engineering_score,
+                "composite_score": float(composite),
+                "minimum_composite_score": config.minimum_composite_score,
             }
         ]
     )
@@ -248,7 +373,7 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
     comparison = pd.DataFrame(
         [
             {"portfolio": "phase17_4", **phase17_metrics},
-            {"portfolio": "phase18_5", **phase18_metrics},
+            {"portfolio": "phase18_6", **phase18_metrics},
         ]
     )
     fold_column = "phase15_fold" if "phase15_fold" in source else "fold"
@@ -261,8 +386,18 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
         )
     folds = pd.DataFrame(fold_rows)
     positive_fold_rate = float((folds["total_return"] > 0.0).mean()) if not folds.empty else 0.0
-    bootstrap = _bootstrap_difference(
-        executed, phase17_executed, config.bootstrap_samples, config.random_seed
+    block_bootstrap = _moving_block_bootstrap(
+        equity,
+        phase17_equity,
+        config.bootstrap_samples,
+        config.bootstrap_block_size,
+        config.random_seed,
+    )
+    monte_carlo = _monte_carlo_robustness(
+        executed,
+        config.monte_carlo_samples,
+        config.random_seed + 1,
+        config.maximum_cost_shock_bps,
     )
     diagnostics = bool(
         not equity.empty
@@ -272,16 +407,33 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
     sharpe_improvement = phase18_metrics["sharpe"] - phase17_metrics["sharpe"]
     pf_improvement = phase18_metrics["profit_factor"] - phase17_metrics["profit_factor"]
     dd_deterioration = phase18_metrics["maximum_drawdown"] - phase17_metrics["maximum_drawdown"]
-    bootstrap_probability = float(bootstrap.iloc[0]["probability_improvement"])
+    block_probability = float(block_bootstrap.iloc[0]["probability_improvement"])
+    monte_carlo_probability = float(monte_carlo.iloc[0]["probability_profitable"])
+    capital_utilization_ratio = phase18_metrics["average_gross_exposure"] / max(
+        phase17_metrics["average_gross_exposure"], 1e-12
+    )
+    scorecard = _validation_scorecard(
+        diagnostics,
+        sharpe_improvement,
+        pf_improvement,
+        dd_deterioration,
+        positive_fold_rate,
+        block_probability,
+        monte_carlo_probability,
+        capital_utilization_ratio,
+        config,
+    )
+    composite_score = float(scorecard.iloc[0]["composite_score"])
     approved = bool(
         diagnostics
         and sharpe_improvement >= config.minimum_sharpe_improvement
         and pf_improvement >= config.minimum_profit_factor_improvement
         and dd_deterioration <= config.maximum_drawdown_deterioration
         and positive_fold_rate >= config.minimum_positive_fold_rate
-        and bootstrap_probability >= config.minimum_bootstrap_probability
-        and phase18_metrics["average_gross_exposure"]
-        >= config.minimum_capital_utilization_ratio * phase17_metrics["average_gross_exposure"]
+        and block_probability >= config.minimum_block_bootstrap_probability
+        and monte_carlo_probability >= config.minimum_monte_carlo_profitable_probability
+        and capital_utilization_ratio >= config.minimum_capital_utilization_ratio
+        and composite_score >= config.minimum_composite_score
     )
     artifacts = {
         "opportunity_ranking": str(config.output_root / "opportunity_ranking.csv"),
@@ -291,7 +443,9 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
         "model_allocation": str(config.output_root / "model_allocation.csv"),
         "phase17_vs_phase18": str(config.output_root / "phase17_vs_phase18.csv"),
         "fold_comparison": str(config.output_root / "fold_comparison.csv"),
-        "bootstrap_validation": str(config.output_root / "bootstrap_validation.csv"),
+        "block_bootstrap_validation": str(config.output_root / "block_bootstrap_validation.csv"),
+        "monte_carlo_robustness": str(config.output_root / "monte_carlo_robustness.csv"),
+        "validation_scorecard": str(config.output_root / "validation_scorecard.csv"),
         "executed_trades": str(config.output_root / "phase18_executed_trades.csv"),
         "rejected_signals": str(config.output_root / "phase18_rejected_signals.csv"),
         "equity_curve": str(config.output_root / "phase18_equity_curve.csv"),
@@ -339,7 +493,9 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
     ).to_csv(artifacts["model_allocation"], index=False)
     comparison.to_csv(artifacts["phase17_vs_phase18"], index=False)
     folds.to_csv(artifacts["fold_comparison"], index=False)
-    bootstrap.to_csv(artifacts["bootstrap_validation"], index=False)
+    block_bootstrap.to_csv(artifacts["block_bootstrap_validation"], index=False)
+    monte_carlo.to_csv(artifacts["monte_carlo_robustness"], index=False)
+    scorecard.to_csv(artifacts["validation_scorecard"], index=False)
     executed.to_csv(artifacts["executed_trades"], index=False)
     rejected.to_csv(artifacts["rejected_signals"], index=False)
     equity.to_csv(artifacts["equity_curve"], index=False)
@@ -352,13 +508,14 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
         "rejected_trades": len(rejected),
         "phase17_metrics": phase17_metrics,
         "phase18_metrics": phase18_metrics,
-        "capital_utilization_ratio": phase18_metrics["average_gross_exposure"]
-        / max(phase17_metrics["average_gross_exposure"], 1e-12),
+        "capital_utilization_ratio": capital_utilization_ratio,
         "sharpe_improvement": sharpe_improvement,
         "profit_factor_improvement": pf_improvement,
         "drawdown_deterioration": dd_deterioration,
         "positive_fold_rate": positive_fold_rate,
-        "bootstrap_probability_improvement": bootstrap_probability,
+        "block_bootstrap_probability_improvement": block_probability,
+        "monte_carlo_probability_profitable": monte_carlo_probability,
+        "validation_composite_score": composite_score,
         "diagnostics_passed": diagnostics,
         "approved_for_phase19_review": approved,
         "approved_for_paper_trading": False,
@@ -367,7 +524,7 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
     signoff = {
         "phase": PHASE,
         "version": VERSION,
-        "status": "PHASE18_5_SOFT_PORTFOLIO_OPTIMIZATION_COMPLETE",
+        "status": "PHASE18_6_INSTITUTIONAL_VALIDATION_COMPLETE",
         "diagnostics_passed": diagnostics,
         "approved_for_phase19_review": approved,
         "approved_for_paper_trading": False,
@@ -377,14 +534,21 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
             "profit_factor_improvement": pf_improvement >= config.minimum_profit_factor_improvement,
             "drawdown_control": dd_deterioration <= config.maximum_drawdown_deterioration,
             "fold_stability": positive_fold_rate >= config.minimum_positive_fold_rate,
-            "bootstrap_probability": bootstrap_probability >= config.minimum_bootstrap_probability,
+            "block_bootstrap_probability": block_probability
+            >= config.minimum_block_bootstrap_probability,
+            "monte_carlo_robustness": monte_carlo_probability
+            >= config.minimum_monte_carlo_profitable_probability,
+            "composite_validation_score": composite_score >= config.minimum_composite_score,
             "capital_utilization": phase18_metrics["average_gross_exposure"]
             >= config.minimum_capital_utilization_ratio * phase17_metrics["average_gross_exposure"],
         },
         "notes": [
             "Soft optimization uses only fields available before each candidate trade.",
-            "Phase 17 accepted opportunities are preserved; scores alter priority and sizing continuously.",
+            "Phase 17 accepted opportunities are preserved; scores alter priority and sizing",
+            "continuously.",
             "Phase 17 execution costs remain in force.",
+            "Moving-block bootstrap preserves short-range serial dependence in daily returns.",
+            "Monte Carlo validation shocks execution costs and trade sequence.",
             "No broker orders are submitted.",
         ],
     }

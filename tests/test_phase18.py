@@ -51,3 +51,32 @@ def test_normalize_requires_phase17_columns() -> None:
         assert "missing required columns" in str(exc)
     else:
         raise AssertionError("expected ValueError")
+
+
+def test_moving_block_bootstrap_is_deterministic() -> None:
+    from src.research.phase18.engine import _moving_block_bootstrap
+
+    timestamps = pd.date_range("2024-01-01", periods=30, tz="UTC")
+    old = pd.DataFrame(
+        {"timestamp": timestamps, "capital": 10000.0 * (1.001 ** pd.Series(range(30)))}
+    )
+    new = pd.DataFrame(
+        {"timestamp": timestamps, "capital": 10000.0 * (1.002 ** pd.Series(range(30)))}
+    )
+    first = _moving_block_bootstrap(new, old, 100, 5, 42)
+    second = _moving_block_bootstrap(new, old, 100, 5, 42)
+    pd.testing.assert_frame_equal(first, second)
+    assert float(first.iloc[0]["probability_improvement"]) > 0.95
+
+
+def test_monte_carlo_reports_profitable_probability() -> None:
+    from src.research.phase18.engine import _monte_carlo_robustness
+
+    executed = pd.DataFrame(
+        {
+            "net_return": [0.02, 0.01, 0.03, 0.015],
+            "position_fraction": [0.10, 0.10, 0.10, 0.10],
+        }
+    )
+    result = _monte_carlo_robustness(executed, 100, 7, 1.0)
+    assert float(result.iloc[0]["probability_profitable"]) == 1.0
