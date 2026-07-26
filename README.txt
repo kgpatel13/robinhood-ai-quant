@@ -1,16 +1,14 @@
-Phase 15.5 Quality Fix
-======================
+Atlas AI v3.0 Phase 4 - MyPy Fix
 
-Replace:
-  src/research/phase15/engine.py
+Fixes the two union-attr errors in src/atlas/portfolio/engine.py by explicitly
+narrowing target/current before accessing symbol and asset_class.
 
-Fixes:
-- Ruff E501 long string lines.
-- MyPy pandas groupby/sort_values inference error in _proxy_benchmark.
-- No algorithm, threshold, model, or report behavior changes.
+Installation:
+1. Extract this ZIP over the project root.
+2. Allow replacement of src/atlas/portfolio/engine.py.
+3. Run:
+   python -m mypy src
+   python -m pytest
+   python -m ruff check src tests scripts
 
-After replacement run:
-  python -m ruff format .
-  python -m ruff check .
-  python -m mypy .
-  python -m pytest
+No runtime portfolio logic or configuration is changed.
