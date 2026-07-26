@@ -1,0 +1,25 @@
+phase: 16.4
+version: 0.16.4
+mode: research_only
+portfolio:
+  initial_capital: 10000
+  target_risk_per_trade: 0.005
+  target_portfolio_volatility: 0.12
+  maximum_position_fraction: 0.15
+  maximum_gross_exposure: 0.75
+  maximum_asset_class_exposure: 0.50
+  maximum_open_positions: 8
+adaptive_sizing:
+  fractional_kelly: 0.25
+  maximum_kelly_fraction: 0.12
+  correlation_soft_limit: 0.60
+  correlation_hard_limit: 0.85
+risk:
+  drawdown_soft_limit: 0.10
+  drawdown_hard_limit: 0.20
+promotion:
+  minimum_sharpe_improvement: 0.02
+  maximum_drawdown_deterioration: 0.01
+  minimum_positive_fold_rate: 0.60
+  paper_trading: false
+  live_trading: false

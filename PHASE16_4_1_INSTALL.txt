@@ -1,0 +1,9 @@
+Phase 16.4.1 MyPy/Ruff quality fix
+
+Copy src/research/phase16/engine.py into the matching project path and replace the existing file.
+
+Then run:
+python -m ruff format src/research/phase16/engine.py
+python -m ruff check .
+python -m mypy .
+python -m pytest
