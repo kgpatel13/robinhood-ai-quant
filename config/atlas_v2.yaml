@@ -1,0 +1,13 @@
+output_root: reports/atlas_v2
+experiment_root: reports/atlas_v2/experiments
+baseline_signoff: reports/phase18_6_institutional_validation/phase18_final_signoff.json
+stock_universe_path: data/universe/stocks.csv
+crypto_universe_path: data/universe/crypto.csv
+random_seed: 42
+top_candidates: 100
+minimum_price: 1.0
+minimum_daily_dollar_volume: 1000000.0
+maximum_stock_holding_days: 7
+maximum_crypto_holding_days: 7
+paper_trading_enabled: false
+live_trading_enabled: false
