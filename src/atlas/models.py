@@ -34,6 +34,10 @@ class AtlasConfig:
     market_feature_store_path: Path = Path("data/market/features.csv")
     market_snapshot_path: Path = Path("reports/atlas_v2/market_snapshot.json")
     market_report_path: Path = Path("reports/atlas_v2/market_intelligence.json")
+    history_report_path: Path = Path("reports/atlas_v2/history_download_report.json")
+    history_stock_limit: int = 100
+    history_crypto_limit: int = 50
+    history_lookback_days: int = 730
     random_seed: int = 42
     top_candidates: int = 100
     minimum_price: float = 1.0

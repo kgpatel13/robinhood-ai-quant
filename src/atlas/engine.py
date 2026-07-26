@@ -12,7 +12,7 @@ from src.atlas.intelligence import score_opportunity
 from src.atlas.models import AssetClass, AtlasConfig, AtlasRunResult, MarketSnapshot
 from src.atlas.research import create_manifest, file_sha256
 
-PLATFORM_VERSION = "2.2.0"
+PLATFORM_VERSION = "2.2.1"
 _REQUIRED_COLUMNS = {
     "symbol",
     "price",
@@ -87,6 +87,18 @@ def load_config(path: Path) -> AtlasConfig:
         ),
         market_report_path=Path(
             raw.get("market_report_path", defaults.market_report_path)
+        ),
+        history_report_path=Path(
+            raw.get("history_report_path", defaults.history_report_path)
+        ),
+        history_stock_limit=int(
+            raw.get("history_stock_limit", defaults.history_stock_limit)
+        ),
+        history_crypto_limit=int(
+            raw.get("history_crypto_limit", defaults.history_crypto_limit)
+        ),
+        history_lookback_days=int(
+            raw.get("history_lookback_days", defaults.history_lookback_days)
         ),
         random_seed=int(raw.get("random_seed", defaults.random_seed)),
         top_candidates=int(raw.get("top_candidates", defaults.top_candidates)),
