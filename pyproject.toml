@@ -39,6 +39,7 @@ atlas-research = "scripts.atlas_v2_research_intelligence:main"
 atlas-universe = "scripts.atlas_v2_1_universe_intelligence:main"
 atlas-market = "scripts.atlas_v2_2_market_intelligence:main"
 atlas-history = "scripts.atlas_v2_2_1_history:main"
+atlas-rank = "scripts.atlas_v3_alpha_ranking:main"
 
 [tool.setuptools]
 packages = [
@@ -48,6 +49,7 @@ packages = [
   "src.atlas",
   "src.atlas.factors",
   "src.atlas.features",
+  "src.atlas.ranking",
   "src.analytics",
   "src.backtest",
   "src.common",
