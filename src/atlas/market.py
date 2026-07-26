@@ -10,6 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from src.atlas.features import FEATURE_SET_VERSION, build_default_registry
 from src.atlas.indicators import (
     annualized_volatility,
     average_true_range,
@@ -25,7 +26,7 @@ from src.atlas.models import AtlasConfig
 from src.atlas.regime import classify_market_regime
 from src.atlas.universe import UniverseAsset, load_registry
 
-PLATFORM_VERSION = "2.2.0"
+PLATFORM_VERSION = "2.5.0"
 _REQUIRED_BAR_COLUMNS = {"timestamp", "open", "high", "low", "close", "volume"}
 
 
@@ -160,6 +161,7 @@ def compute_market_features(asset: UniverseAsset, bars: Sequence[PriceBar]) -> M
         market_quality_score=market_quality_score,
         regime=regime,
         warnings=warnings,
+        extended_features=build_default_registry().compute(bars),
     )
 
 
@@ -179,7 +181,9 @@ def _atomic_write(path: Path, text: str) -> None:
 
 
 def _write_feature_csv(path: Path, features: Sequence[MarketFeatures]) -> None:
-    fieldnames = list(MarketFeatures.__dataclass_fields__)
+    fieldnames = [
+        name for name in MarketFeatures.__dataclass_fields__ if name != "extended_features"
+    ]
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
         mode="w",
@@ -193,10 +197,62 @@ def _write_feature_csv(path: Path, features: Sequence[MarketFeatures]) -> None:
         writer.writeheader()
         for feature in features:
             row = asdict(feature)
+            row.pop("extended_features", None)
             row["warnings"] = "|".join(feature.warnings)
             writer.writerow(row)
         temporary = Path(stream.name)
     temporary.replace(path)
+
+
+def _write_extended_feature_csv(path: Path, features: Sequence[MarketFeatures]) -> None:
+    registry = build_default_registry()
+    feature_names = [item.metadata.name for item in registry.definitions()]
+    fieldnames = ["asset_id", "symbol", "asset_class", "timestamp", *feature_names]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline="",
+        delete=False,
+        dir=path.parent,
+        prefix=f".{path.name}.",
+    ) as stream:
+        writer = csv.DictWriter(stream, fieldnames=fieldnames)
+        writer.writeheader()
+        for feature in features:
+            row: dict[str, Any] = {
+                "asset_id": feature.asset_id,
+                "symbol": feature.symbol,
+                "asset_class": feature.asset_class,
+                "timestamp": feature.timestamp,
+            }
+            row.update(feature.extended_features)
+            writer.writerow(row)
+        temporary = Path(stream.name)
+    temporary.replace(path)
+
+
+def _feature_statistics(
+    features: Sequence[MarketFeatures],
+) -> dict[str, dict[str, float | int | None]]:
+    registry = build_default_registry()
+    output: dict[str, dict[str, float | int | None]] = {}
+    for definition in registry.definitions():
+        name = definition.metadata.name
+        values = [
+            item.extended_features[name]
+            for item in features
+            if item.extended_features.get(name) is not None
+        ]
+        numeric = [float(value) for value in values if value is not None]
+        output[name] = {
+            "count": len(numeric),
+            "coverage": len(numeric) / len(features) if features else 0.0,
+            "minimum": min(numeric) if numeric else None,
+            "maximum": max(numeric) if numeric else None,
+            "mean": sum(numeric) / len(numeric) if numeric else None,
+        }
+    return output
 
 
 def _history_path(root: Path, asset: UniverseAsset) -> Path:
@@ -220,9 +276,39 @@ def run_market_intelligence(config: AtlasConfig) -> MarketIntelligenceResult:
 
     features.sort(key=lambda item: (-item.market_quality_score, item.asset_id))
     _write_feature_csv(config.market_feature_store_path, features)
+    _write_extended_feature_csv(config.feature_intelligence_store_path, features)
+    feature_registry = build_default_registry()
+    _atomic_write(
+        config.feature_dictionary_path,
+        json.dumps(
+            {
+                "platform_version": PLATFORM_VERSION,
+                "feature_set_version": FEATURE_SET_VERSION,
+                "feature_count": len(feature_registry.definitions()),
+                "features": feature_registry.metadata_payload(),
+            },
+            indent=2,
+            sort_keys=True,
+        ),
+    )
+    _atomic_write(
+        config.feature_statistics_path,
+        json.dumps(
+            {
+                "platform_version": PLATFORM_VERSION,
+                "feature_set_version": FEATURE_SET_VERSION,
+                "asset_count": len(features),
+                "statistics": _feature_statistics(features),
+            },
+            indent=2,
+            sort_keys=True,
+        ),
+    )
     snapshot_payload: dict[str, Any] = {
         "platform_version": PLATFORM_VERSION,
         "generated_at_utc": generated_at,
+        "feature_set_version": FEATURE_SET_VERSION,
+        "extended_feature_count": len(feature_registry.definitions()),
         "features": [asdict(item) for item in features],
     }
     _atomic_write(

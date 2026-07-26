@@ -16,6 +16,9 @@ market_history_root: data/market/daily
 market_feature_store_path: data/market/features.csv
 market_snapshot_path: reports/atlas_v2/market_snapshot.json
 market_report_path: reports/atlas_v2/market_intelligence.json
+feature_intelligence_store_path: data/market/features_v2.csv
+feature_dictionary_path: reports/atlas_v2/feature_dictionary.json
+feature_statistics_path: reports/atlas_v2/feature_statistics.json
 random_seed: 42
 top_candidates: 100
 minimum_price: 1.0

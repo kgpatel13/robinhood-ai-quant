@@ -50,6 +50,7 @@ class MarketFeatures:
     market_quality_score: float
     regime: MarketRegime
     warnings: tuple[str, ...] = field(default_factory=tuple)
+    extended_features: dict[str, float | None] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

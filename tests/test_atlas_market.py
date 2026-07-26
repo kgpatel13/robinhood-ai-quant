@@ -159,5 +159,47 @@ def test_market_intelligence_pipeline(tmp_path: Path) -> None:
     assert snapshot_path.exists()
     assert report_path.exists()
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
-    assert snapshot["platform_version"] == "2.2.0"
+    assert snapshot["platform_version"] == "2.5.0"
     assert snapshot["features"][0]["asset_id"] == "stock:TEST"
+
+
+def test_feature_intelligence_registry() -> None:
+    from src.atlas.features import FEATURE_SET_VERSION, build_default_registry
+
+    registry = build_default_registry()
+    definitions = registry.definitions()
+    assert FEATURE_SET_VERSION == "2.5.0"
+    assert len(definitions) >= 70
+    assert len({item.metadata.name for item in definitions}) == len(definitions)
+    features = registry.compute(_bars(300))
+    assert features["sma_200"] is not None
+    assert features["return_252d"] is not None
+    assert features["rsi_14"] == 100.0
+    assert features["relative_volume_20d"] is not None
+
+
+def test_feature_intelligence_artifacts(tmp_path: Path) -> None:
+    registry_path = tmp_path / "registry.json"
+    history_root = tmp_path / "daily"
+    write_registry(registry_path, [_asset()])
+    _write_bars(history_root / "stock__TEST.csv", _bars(300))
+    config = AtlasConfig(
+        universe_registry_path=registry_path,
+        market_history_root=history_root,
+        market_feature_store_path=tmp_path / "features.csv",
+        feature_intelligence_store_path=tmp_path / "features_v2.csv",
+        feature_dictionary_path=tmp_path / "feature_dictionary.json",
+        feature_statistics_path=tmp_path / "feature_statistics.json",
+        market_snapshot_path=tmp_path / "snapshot.json",
+        market_report_path=tmp_path / "report.json",
+    )
+
+    result = run_market_intelligence(config)
+
+    assert result.complete is True
+    assert config.feature_intelligence_store_path.exists()
+    dictionary = json.loads(config.feature_dictionary_path.read_text(encoding="utf-8"))
+    statistics = json.loads(config.feature_statistics_path.read_text(encoding="utf-8"))
+    assert dictionary["feature_count"] >= 70
+    assert statistics["asset_count"] == 1
+    assert statistics["statistics"]["sma_200"]["coverage"] == 1.0
