@@ -3,6 +3,15 @@ experiment_root: reports/atlas_v2/experiments
 baseline_signoff: reports/phase18_6_institutional_validation/phase18_final_signoff.json
 stock_universe_path: data/universe/stocks.csv
 crypto_universe_path: data/universe/crypto.csv
+universe_registry_path: data/universe/registry.json
+universe_registry_csv_path: data/universe/registry.csv
+universe_report_path: reports/atlas_v2/universe_update.json
+nasdaq_listed_url: https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt
+other_listed_url: https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt
+coingecko_markets_url: https://api.coingecko.com/api/v3/coins/markets
+coingecko_api_key_env: COINGECKO_DEMO_API_KEY
+maximum_crypto_universe_assets: 250
+universe_request_timeout_seconds: 30.0
 random_seed: 42
 top_candidates: 100
 minimum_price: 1.0

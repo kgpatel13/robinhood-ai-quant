@@ -40,3 +40,41 @@ reports\atlas_v2\experiment_manifest.json
 
 SAFETY
 This release does not place orders. Paper and live trading remain disabled.
+
+ATLAS AI v2.1 — UNIVERSE INTELLIGENCE
+=====================================
+
+This update adds an incremental local asset registry and two independent discovery providers:
+
+- U.S. listed securities from Nasdaq Trader's official symbol directory.
+- Crypto market assets from CoinGecko's /coins/markets endpoint.
+
+Set your CoinGecko Demo API key in PowerShell before running both providers:
+
+    $env:COINGECKO_DEMO_API_KEY="your-demo-key"
+
+Update both universes:
+
+    python scripts\atlas_v2_1_universe_intelligence.py
+
+Stocks only (no API key required):
+
+    python scripts\atlas_v2_1_universe_intelligence.py --stocks-only
+
+Crypto only:
+
+    python scripts\atlas_v2_1_universe_intelligence.py --crypto-only
+
+Generated local artifacts:
+
+    data\universe\registry.json
+    data\universe\registry.csv
+    reports\atlas_v2\universe_update.json
+
+Safety behavior:
+
+- A failed provider never deactivates that provider's existing assets.
+- Registry files are replaced atomically after a successful update.
+- ETFs, warrants, rights, units, preferred/depositary issues and test issues remain
+  discoverable where appropriate but are not marked tradable by Atlas.
+- No orders are created or transmitted.
