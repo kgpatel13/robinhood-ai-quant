@@ -13,13 +13,17 @@ class Phase18Config:
     phase17_executed_path: Path = Path(
         "reports/phase17_execution_intelligence/phase17_executed_trades.csv"
     )
-    output_root: Path = Path("reports/phase18_adaptive_optimizer")
+    output_root: Path = Path("reports/phase18_5_soft_optimizer")
     initial_capital: float = 10_000.0
-    minimum_opportunity_score: float = 0.46
-    minimum_model_win_rate: float = 0.48
-    maximum_cost_to_edge_ratio: float = 0.35
-    minimum_position_multiplier: float = 0.55
-    maximum_position_multiplier: float = 1.35
+    soft_confidence_weight: float = 0.50
+    soft_execution_weight: float = 0.25
+    soft_model_health_weight: float = 0.15
+    soft_diversification_weight: float = 0.10
+    probability_anchor_weight: float = 0.55
+    sizing_strength: float = 0.10
+    minimum_volatility_multiplier: float = 0.80
+    maximum_volatility_multiplier: float = 1.20
+    minimum_capital_utilization_ratio: float = 0.95
     maximum_position_fraction: float = 0.15
     maximum_gross_exposure: float = 0.75
     maximum_asset_class_exposure: float = 0.50

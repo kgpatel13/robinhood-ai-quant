@@ -1,13 +1,17 @@
-phase: 18.4
-version: 0.18.4
+phase: 18.5
+version: 0.18.5
 mode: research_only
-opportunity_optimizer:
-  minimum_opportunity_score: 0.46
-  minimum_model_win_rate: 0.48
-  maximum_cost_to_edge_ratio: 0.35
+soft_optimizer:
+  confidence_weight: 0.50
+  execution_weight: 0.25
+  model_health_weight: 0.15
+  diversification_weight: 0.10
+  probability_anchor_weight: 0.55
+  sizing_strength: 0.10
+  minimum_volatility_multiplier: 0.80
+  maximum_volatility_multiplier: 1.20
 capital_allocator:
-  minimum_position_multiplier: 0.55
-  maximum_position_multiplier: 1.35
+  minimum_capital_utilization_ratio: 0.95
   maximum_position_fraction: 0.15
   maximum_gross_exposure: 0.75
   maximum_asset_class_exposure: 0.50

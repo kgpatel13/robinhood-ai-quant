@@ -23,10 +23,17 @@ def _row() -> pd.Series:
     )
 
 
-def test_opportunity_score_and_position_are_bounded() -> None:
+def test_soft_score_probability_and_sizing_are_bounded() -> None:
     result = _opportunity_components(_row(), Phase18Config())
-    assert 0.0 <= float(result["opportunity_score"]) <= 1.0
-    assert 0.0 <= float(result["phase18_position_fraction"]) <= 0.15
+    assert 0.0 <= float(result["soft_opportunity_score"]) <= 1.0
+    assert 0.50 <= float(result["optimized_probability"]) <= 0.75
+    assert 0.80 <= float(result["volatility_multiplier"]) <= 1.20
+
+
+def test_phase17_acceptance_is_preserved_without_new_hard_filter() -> None:
+    result = _opportunity_components(_row(), Phase18Config())
+    assert result["phase18_accepted"] is True
+    assert result["phase18_reason"] == "accepted_soft_weight"
 
 
 def test_phase17_rejection_is_preserved() -> None:

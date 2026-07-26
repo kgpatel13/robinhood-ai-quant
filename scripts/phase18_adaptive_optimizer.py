@@ -10,7 +10,7 @@ from src.research.phase18.models import Phase18Config
 
 
 def parser() -> argparse.ArgumentParser:
-    result = argparse.ArgumentParser(description="Run Phase 18 adaptive portfolio optimizer")
+    result = argparse.ArgumentParser(description="Run Phase 18.5 soft adaptive portfolio optimizer")
     result.add_argument(
         "--phase17-scores",
         type=Path,
@@ -26,7 +26,7 @@ def parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("reports/phase17_execution_intelligence/phase17_executed_trades.csv"),
     )
-    result.add_argument("--output", type=Path, default=Path("reports/phase18_adaptive_optimizer"))
+    result.add_argument("--output", type=Path, default=Path("reports/phase18_5_soft_optimizer"))
     return result
 
 

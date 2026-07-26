@@ -11,8 +11,8 @@ from src.research.phase13.engine import simulate_portfolio
 from src.research.phase13.models import Phase13Config
 from src.research.phase18.models import Phase18Config, Phase18Result
 
-PHASE = "18.4"
-VERSION = "0.18.4"
+PHASE = "18.5"
+VERSION = "0.18.5"
 
 
 def _safe_float(value: object, default: float = 0.0) -> float:
@@ -71,76 +71,55 @@ def _normalize(frame: pd.DataFrame) -> pd.DataFrame:
 
 def _opportunity_components(row: pd.Series, config: Phase18Config) -> dict[str, float | str | bool]:
     probability = float(np.clip(_safe_float(row["alpha_probability"], 0.5), 0.0, 1.0))
-    expected_value = max(_safe_float(row["expected_value"]), 0.0)
     execution_score = float(np.clip(_safe_float(row["execution_score"]), 0.0, 1.0))
     liquidity = float(np.clip(_safe_float(row["liquidity_score"]), 0.0, 1.0))
     model_win_rate = float(np.clip(_safe_float(row["model_recent_win_rate"], 0.5), 0.0, 1.0))
-    model_mean = _safe_float(row["model_recent_mean_return"])
     correlation = abs(_safe_float(row["rolling_symbol_correlation"]))
     phase17_fraction = float(np.clip(_safe_float(row["phase17_position_fraction"]), 0.0, 0.25))
-    slippage_return = max(_safe_float(row["incremental_slippage_bps"]), 0.0) / 10_000.0
-    cost_to_edge = slippage_return / max(expected_value, 1e-6)
 
     confidence_score = float(np.clip((probability - 0.50) / 0.25, 0.0, 1.0))
-    ev_score = float(np.clip(expected_value / 0.05, 0.0, 1.0))
-    model_health = float(
-        np.clip(0.65 * ((model_win_rate - 0.40) / 0.30) + 0.35 * (model_mean / 0.06), 0.0, 1.0)
-    )
+    model_health = float(np.clip(model_win_rate, 0.0, 1.0))
     diversification_score = float(np.clip(1.0 - correlation, 0.0, 1.0))
-    cost_efficiency = float(np.clip(1.0 - cost_to_edge, 0.0, 1.0))
-    opportunity_score = float(
+    soft_score = float(
         np.clip(
-            0.24 * execution_score
-            + 0.18 * confidence_score
-            + 0.18 * ev_score
-            + 0.24 * model_health
-            + 0.08 * liquidity
-            + 0.05 * diversification_score
-            + 0.03 * cost_efficiency,
+            config.soft_confidence_weight * confidence_score
+            + config.soft_execution_weight * execution_score
+            + config.soft_model_health_weight * model_health
+            + config.soft_diversification_weight * diversification_score,
             0.0,
             1.0,
         )
     )
-    multiplier = float(
+    score_probability = 0.50 + 0.25 * soft_score
+    optimized_probability = float(
         np.clip(
-            0.55 + 0.65 * opportunity_score + 0.30 * (model_win_rate - 0.50),
-            config.minimum_position_multiplier,
-            config.maximum_position_multiplier,
+            config.probability_anchor_weight * probability
+            + (1.0 - config.probability_anchor_weight) * score_probability,
+            0.50,
+            0.75,
         )
     )
-    optimized_fraction = float(
-        np.clip(phase17_fraction * multiplier, 0.0, config.maximum_position_fraction)
+    volatility_multiplier = float(
+        np.clip(
+            1.0 - config.sizing_strength * (soft_score - 0.50),
+            config.minimum_volatility_multiplier,
+            config.maximum_volatility_multiplier,
+        )
     )
     phase17_accepted = bool(row["execution_accepted"])
-    accepted = bool(
-        phase17_accepted
-        and phase17_fraction > 0.0
-        and opportunity_score >= config.minimum_opportunity_score
-        and model_win_rate >= config.minimum_model_win_rate
-        and cost_to_edge <= config.maximum_cost_to_edge_ratio
-    )
-    if accepted:
-        reason = "accepted"
-    elif not phase17_accepted or phase17_fraction <= 0.0:
-        reason = "phase17_rejected"
-    elif model_win_rate < config.minimum_model_win_rate:
-        reason = "model_health"
-    elif cost_to_edge > config.maximum_cost_to_edge_ratio:
-        reason = "cost_to_edge"
-    else:
-        reason = "opportunity_score"
+    accepted = bool(phase17_accepted and phase17_fraction > 0.0)
     return {
         "confidence_score_phase18": confidence_score,
-        "ev_score_phase18": ev_score,
         "model_health_score": model_health,
         "diversification_score": diversification_score,
-        "cost_to_edge_ratio": cost_to_edge,
-        "cost_efficiency_score": cost_efficiency,
-        "opportunity_score": opportunity_score,
-        "capital_multiplier": multiplier,
-        "phase18_position_fraction": optimized_fraction if accepted else 0.0,
+        "soft_opportunity_score": soft_score,
+        "optimized_probability": optimized_probability,
+        "volatility_multiplier": volatility_multiplier,
+        "capital_multiplier": 1.0 / volatility_multiplier,
+        "phase18_position_fraction": phase17_fraction if accepted else 0.0,
         "phase18_accepted": accepted,
-        "phase18_reason": reason,
+        "phase18_reason": "accepted_soft_weight" if accepted else "phase17_rejected",
+        "liquidity_score_phase18": liquidity,
     }
 
 
@@ -156,8 +135,10 @@ def _prepare(frame: pd.DataFrame, config: Phase18Config) -> tuple[pd.DataFrame, 
     accepted["exit_timestamp"] = accepted["timestamp"] + pd.to_timedelta(
         accepted["holding_period"], unit="D"
     )
-    accepted["probability"] = accepted["alpha_probability"]
-    accepted["volatility"] = accepted["synthetic_volatility"].clip(0.005, 0.10)
+    accepted["probability"] = accepted["optimized_probability"]
+    accepted["volatility"] = (
+        accepted["synthetic_volatility"] * accepted["volatility_multiplier"]
+    ).clip(0.005, 0.10)
     accepted["net_return"] = accepted["net_return_after_costs"] - (
         accepted["incremental_slippage_bps"] / 10_000.0
     )
@@ -267,7 +248,7 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
     comparison = pd.DataFrame(
         [
             {"portfolio": "phase17_4", **phase17_metrics},
-            {"portfolio": "phase18_4", **phase18_metrics},
+            {"portfolio": "phase18_5", **phase18_metrics},
         ]
     )
     fold_column = "phase15_fold" if "phase15_fold" in source else "fold"
@@ -299,6 +280,8 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
         and dd_deterioration <= config.maximum_drawdown_deterioration
         and positive_fold_rate >= config.minimum_positive_fold_rate
         and bootstrap_probability >= config.minimum_bootstrap_probability
+        and phase18_metrics["average_gross_exposure"]
+        >= config.minimum_capital_utilization_ratio * phase17_metrics["average_gross_exposure"]
     )
     artifacts = {
         "opportunity_ranking": str(config.output_root / "opportunity_ranking.csv"),
@@ -324,7 +307,9 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
             "phase17_position_fraction",
             "capital_multiplier",
             "phase18_position_fraction",
-            "opportunity_score",
+            "soft_opportunity_score",
+            "optimized_probability",
+            "volatility_multiplier",
             "phase18_accepted",
         ]
     ].to_csv(artifacts["capital_allocation_history"], index=False)
@@ -340,7 +325,7 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
             "timestamp",
             "symbol",
             "phase18_reason",
-            "opportunity_score",
+            "soft_opportunity_score",
             "expected_value",
             "net_return_after_costs",
         ],
@@ -367,6 +352,8 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
         "rejected_trades": len(rejected),
         "phase17_metrics": phase17_metrics,
         "phase18_metrics": phase18_metrics,
+        "capital_utilization_ratio": phase18_metrics["average_gross_exposure"]
+        / max(phase17_metrics["average_gross_exposure"], 1e-12),
         "sharpe_improvement": sharpe_improvement,
         "profit_factor_improvement": pf_improvement,
         "drawdown_deterioration": dd_deterioration,
@@ -380,7 +367,7 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
     signoff = {
         "phase": PHASE,
         "version": VERSION,
-        "status": "PHASE18_ADAPTIVE_PORTFOLIO_OPTIMIZATION_COMPLETE",
+        "status": "PHASE18_5_SOFT_PORTFOLIO_OPTIMIZATION_COMPLETE",
         "diagnostics_passed": diagnostics,
         "approved_for_phase19_review": approved,
         "approved_for_paper_trading": False,
@@ -391,9 +378,12 @@ def run_phase18(config: Phase18Config) -> Phase18Result:
             "drawdown_control": dd_deterioration <= config.maximum_drawdown_deterioration,
             "fold_stability": positive_fold_rate >= config.minimum_positive_fold_rate,
             "bootstrap_probability": bootstrap_probability >= config.minimum_bootstrap_probability,
+            "capital_utilization": phase18_metrics["average_gross_exposure"]
+            >= config.minimum_capital_utilization_ratio * phase17_metrics["average_gross_exposure"],
         },
         "notes": [
-            "Optimization uses only fields available before each candidate trade.",
+            "Soft optimization uses only fields available before each candidate trade.",
+            "Phase 17 accepted opportunities are preserved; scores alter priority and sizing continuously.",
             "Phase 17 execution costs remain in force.",
             "No broker orders are submitted.",
         ],
