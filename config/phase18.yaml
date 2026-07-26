@@ -1,0 +1,22 @@
+phase: 18.4
+version: 0.18.4
+mode: research_only
+opportunity_optimizer:
+  minimum_opportunity_score: 0.46
+  minimum_model_win_rate: 0.48
+  maximum_cost_to_edge_ratio: 0.35
+capital_allocator:
+  minimum_position_multiplier: 0.55
+  maximum_position_multiplier: 1.35
+  maximum_position_fraction: 0.15
+  maximum_gross_exposure: 0.75
+  maximum_asset_class_exposure: 0.50
+  maximum_open_positions: 8
+promotion:
+  minimum_sharpe_improvement: 0.01
+  minimum_profit_factor_improvement: 0.0
+  maximum_drawdown_deterioration: 0.005
+  minimum_positive_fold_rate: 0.60
+  minimum_bootstrap_probability: 0.60
+  paper_trading: false
+  live_trading: false
