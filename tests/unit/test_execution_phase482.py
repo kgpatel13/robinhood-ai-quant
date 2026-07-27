@@ -80,7 +80,9 @@ def test_daily_workflow_refreshes_builds_orders_executes_and_checkpoints(tmp_pat
     assert refresher.calls == provider.calls == 1
     assert len(reports) == 1
     account = broker.get_account()
-    assert account.cash == pytest.approx(2_500)
+    assert account.cash == pytest.approx(5_000)
+    assert result.risk_resized_orders == 1
+    assert result.risk_rejected_orders == 0
     assert {position.symbol for position in account.positions} == {"AAPL", "MSFT"}
     assert orchestrator.runtime.journal.load_checkpoint("daily-paper-workflow:2026-07-28")
 
@@ -105,8 +107,10 @@ def test_force_allows_same_day_rerun_without_duplicate_fills(tmp_path) -> None:
     orchestrator.run(now)
     forced = orchestrator.run(now, force=True)
 
-    assert forced.status == "COMPLETED"
-    assert forced.planned_orders == 0
+    assert forced.status == "COMPLETED_WITH_REJECTIONS"
+    assert forced.risk_rejected_orders == 1
+    assert forced.planned_orders == 1
+    assert forced.accepted_orders == 0
     assert refresher.calls == provider.calls == 2
     assert len(broker.list_fills()) == 1
 

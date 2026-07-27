@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 from src.execution.calendar import MarketSession
 from src.execution.models import AccountSnapshot, OrderReceipt
 from src.execution.rebalance import RebalancePlanner
+from src.execution.risk import PreTradeRiskEngine, RiskDecision
 from src.execution.router import OrderRouter
 from src.execution.runtime import PaperTradingRuntime, RuntimeCycleResult
 
@@ -51,6 +52,9 @@ class DailyWorkflowResult:
     planned_orders: int
     accepted_orders: int
     rejected_orders: int
+    risk_resized_orders: int
+    risk_rejected_orders: int
+    risk_decisions: tuple[RiskDecision, ...]
     ignored_symbols: tuple[str, ...]
     receipts: tuple[OrderReceipt, ...]
     runtime: RuntimeCycleResult | None
@@ -86,6 +90,7 @@ class DailyPaperTradingOrchestrator:
         session: MarketSession | None = None,
         config: DailyWorkflowConfig | None = None,
         reporter: WorkflowReporter | None = None,
+        risk_engine: PreTradeRiskEngine | None = None,
     ) -> None:
         self.runtime = runtime
         self.router = router
@@ -95,6 +100,7 @@ class DailyPaperTradingOrchestrator:
         self.session = session or runtime.session
         self.config = config or DailyWorkflowConfig()
         self.reporter = reporter
+        self.risk_engine = risk_engine or PreTradeRiskEngine()
 
     def run(self, now: datetime, *, force: bool = False) -> DailyWorkflowResult:
         local_now = now.astimezone(ZoneInfo(self.session.timezone))
@@ -114,6 +120,9 @@ class DailyPaperTradingOrchestrator:
                     planned_orders=0,
                     accepted_orders=0,
                     rejected_orders=0,
+                    risk_resized_orders=0,
+                    risk_rejected_orders=0,
+                    risk_decisions=(),
                     ignored_symbols=(),
                     receipts=(),
                     runtime=None,
@@ -134,6 +143,9 @@ class DailyPaperTradingOrchestrator:
                     planned_orders=0,
                     accepted_orders=0,
                     rejected_orders=0,
+                    risk_resized_orders=0,
+                    risk_rejected_orders=0,
+                    risk_decisions=(),
                     ignored_symbols=(),
                     receipts=(),
                     runtime=None,
@@ -154,6 +166,9 @@ class DailyPaperTradingOrchestrator:
                     planned_orders=0,
                     accepted_orders=0,
                     rejected_orders=0,
+                    risk_resized_orders=0,
+                    risk_rejected_orders=0,
+                    risk_decisions=(),
                     ignored_symbols=(),
                     receipts=(),
                     runtime=None,
@@ -181,12 +196,30 @@ class DailyPaperTradingOrchestrator:
                 min_notional=self.config.min_notional,
                 client_prefix=f"daily:{trading_date.isoformat()}",
             )
-            receipts = tuple(self.router.submit(order) for order in plan.orders)
+            risk = self.risk_engine.evaluate(plan.orders, account_before, prices)
+            for index, decision in enumerate(risk.decisions):
+                self.runtime.journal.append_event(
+                    event_id=(
+                        f"risk:{trading_date.isoformat()}:"
+                        f"{decision.original_order.client_order_id}:{index}"
+                    ),
+                    event_type="risk_decision",
+                    entity_id=decision.original_order.client_order_id,
+                    payload={
+                        "decision": decision.decision.value,
+                        "reason": decision.reason.value,
+                        "symbol": decision.original_order.symbol,
+                        "original_notional": decision.original_notional,
+                        "approved_notional": decision.approved_notional,
+                    },
+                )
+            receipts = tuple(self.router.submit(order) for order in risk.approved_orders)
             runtime_result = self.runtime.run_cycle(now)
             account_after = self.runtime.broker.get_account()
             accepted = sum(receipt.accepted for receipt in receipts)
             rejected = len(receipts) - accepted
-            status = "COMPLETED" if rejected == 0 else "COMPLETED_WITH_REJECTIONS"
+            total_rejections = rejected + risk.rejected_count
+            status = "COMPLETED" if total_rejections == 0 else "COMPLETED_WITH_REJECTIONS"
             result = DailyWorkflowResult(
                 trading_date=trading_date,
                 status=status,
@@ -197,6 +230,9 @@ class DailyPaperTradingOrchestrator:
                 planned_orders=len(plan.orders),
                 accepted_orders=accepted,
                 rejected_orders=rejected,
+                risk_resized_orders=risk.resized_count,
+                risk_rejected_orders=risk.rejected_count,
+                risk_decisions=risk.decisions,
                 ignored_symbols=plan.ignored_symbols,
                 receipts=receipts,
                 runtime=runtime_result,
@@ -211,6 +247,8 @@ class DailyPaperTradingOrchestrator:
                     "planned_orders": result.planned_orders,
                     "accepted_orders": result.accepted_orders,
                     "rejected_orders": result.rejected_orders,
+                    "risk_resized_orders": result.risk_resized_orders,
+                    "risk_rejected_orders": result.risk_rejected_orders,
                     "model_name": result.model_name,
                 },
             )

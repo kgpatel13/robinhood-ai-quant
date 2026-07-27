@@ -29,6 +29,14 @@ from src.execution.paper import PaperBroker, PriceProvider
 from src.execution.persistence import ExecutionJournal
 from src.execution.rebalance import RebalancePlan, RebalancePlanner
 from src.execution.reconciliation import PortfolioSync, ReconciliationReport
+from src.execution.risk import (
+    PreTradeRiskConfig,
+    PreTradeRiskEngine,
+    RiskDecision,
+    RiskDecisionType,
+    RiskEvaluation,
+    RiskReason,
+)
 from src.execution.router import OrderRouter, RetryPolicy
 from src.execution.runtime import PaperTradingRuntime, RuntimeCycleResult
 from src.execution.state_machine import InvalidOrderTransition, OrderStateMachine
@@ -60,6 +68,12 @@ __all__ = [
     "Position",
     "PriceProvider",
     "PriceSnapshotProvider",
+    "RiskReason",
+    "RiskEvaluation",
+    "RiskDecisionType",
+    "RiskDecision",
+    "PreTradeRiskEngine",
+    "PreTradeRiskConfig",
     "ReconciliationReport",
     "MarketSession",
     "PaperTradingRuntime",
