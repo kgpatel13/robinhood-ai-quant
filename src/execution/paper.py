@@ -15,6 +15,7 @@ from src.execution.models import (
     OrderStatus,
     OrderType,
     Position,
+    TimeInForce,
 )
 from src.execution.state_machine import OrderStateMachine
 
@@ -133,10 +134,8 @@ class PaperBroker:
             self._cash -= total_cost
             holding = self._holdings.get(order.symbol, _Holding(0.0, 0.0))
             new_quantity = holding.quantity + quantity
-            new_average = (
-                holding.quantity * holding.average_cost
-                + quantity * execution_price
-                ) / new_quantity
+            cost_basis = holding.quantity * holding.average_cost + quantity * execution_price
+            new_average = cost_basis / new_quantity
             self._holdings[order.symbol] = _Holding(new_quantity, new_average)
         else:
             existing_holding = self._holdings.get(order.symbol)
@@ -150,9 +149,7 @@ class PaperBroker:
             if remaining <= 1e-9:
                 del self._holdings[order.symbol]
             else:
-                self._holdings[order.symbol] = _Holding(
-                    remaining, existing_holding.average_cost
-                )
+                self._holdings[order.symbol] = _Holding(remaining, existing_holding.average_cost)
 
         fill = Fill(
             fill_id=uuid4().hex,
@@ -211,3 +208,127 @@ class PaperBroker:
             buying_power=self._cash,
             positions=tuple(positions),
         )
+
+    def export_state(self) -> dict[str, object]:
+        """Return a JSON-serializable broker checkpoint."""
+        with self._lock:
+            return {
+                "cash": self._cash,
+                "orders": [self._serialize_order(order) for order in self._orders.values()],
+                "fills": [self._serialize_fill(fill) for fill in self._fills],
+                "holdings": {
+                    symbol: {"quantity": holding.quantity, "average_cost": holding.average_cost}
+                    for symbol, holding in self._holdings.items()
+                },
+            }
+
+    def restore_state(self, state: dict[str, object]) -> None:
+        """Restore a checkpoint created by :meth:`export_state`."""
+        from datetime import datetime
+
+        with self._lock:
+            cash = state["cash"]
+            if not isinstance(cash, int | float | str):
+                raise TypeError("checkpoint cash must be numeric")
+            self._cash = float(cash)
+            self._orders.clear()
+            self._by_client_id.clear()
+
+            orders = state.get("orders", [])
+            if not isinstance(orders, list):
+                raise TypeError("checkpoint orders must be a list")
+            for raw in orders:
+                assert isinstance(raw, dict)
+                request_raw = raw["request"]
+                assert isinstance(request_raw, dict)
+                request = OrderRequest(
+                    symbol=str(request_raw["symbol"]),
+                    quantity=float(request_raw["quantity"]),
+                    side=OrderSide(str(request_raw["side"])),
+                    order_type=OrderType(str(request_raw["order_type"])),
+                    limit_price=(
+                        None
+                        if request_raw.get("limit_price") is None
+                        else float(request_raw["limit_price"])
+                    ),
+                    time_in_force=TimeInForce(str(request_raw["time_in_force"])),
+                    client_order_id=str(request_raw["client_order_id"]),
+                )
+                snapshot = OrderSnapshot(
+                    order_id=str(raw["order_id"]),
+                    request=request,
+                    status=OrderStatus(str(raw["status"])),
+                    filled_quantity=float(raw["filled_quantity"]),
+                    average_fill_price=(
+                        None
+                        if raw.get("average_fill_price") is None
+                        else float(raw["average_fill_price"])
+                    ),
+                    message=str(raw.get("message", "")),
+                    created_at=datetime.fromisoformat(str(raw["created_at"])),
+                    updated_at=datetime.fromisoformat(str(raw["updated_at"])),
+                )
+                self._orders[snapshot.order_id] = snapshot
+                self._by_client_id[request.client_order_id] = snapshot.order_id
+
+            self._fills = []
+            fills = state.get("fills", [])
+            if not isinstance(fills, list):
+                raise TypeError("checkpoint fills must be a list")
+            for raw in fills:
+                assert isinstance(raw, dict)
+                self._fills.append(
+                    Fill(
+                        fill_id=str(raw["fill_id"]),
+                        order_id=str(raw["order_id"]),
+                        symbol=str(raw["symbol"]),
+                        side=OrderSide(str(raw["side"])),
+                        quantity=float(raw["quantity"]),
+                        price=float(raw["price"]),
+                        commission=float(raw["commission"]),
+                        timestamp=datetime.fromisoformat(str(raw["timestamp"])),
+                    )
+                )
+
+            holdings = state.get("holdings", {})
+            assert isinstance(holdings, dict)
+            self._holdings = {
+                str(symbol): _Holding(float(values["quantity"]), float(values["average_cost"]))
+                for symbol, values in holdings.items()
+                if isinstance(values, dict)
+            }
+
+    @staticmethod
+    def _serialize_order(order: OrderSnapshot) -> dict[str, object]:
+        request = order.request
+        return {
+            "order_id": order.order_id,
+            "request": {
+                "symbol": request.symbol,
+                "quantity": request.quantity,
+                "side": request.side.value,
+                "order_type": request.order_type.value,
+                "limit_price": request.limit_price,
+                "time_in_force": request.time_in_force.value,
+                "client_order_id": request.client_order_id,
+            },
+            "status": order.status.value,
+            "filled_quantity": order.filled_quantity,
+            "average_fill_price": order.average_fill_price,
+            "message": order.message,
+            "created_at": order.created_at.isoformat(),
+            "updated_at": order.updated_at.isoformat(),
+        }
+
+    @staticmethod
+    def _serialize_fill(fill: Fill) -> dict[str, object]:
+        return {
+            "fill_id": fill.fill_id,
+            "order_id": fill.order_id,
+            "symbol": fill.symbol,
+            "side": fill.side.value,
+            "quantity": fill.quantity,
+            "price": fill.price,
+            "commission": fill.commission,
+            "timestamp": fill.timestamp.isoformat(),
+        }

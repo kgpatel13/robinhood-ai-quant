@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from src.execution.models import OrderSnapshot, OrderStatus, utc_now
+from src.execution.models import (
+    OrderSnapshot,
+    OrderStatus,
+    utc_now,
+)
 
 _ALLOWED: dict[OrderStatus, frozenset[OrderStatus]] = {
     OrderStatus.CREATED: frozenset({OrderStatus.SUBMITTED, OrderStatus.REJECTED}),
