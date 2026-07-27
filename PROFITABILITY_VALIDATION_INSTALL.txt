@@ -1,0 +1,34 @@
+Profitability Validation Utility
+================================
+
+Added:
+  scripts/profitability_validation.py
+
+Run from the project root in PowerShell:
+
+  python scripts/profitability_validation.py --capital 10000
+
+Optional one-line command:
+
+  python scripts/profitability_validation.py --capital 10000 --years 1 3 5 --benchmark SPY
+
+PowerShell multiline form uses the backtick character (`), not the CMD caret (^):
+
+  python scripts/profitability_validation.py `
+      --capital 10000 `
+      --years 1 3 5 `
+      --benchmark SPY
+
+Outputs:
+  reports/profitability_validation/summary.csv
+  reports/profitability_validation/best_by_symbol_period.csv
+  reports/profitability_validation/profitability_report.md
+  reports/profitability_validation/run_metadata.json
+  reports/profitability_validation/trades_*.csv
+  reports/profitability_validation/equity_*.png
+
+Validate:
+  python -m ruff format .
+  python -m ruff check .
+  python -m mypy .
+  python -m pytest
