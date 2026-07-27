@@ -1,0 +1,22 @@
+{
+  "phase": "4.7",
+  "name": "Institutional Execution Simulator",
+  "paper_only": true,
+  "files": [
+    "src/atlas/portfolio/execution.py",
+    "src/atlas/portfolio/__init__.py",
+    "scripts/atlas_v4_execution.py",
+    "tests/test_atlas_portfolio_execution.py",
+    "ATLAS_V4_7_INSTALL_README.txt",
+    "ATLAS_V4_7_MANIFEST.json"
+  ],
+  "capabilities": [
+    "asset-class spread model",
+    "volatility-linked slippage",
+    "square-root market impact",
+    "participation-rate capacity limits",
+    "partial fills",
+    "commission and sell-fee modeling",
+    "execution and capacity reports"
+  ]
+}

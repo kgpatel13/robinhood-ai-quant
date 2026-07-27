@@ -8,6 +8,16 @@ from src.atlas.portfolio.core import (
     TargetPosition,
 )
 from src.atlas.portfolio.engine import PortfolioEngine
+from src.atlas.portfolio.execution import (
+    ExecutionConfig,
+    ExecutionFill,
+    ExecutionOrder,
+    ExecutionResult,
+    build_orders_from_weights,
+    load_daily_dollar_volume,
+    simulate_execution,
+    write_execution_reports,
+)
 from src.atlas.portfolio.io import read_candidates, read_current_positions, write_reports
 from src.atlas.portfolio.optimizer import (
     OptimizerConfig,
@@ -32,6 +42,10 @@ from src.atlas.portfolio.walk_forward import (
 
 __all__ = [
     "CurrentPosition",
+    "ExecutionConfig",
+    "ExecutionFill",
+    "ExecutionOrder",
+    "ExecutionResult",
     "OptimizerConfig",
     "OptimizerSuiteResult",
     "PointInTimeConfig",
@@ -46,6 +60,10 @@ __all__ = [
     "TargetPosition",
     "WalkForwardConfig",
     "WalkForwardResult",
+    "build_orders_from_weights",
+    "load_daily_dollar_volume",
+    "simulate_execution",
+    "write_execution_reports",
     "build_point_in_time_snapshots",
     "load_snapshot_candidates",
     "read_candidates",
