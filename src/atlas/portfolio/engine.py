@@ -163,6 +163,45 @@ class PortfolioEngine:
             if confidence_rank(candidate.confidence) < minimum_confidence:
                 excluded[candidate.asset_id] = "below_minimum_confidence"
                 continue
+            if self.config.enforce_institutional_eligibility:
+                if (
+                    candidate.asset_class.lower() == "stock"
+                    and (
+                        candidate.price is None
+                        or candidate.price < self.config.minimum_price
+                    )
+                ):
+                    excluded[candidate.asset_id] = "price_below_minimum"
+                    continue
+                if (
+                    candidate.asset_class.lower() == "stock"
+                    and (
+                        candidate.market_cap is None
+                        or candidate.market_cap < self.config.minimum_market_cap
+                    )
+                ):
+                    excluded[candidate.asset_id] = (
+                        "market_cap_below_minimum_or_missing"
+                    )
+                    continue
+                if (
+                    candidate.liquidity_score is None
+                    or candidate.liquidity_score
+                    < self.config.minimum_liquidity_score
+                ):
+                    excluded[candidate.asset_id] = (
+                        "liquidity_below_minimum_or_missing"
+                    )
+                    continue
+                if (
+                    candidate.data_quality_score is None
+                    or candidate.data_quality_score
+                    < self.config.minimum_data_quality_score
+                ):
+                    excluded[candidate.asset_id] = (
+                        "data_quality_below_minimum_or_missing"
+                    )
+                    continue
             if len(eligible) >= self.config.max_positions:
                 excluded[candidate.asset_id] = "outside_position_limit"
                 continue

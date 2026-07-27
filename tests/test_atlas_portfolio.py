@@ -202,3 +202,41 @@ def test_read_candidates_merges_metadata_file(tmp_path: Path) -> None:
     assert candidate.industry == "Software"
     assert candidate.country == "United States"
     assert candidate.market_cap == 1_000_000_000.0
+
+
+def test_integrated_eligibility_replaces_rejected_candidate() -> None:
+    rejected = PortfolioCandidate(
+        rank=1,
+        asset_id="stock:BAD",
+        symbol="BAD",
+        asset_class="stock",
+        alpha_score=1.0,
+        alpha_percentile=0.99,
+        confidence="high",
+        volatility_60d=0.25,
+        price=2.0,
+        market_cap=50_000_000.0,
+        liquidity_score=25.0,
+        data_quality_score=95.0,
+    )
+    replacement = PortfolioCandidate(
+        rank=2,
+        asset_id="stock:GOOD",
+        symbol="GOOD",
+        asset_class="stock",
+        alpha_score=0.9,
+        alpha_percentile=0.98,
+        confidence="high",
+        volatility_60d=0.25,
+        price=20.0,
+        market_cap=1_000_000_000.0,
+        liquidity_score=90.0,
+        data_quality_score=95.0,
+    )
+    config = PortfolioConfig(
+        max_positions=1,
+        enforce_institutional_eligibility=True,
+    )
+    result = PortfolioEngine(config).construct([rejected, replacement])
+    assert [position.symbol for position in result.targets] == ["GOOD"]
+    assert result.excluded["stock:BAD"] == "price_below_minimum"

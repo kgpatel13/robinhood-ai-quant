@@ -22,6 +22,11 @@ class PortfolioConfig:
     fractional_shares: bool = True
     stock_share_precision: int = 6
     crypto_share_precision: int = 8
+    minimum_price: float = 3.0
+    minimum_market_cap: float = 100_000_000.0
+    minimum_liquidity_score: float = 50.0
+    minimum_data_quality_score: float = 80.0
+    enforce_institutional_eligibility: bool = False
 
     def __post_init__(self) -> None:
         if self.capital <= 0:
@@ -46,6 +51,14 @@ class PortfolioConfig:
             raise ValueError("minimum_confidence must be low, medium, or high")
         if self.stock_share_precision < 0 or self.crypto_share_precision < 0:
             raise ValueError("share precision must be non-negative")
+        if self.minimum_price < 0 or self.minimum_market_cap < 0:
+            raise ValueError("institutional minimums must be non-negative")
+        for name, value in (
+            ("minimum_liquidity_score", self.minimum_liquidity_score),
+            ("minimum_data_quality_score", self.minimum_data_quality_score),
+        ):
+            if not 0.0 <= value <= 100.0:
+                raise ValueError(f"{name} must be within [0, 100]")
 
 
 @dataclass(frozen=True)
@@ -63,6 +76,8 @@ class PortfolioCandidate:
     industry: str | None = None
     country: str | None = None
     market_cap: float | None = None
+    liquidity_score: float | None = None
+    data_quality_score: float | None = None
 
 
 @dataclass(frozen=True)

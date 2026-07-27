@@ -22,6 +22,8 @@ class FeatureRecord(TypedDict):
     industry: str | None
     country: str | None
     market_cap: float | None
+    liquidity_score: float | None
+    data_quality_score: float | None
 
 
 def _first(row: dict[str, str], *names: str) -> str | None:
@@ -70,11 +72,13 @@ def read_candidates(
                         "industry": _first(row, "industry", "gics_industry"),
                         "country": _first(row, "country", "domicile"),
                         "market_cap": finite_number(
-                            _first(
-                                row,
-                                "market_cap",
-                                "market_capitalization",
-                            )
+                            _first(row, "market_cap", "market_capitalization")
+                        ),
+                        "liquidity_score": finite_number(
+                            _first(row, "liquidity_score", "liquidity")
+                        ),
+                        "data_quality_score": finite_number(
+                            _first(row, "data_quality_score", "quality_score")
                         ),
                     }
 
@@ -93,6 +97,8 @@ def read_candidates(
                         "industry": None,
                         "country": None,
                         "market_cap": None,
+                        "liquidity_score": None,
+                        "data_quality_score": None,
                     }
                 features[asset_id] = {
                     **current,
@@ -102,6 +108,8 @@ def read_candidates(
                     "market_cap": finite_number(
                         _first(row, "market_cap", "market_capitalization")
                     ) or current["market_cap"],
+                    "liquidity_score": current["liquidity_score"],
+                    "data_quality_score": current["data_quality_score"],
                 }
 
     candidates: list[PortfolioCandidate] = []
@@ -178,6 +186,16 @@ def read_candidates(
                         row_market_cap
                         if row_market_cap is not None
                         else extra["market_cap"] if extra else None
+                    ),
+                    liquidity_score=(
+                        finite_number(row.get("liquidity_score"))
+                        if finite_number(row.get("liquidity_score")) is not None
+                        else extra["liquidity_score"] if extra else None
+                    ),
+                    data_quality_score=(
+                        finite_number(row.get("data_quality_score"))
+                        if finite_number(row.get("data_quality_score")) is not None
+                        else extra["data_quality_score"] if extra else None
                     ),
                 )
             )

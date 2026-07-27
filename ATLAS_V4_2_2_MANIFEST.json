@@ -1,0 +1,14 @@
+{
+  "phase": "4.2.2",
+  "name": "Portfolio Intelligence",
+  "added_files": [
+    "src/atlas/portfolio/analytics.py",
+    "scripts/atlas_v4_intelligence.py",
+    "tests/test_atlas_portfolio_analytics.py",
+    "ATLAS_V4_2_2_INSTALL_README.txt"
+  ],
+  "modified_files": [
+    "pyproject.toml"
+  ],
+  "paper_only": true
+}

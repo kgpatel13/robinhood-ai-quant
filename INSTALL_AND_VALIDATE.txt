@@ -1,0 +1,17 @@
+Atlas Phase 4.3.2 - Final MyPy Fix
+
+Replace this file in the project:
+  src\atlas\portfolio\analytics.py
+
+From PowerShell at C:\Projects\robinhood-ai-quant run:
+  python -m ruff check src tests scripts
+  python -m mypy src
+  python -m pytest
+  python -m scripts.atlas_v4_portfolio --capital 100000
+  python -m scripts.atlas_v4_institutional
+
+Expected:
+  Ruff: All checks passed
+  MyPy: Success: no issues found in 180 source files
+  Pytest: 182 passed
+  Institutional status: BACKTEST_READY

@@ -1,0 +1,26 @@
+{
+  "phase": "4.3.2",
+  "title": "Institutional Hardening and Integrated Eligibility",
+  "modified": [
+    "src/atlas/portfolio/analytics.py",
+    "src/atlas/portfolio/institutional.py",
+    "src/atlas/portfolio/core.py",
+    "src/atlas/portfolio/io.py",
+    "src/atlas/portfolio/engine.py",
+    "scripts/atlas_v4_portfolio.py",
+    "scripts/atlas_v4_institutional.py",
+    "tests/test_atlas_institutional.py",
+    "tests/test_atlas_portfolio.py"
+  ],
+  "validation": {
+    "python_compile": "passed",
+    "targeted_tests": "13 passed",
+    "full_tests": "blocked in build container by missing pyarrow; project declares pyarrow dependency",
+    "ruff": "not executable in build container; modified files were checked for 100-character line limit",
+    "mypy": "not executable in build container"
+  },
+  "safety": {
+    "paper_only": true,
+    "live_trading_enabled": false
+  }
+}

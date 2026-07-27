@@ -41,6 +41,15 @@ def build_parser() -> argparse.ArgumentParser:
         default="hybrid",
     )
     parser.add_argument("--rebalance-threshold-pct", type=float, default=0.005)
+    parser.add_argument("--minimum-price", type=float, default=3.0)
+    parser.add_argument("--minimum-market-cap", type=float, default=100_000_000.0)
+    parser.add_argument("--minimum-liquidity-score", type=float, default=50.0)
+    parser.add_argument("--minimum-data-quality-score", type=float, default=80.0)
+    parser.add_argument(
+        "--disable-institutional-eligibility",
+        action="store_true",
+        help="Research only: bypass integrated eligibility filters.",
+    )
     parser.add_argument("--whole-shares", action="store_true")
     return parser
 
@@ -60,6 +69,13 @@ def main() -> int:
         sizing_method=args.sizing_method,
         rebalance_threshold_pct=args.rebalance_threshold_pct,
         fractional_shares=not args.whole_shares,
+        minimum_price=args.minimum_price,
+        minimum_market_cap=args.minimum_market_cap,
+        minimum_liquidity_score=args.minimum_liquidity_score,
+        minimum_data_quality_score=args.minimum_data_quality_score,
+        enforce_institutional_eligibility=(
+            not args.disable_institutional_eligibility
+        ),
     )
     candidates = read_candidates(args.ranked_assets, args.features, args.metadata)
     current = read_current_positions(args.existing_portfolio)
