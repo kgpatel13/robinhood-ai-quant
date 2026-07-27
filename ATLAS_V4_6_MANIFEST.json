@@ -1,0 +1,20 @@
+{
+  "phase": "4.6",
+  "name": "Point-in-Time Historical Snapshot Engine",
+  "files": [
+    "src/atlas/portfolio/point_in_time.py",
+    "src/atlas/portfolio/__init__.py",
+    "scripts/atlas_v4_point_in_time.py",
+    "tests/test_atlas_portfolio_point_in_time.py",
+    "ATLAS_V4_6_INSTALL_README.txt",
+    "ATLAS_V4_6_MANIFEST.json"
+  ],
+  "capabilities": [
+    "point-in-time technical feature generation",
+    "historical cross-sectional ranking",
+    "versioned snapshot manifests",
+    "sha256 snapshot integrity",
+    "future-row leakage audit",
+    "snapshot resolver for walk-forward integration"
+  ]
+}
