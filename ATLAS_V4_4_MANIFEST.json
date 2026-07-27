@@ -1,0 +1,32 @@
+{
+  "phase": "4.4",
+  "name": "Consolidated Institutional Optimizer",
+  "paper_only": true,
+  "baseline": "Updated(17) with Phase 4.3.2 hardening",
+  "added_files": [
+    "src/atlas/portfolio/optimizer.py",
+    "scripts/atlas_v4_optimizer.py",
+    "tests/test_atlas_portfolio_optimizer.py",
+    "ATLAS_V4_4_INSTALL_README.txt"
+  ],
+  "modified_files": [
+    "src/atlas/portfolio/__init__.py"
+  ],
+  "optimizers": [
+    "equal",
+    "score",
+    "inverse_volatility",
+    "hybrid",
+    "risk_parity",
+    "minimum_variance",
+    "maximum_diversification",
+    "hrp"
+  ],
+  "reports": [
+    "optimizer_comparison.json",
+    "optimizer_constraints.json",
+    "replacement_history.json",
+    "optimizer_explainability.json",
+    "optimizer_diagnostics.json"
+  ]
+}

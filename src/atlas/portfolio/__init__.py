@@ -9,6 +9,12 @@ from src.atlas.portfolio.core import (
 )
 from src.atlas.portfolio.engine import PortfolioEngine
 from src.atlas.portfolio.io import read_candidates, read_current_positions, write_reports
+from src.atlas.portfolio.optimizer import (
+    OptimizerConfig,
+    OptimizerSuiteResult,
+    run_optimizer_suite,
+    write_optimizer_reports,
+)
 
 __all__ = [
     "CurrentPosition",
@@ -21,5 +27,9 @@ __all__ = [
     "TargetPosition",
     "read_candidates",
     "read_current_positions",
+    "OptimizerConfig",
+    "OptimizerSuiteResult",
+    "run_optimizer_suite",
+    "write_optimizer_reports",
     "write_reports",
 ]
