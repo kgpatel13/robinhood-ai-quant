@@ -1,14 +1,13 @@
-Atlas AI v3.0 Phase 4 - MyPy Fix
+Atlas AI v3.0 Phase 4.1 MyPy Fix
 
-Fixes the two union-attr errors in src/atlas/portfolio/engine.py by explicitly
-narrowing target/current before accessing symbol and asset_class.
+Replace this file:
+  src/atlas/portfolio/io.py
 
-Installation:
-1. Extract this ZIP over the project root.
-2. Allow replacement of src/atlas/portfolio/engine.py.
-3. Run:
-   python -m mypy src
-   python -m pytest
-   python -m ruff check src tests scripts
+Then run:
+  python -m ruff check src tests scripts
+  python -m mypy src
+  python -m pytest
+  python -m scripts.atlas_v4_portfolio --capital 100000
 
-No runtime portfolio logic or configuration is changed.
+This patch replaces loosely typed dict[str, object] lookups with a TypedDict-backed
+feature record and explicit None-aware fallback selection. Runtime behavior is preserved.

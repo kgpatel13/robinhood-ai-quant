@@ -106,3 +106,70 @@ def test_report_writer_marks_orders_as_paper_only(tmp_path: Path) -> None:
 def test_invalid_config_rejected() -> None:
     with pytest.raises(ValueError, match="capital"):
         PortfolioConfig(capital=0)
+
+
+def test_hybrid_falls_back_and_effective_positions_are_normalized() -> None:
+    candidates = [
+        _candidate(1, "AAA", 0.99, volatility=None, price=None),
+        _candidate(2, "BBB", 0.98, volatility=None, price=None),
+    ]
+    result = PortfolioEngine(
+        PortfolioConfig(max_positions=2, cash_reserve_pct=0.10, sizing_method="hybrid")
+    ).construct(candidates)
+    assert result.diagnostics.effective_sizing_method == "score"
+    assert result.diagnostics.sizing_fallback_reason == "volatility_unavailable"
+    assert result.metrics.effective_positions <= result.metrics.position_count
+    assert result.metrics.price_coverage == 0.0
+
+
+def test_sector_limit_applies_when_metadata_exists() -> None:
+    candidates = [
+        PortfolioCandidate(
+            rank=1,
+            asset_id="stock:AAA",
+            symbol="AAA",
+            asset_class="stock",
+            alpha_score=1.0,
+            alpha_percentile=0.99,
+            confidence="high",
+            volatility_60d=0.2,
+            price=100.0,
+            sector="Technology",
+        ),
+        PortfolioCandidate(
+            rank=2,
+            asset_id="stock:BBB",
+            symbol="BBB",
+            asset_class="stock",
+            alpha_score=0.9,
+            alpha_percentile=0.98,
+            confidence="high",
+            volatility_60d=0.2,
+            price=100.0,
+            sector="Technology",
+        ),
+        PortfolioCandidate(
+            rank=3,
+            asset_id="stock:CCC",
+            symbol="CCC",
+            asset_class="stock",
+            alpha_score=0.8,
+            alpha_percentile=0.97,
+            confidence="high",
+            volatility_60d=0.2,
+            price=100.0,
+            sector="Healthcare",
+        ),
+    ]
+    config = PortfolioConfig(
+        max_positions=3,
+        cash_reserve_pct=0.10,
+        max_position_pct=0.50,
+        max_sector_pct=0.60,
+        sizing_method="equal",
+    )
+    result = PortfolioEngine(config).construct(candidates)
+    tech_weight = sum(
+        position.target_weight for position in result.targets if position.sector == "Technology"
+    )
+    assert tech_weight <= 0.60 + 1e-9

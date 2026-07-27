@@ -12,11 +12,16 @@ class PortfolioConfig:
     max_positions: int = 25
     max_position_pct: float = 0.08
     max_crypto_pct: float = 0.15
+    max_sector_pct: float = 0.25
+    max_industry_pct: float = 0.20
     minimum_alpha_percentile: float = 0.70
     minimum_confidence: str = "medium"
     sizing_method: str = "hybrid"
     rebalance_threshold_pct: float = 0.005
     turnover_limit_pct: float = 0.50
+    fractional_shares: bool = True
+    stock_share_precision: int = 6
+    crypto_share_precision: int = 8
 
     def __post_init__(self) -> None:
         if self.capital <= 0:
@@ -25,6 +30,8 @@ class PortfolioConfig:
             ("cash_reserve_pct", self.cash_reserve_pct),
             ("max_position_pct", self.max_position_pct),
             ("max_crypto_pct", self.max_crypto_pct),
+            ("max_sector_pct", self.max_sector_pct),
+            ("max_industry_pct", self.max_industry_pct),
             ("minimum_alpha_percentile", self.minimum_alpha_percentile),
             ("rebalance_threshold_pct", self.rebalance_threshold_pct),
             ("turnover_limit_pct", self.turnover_limit_pct),
@@ -37,6 +44,8 @@ class PortfolioConfig:
             raise ValueError("unsupported sizing_method")
         if self.minimum_confidence not in {"low", "medium", "high"}:
             raise ValueError("minimum_confidence must be low, medium, or high")
+        if self.stock_share_precision < 0 or self.crypto_share_precision < 0:
+            raise ValueError("share precision must be non-negative")
 
 
 @dataclass(frozen=True)
@@ -50,6 +59,10 @@ class PortfolioCandidate:
     confidence: str
     volatility_60d: float | None = None
     price: float | None = None
+    sector: str | None = None
+    industry: str | None = None
+    country: str | None = None
+    market_cap: float | None = None
 
 
 @dataclass(frozen=True)
@@ -63,6 +76,10 @@ class TargetPosition:
     target_weight: float
     target_value: float
     estimated_shares: float | None
+    price: float | None = None
+    sector: str | None = None
+    industry: str | None = None
+    country: str | None = None
 
 
 @dataclass(frozen=True)
@@ -85,6 +102,8 @@ class RebalanceAction:
     current_weight: float
     target_weight: float
     estimated_shares: float | None
+    price: float | None = None
+    quantity_status: str = "available"
 
 
 @dataclass(frozen=True)
@@ -99,6 +118,20 @@ class PortfolioMetrics:
     effective_positions: float
     estimated_volatility: float | None
     turnover: float
+    volatility_coverage: float
+    price_coverage: float
+
+
+@dataclass(frozen=True)
+class PortfolioDiagnostics:
+    requested_sizing_method: str
+    effective_sizing_method: str
+    sizing_fallback_reason: str | None
+    volatility_coverage: float
+    price_coverage: float
+    sector_coverage: float
+    industry_coverage: float
+    warnings: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -106,6 +139,7 @@ class PortfolioResult:
     targets: tuple[TargetPosition, ...]
     actions: tuple[RebalanceAction, ...]
     metrics: PortfolioMetrics
+    diagnostics: PortfolioDiagnostics
     excluded: Mapping[str, str]
 
 

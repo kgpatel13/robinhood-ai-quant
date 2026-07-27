@@ -22,7 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("reports/atlas_v3/ranked_assets.csv"),
     )
-    parser.add_argument("--features", type=Path, default=Path("data/market/features_v2.csv"))
+    parser.add_argument("--features", type=Path, default=Path("data/market/features.csv"))
     parser.add_argument("--existing-portfolio", type=Path)
     parser.add_argument("--output", type=Path, default=Path("reports/atlas_v4"))
     parser.add_argument("--capital", type=float, default=100_000.0)
@@ -30,6 +30,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-positions", type=int, default=25)
     parser.add_argument("--max-position-pct", type=float, default=0.08)
     parser.add_argument("--max-crypto-pct", type=float, default=0.15)
+    parser.add_argument("--max-sector-pct", type=float, default=0.25)
+    parser.add_argument("--max-industry-pct", type=float, default=0.20)
     parser.add_argument("--minimum-alpha-percentile", type=float, default=0.70)
     parser.add_argument("--minimum-confidence", choices=("low", "medium", "high"), default="medium")
     parser.add_argument(
@@ -38,6 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="hybrid",
     )
     parser.add_argument("--rebalance-threshold-pct", type=float, default=0.005)
+    parser.add_argument("--whole-shares", action="store_true")
     return parser
 
 
@@ -49,10 +52,13 @@ def main() -> int:
         max_positions=args.max_positions,
         max_position_pct=args.max_position_pct,
         max_crypto_pct=args.max_crypto_pct,
+        max_sector_pct=args.max_sector_pct,
+        max_industry_pct=args.max_industry_pct,
         minimum_alpha_percentile=args.minimum_alpha_percentile,
         minimum_confidence=args.minimum_confidence,
         sizing_method=args.sizing_method,
         rebalance_threshold_pct=args.rebalance_threshold_pct,
+        fractional_shares=not args.whole_shares,
     )
     candidates = read_candidates(args.ranked_assets, args.features)
     current = read_current_positions(args.existing_portfolio)
@@ -67,6 +73,7 @@ def main() -> int:
         "action_count": len(result.actions),
         "config": asdict(config),
         "metrics": asdict(result.metrics),
+        "diagnostics": asdict(result.diagnostics),
         "artifacts": artifacts,
     }
     print(json.dumps(summary, indent=2, sort_keys=True))
