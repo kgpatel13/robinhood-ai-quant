@@ -1,0 +1,12 @@
+{
+  "phase": "4.5",
+  "name": "Historical Replay and Walk-Forward Validation",
+  "paper_only": true,
+  "files": [
+    "src/atlas/portfolio/walk_forward.py",
+    "src/atlas/portfolio/__init__.py",
+    "scripts/atlas_v4_walk_forward.py",
+    "tests/test_atlas_portfolio_walk_forward.py",
+    "ATLAS_V4_5_INSTALL_README.txt"
+  ]
+}

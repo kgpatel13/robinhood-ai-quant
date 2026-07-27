@@ -32,4 +32,15 @@ __all__ = [
     "run_optimizer_suite",
     "write_optimizer_reports",
     "write_reports",
+    "WalkForwardConfig",
+    "WalkForwardResult",
+    "run_walk_forward",
+    "write_walk_forward_reports",
 ]
+
+from src.atlas.portfolio.walk_forward import (
+    WalkForwardConfig,
+    WalkForwardResult,
+    run_walk_forward,
+    write_walk_forward_reports,
+)
