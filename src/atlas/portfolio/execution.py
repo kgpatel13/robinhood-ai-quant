@@ -96,11 +96,7 @@ class ExecutionResult:
 
 
 def _spread_bps(asset_class: str, config: ExecutionConfig) -> float:
-    return (
-        config.spread_bps_crypto
-        if asset_class.lower() == "crypto"
-        else config.spread_bps_stock
-    )
+    return config.spread_bps_crypto if asset_class.lower() == "crypto" else config.spread_bps_stock
 
 
 def _fill_ratio(order: ExecutionOrder, config: ExecutionConfig) -> tuple[float, float]:
@@ -160,8 +156,7 @@ def simulate_order(order: ExecutionOrder, config: ExecutionConfig) -> ExecutionF
     half_spread_bps = 0.5 * _spread_bps(order.asset_class, config)
     daily_volatility = max(order.annual_volatility, 0.0) / math.sqrt(252.0)
     slippage_bps = (
-        config.base_slippage_bps
-        + config.volatility_slippage_multiplier * daily_volatility * 100.0
+        config.base_slippage_bps + config.volatility_slippage_multiplier * daily_volatility * 100.0
     )
     impact_bps = config.market_impact_coefficient * math.sqrt(max(participation, 0.0))
     spread_cost = filled_value * half_spread_bps / 10_000.0
@@ -169,22 +164,12 @@ def simulate_order(order: ExecutionOrder, config: ExecutionConfig) -> ExecutionF
     market_impact_cost = filled_value * impact_bps / 10_000.0
     commission = config.commission_per_order if filled_value > 0.0 else 0.0
     regulatory_fee = (
-        filled_value * config.regulatory_fee_bps_sell / 10_000.0
-        if side == "sell"
-        else 0.0
+        filled_value * config.regulatory_fee_bps_sell / 10_000.0 if side == "sell" else 0.0
     )
-    total_cost = (
-        spread_cost
-        + slippage_cost
-        + market_impact_cost
-        + commission
-        + regulatory_fee
-    )
+    total_cost = spread_cost + slippage_cost + market_impact_cost + commission + regulatory_fee
     effective_cost_bps = total_cost / filled_value * 10_000.0 if filled_value else 0.0
     direction = 1.0 if side == "buy" else -1.0
-    execution_price = order.reference_price * (
-        1.0 + direction * effective_cost_bps / 10_000.0
-    )
+    execution_price = order.reference_price * (1.0 + direction * effective_cost_bps / 10_000.0)
     requested_quantity = order.requested_value / order.reference_price
     filled_quantity = filled_value / execution_price if execution_price > 0.0 else 0.0
     if filled_value <= 0.0:
@@ -272,9 +257,7 @@ def simulate_execution(
     total_cost = sum(item.total_cost for item in fills)
     fill_ratio = filled / requested if requested else 1.0
     capacity_values = [
-        item.daily_dollar_volume
-        * cfg.maximum_participation_rate
-        * cfg.execution_horizon_days
+        item.daily_dollar_volume * cfg.maximum_participation_rate * cfg.execution_horizon_days
         for item in orders
     ]
     deployable = sum(capacity_values)

@@ -345,12 +345,12 @@ def run_walk_forward(
             "average_net_return": float(np.mean([item.net_return for item in regime_windows])),
             "average_turnover": float(np.mean([item.turnover for item in regime_windows])),
             "average_sharpe": float(
-                np.mean([
-                    item.sharpe_ratio
-                    for item in regime_windows
-                    if item.sharpe_ratio is not None
-                ])
-            ) if any(item.sharpe_ratio is not None for item in regime_windows) else None,
+                np.mean(
+                    [item.sharpe_ratio for item in regime_windows if item.sharpe_ratio is not None]
+                )
+            )
+            if any(item.sharpe_ratio is not None for item in regime_windows)
+            else None,
         }
     summary: dict[str, Any] = {
         **combined_metrics,

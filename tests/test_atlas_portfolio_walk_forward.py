@@ -48,10 +48,7 @@ def _history(directory: Path, candidates: list[PortfolioCandidate]) -> None:
 
 
 def test_walk_forward_is_deterministic_and_constraint_compliant(tmp_path: Path) -> None:
-    candidates = [
-        _candidate(index, "crypto" if index == 0 else "stock")
-        for index in range(12)
-    ]
+    candidates = [_candidate(index, "crypto" if index == 0 else "stock") for index in range(12)]
     _history(tmp_path, candidates)
     portfolio_config = PortfolioConfig(
         max_positions=10,

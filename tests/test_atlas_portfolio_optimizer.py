@@ -58,9 +58,7 @@ def test_correlation_aware_selection_is_deterministic() -> None:
     )
     config = PortfolioConfig(max_positions=5, enforce_institutional_eligibility=True)
     optimizer_config = OptimizerConfig(candidate_buffer=8)
-    first, _, _ = select_correlation_aware_candidates(
-        candidates, returns, config, optimizer_config
-    )
+    first, _, _ = select_correlation_aware_candidates(candidates, returns, config, optimizer_config)
     second, _, _ = select_correlation_aware_candidates(
         candidates, returns, config, optimizer_config
     )

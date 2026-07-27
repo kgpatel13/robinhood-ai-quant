@@ -1,27 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from enum import StrEnum
+from collections.abc import Sequence
 from typing import Protocol
 
-
-class OrderSide(StrEnum):
-    BUY = "buy"
-    SELL = "sell"
-
-
-@dataclass(frozen=True)
-class OrderRequest:
-    symbol: str
-    quantity: float
-    side: OrderSide
-
-
-@dataclass(frozen=True)
-class OrderReceipt:
-    order_id: str
-    accepted: bool
-    message: str = ""
+from src.execution.models import (
+    AccountSnapshot,
+    Fill,
+    OrderReceipt,
+    OrderRequest,
+    OrderSide,
+    OrderSnapshot,
+)
 
 
 class Broker(Protocol):
@@ -30,3 +19,14 @@ class Broker(Protocol):
     def submit_order(self, order: OrderRequest) -> OrderReceipt: ...
 
     def cancel_order(self, order_id: str) -> bool: ...
+
+    def get_order(self, order_id: str) -> OrderSnapshot | None: ...
+
+    def list_orders(self, *, include_terminal: bool = True) -> Sequence[OrderSnapshot]: ...
+
+    def list_fills(self, order_id: str | None = None) -> Sequence[Fill]: ...
+
+    def get_account(self) -> AccountSnapshot: ...
+
+
+__all__ = ["Broker", "OrderReceipt", "OrderRequest", "OrderSide"]

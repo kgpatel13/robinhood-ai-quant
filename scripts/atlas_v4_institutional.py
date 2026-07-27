@@ -12,9 +12,7 @@ from src.atlas.version import __version__
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Atlas Phase 4 institutional portfolio controls"
-    )
+    parser = argparse.ArgumentParser(description="Atlas Phase 4 institutional portfolio controls")
     parser.add_argument(
         "--portfolio",
         type=Path,

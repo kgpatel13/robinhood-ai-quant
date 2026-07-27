@@ -54,11 +54,7 @@ def _price_series(frame: pd.DataFrame, name: str | None = None) -> pd.Series:
         None,
     )
     price_column = next(
-        (
-            column
-            for column in ("close", "Close", "adj_close", "Adj Close")
-            if column in frame
-        ),
+        (column for column in ("close", "Close", "adj_close", "Adj Close") if column in frame),
         None,
     )
     if date_column is None or price_column is None:
@@ -128,9 +124,7 @@ def _eligibility_rows(
         suffixes=("", "_feature"),
     )
     metadata_columns = [
-        column
-        for column in metadata.columns
-        if column in {"asset_id", "market_cap", "status"}
+        column for column in metadata.columns if column in {"asset_id", "market_cap", "status"}
     ]
     if metadata_columns:
         universe = universe.merge(
@@ -145,18 +139,12 @@ def _eligibility_rows(
         reasons: list[str] = []
         asset_class = str(row.get("asset_class", "stock"))
         price = _optional_float(row.get("price", row.get("close")))
-        market_cap = _optional_float(
-            row.get("market_cap", row.get("market_cap_meta"))
-        )
+        market_cap = _optional_float(row.get("market_cap", row.get("market_cap_meta")))
         liquidity = _optional_float(row.get("liquidity_score"))
         quality = _optional_float(row.get("data_quality_score"))
-        if asset_class == "stock" and (
-            price is None or price < cfg.minimum_price
-        ):
+        if asset_class == "stock" and (price is None or price < cfg.minimum_price):
             reasons.append("price_below_minimum")
-        if asset_class == "stock" and (
-            market_cap is None or market_cap < cfg.minimum_market_cap
-        ):
+        if asset_class == "stock" and (market_cap is None or market_cap < cfg.minimum_market_cap):
             reasons.append("market_cap_below_minimum_or_missing")
         if liquidity is None or liquidity < cfg.minimum_liquidity_score:
             reasons.append("liquidity_below_minimum_or_missing")
@@ -365,12 +353,8 @@ def run_institutional_analysis(
             }
         )
 
-    stock_weight = float(
-        weights[[item.startswith("stock:") for item in weights.index]].sum()
-    )
-    crypto_weight = float(
-        weights[[item.startswith("crypto:") for item in weights.index]].sum()
-    )
+    stock_weight = float(weights[[item.startswith("stock:") for item in weights.index]].sum())
+    crypto_weight = float(weights[[item.startswith("crypto:") for item in weights.index]].sum())
     technology_weight = 0.0
     healthcare_weight = 0.0
     if "sector" in positions:
@@ -401,10 +385,7 @@ def run_institutional_analysis(
         else 0.0
     )
     history_coverage = (
-        sum(
-            count >= cfg.minimum_history_observations
-            for count in observations.values()
-        )
+        sum(count >= cfg.minimum_history_observations for count in observations.values())
         / len(observations)
         if observations
         else 0.0
@@ -450,9 +431,7 @@ def run_institutional_analysis(
             "eligibility_integrated_in_portfolio_engine": True,
             "note": "Only eligible candidates should enter the constrained allocator.",
         },
-        "risk_contribution": {
-            "positions": _risk_contribution(covariance, aligned_weights)
-        },
+        "risk_contribution": {"positions": _risk_contribution(covariance, aligned_weights)},
         "transaction_cost_report": {
             "total_estimated_cost": total_cost,
             "cost_bps": cost_bps,

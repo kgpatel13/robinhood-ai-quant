@@ -219,9 +219,11 @@ def _rank_snapshot(rows: list[dict[str, Any]], maximum_assets: int | None) -> pd
         "high",
         np.where(frame["alpha_percentile"] >= 0.70, "medium", "low"),
     )
-    frame["factor_coverage"] = frame[
-        ["return_20d", "return_60d", "return_126d", "volatility_60d", "trend_strength"]
-    ].notna().sum(axis=1)
+    frame["factor_coverage"] = (
+        frame[["return_20d", "return_60d", "return_126d", "volatility_60d", "trend_strength"]]
+        .notna()
+        .sum(axis=1)
+    )
     if maximum_assets is not None:
         frame = frame.head(maximum_assets).copy()
     columns = [
@@ -271,7 +273,7 @@ def _snapshot_dates(
     if len(calendar) < config.minimum_history_observations:
         return []
     first = config.minimum_history_observations - 1
-    return calendar[first:: config.rebalance_observations]
+    return calendar[first :: config.rebalance_observations]
 
 
 def build_point_in_time_snapshots(

@@ -73,9 +73,7 @@ def main() -> int:
         minimum_market_cap=args.minimum_market_cap,
         minimum_liquidity_score=args.minimum_liquidity_score,
         minimum_data_quality_score=args.minimum_data_quality_score,
-        enforce_institutional_eligibility=(
-            not args.disable_institutional_eligibility
-        ),
+        enforce_institutional_eligibility=(not args.disable_institutional_eligibility),
     )
     candidates = read_candidates(args.ranked_assets, args.features, args.metadata)
     current = read_current_positions(args.existing_portfolio)

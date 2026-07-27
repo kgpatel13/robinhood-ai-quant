@@ -118,22 +118,15 @@ def performance_statistics(
         if len(aligned) > 2 and benchmark_variance > 0:
             covariance = float(cast(Any, aligned.cov().at["portfolio", "benchmark"]))
             beta = covariance / benchmark_variance
-            benchmark_annual = float(
-                aligned["benchmark"].mean() * cfg.periods_per_year
-            )
+            benchmark_annual = float(aligned["benchmark"].mean() * cfg.periods_per_year)
             alpha = arithmetic_annual_return - (
-                cfg.risk_free_rate
-                + beta * (benchmark_annual - cfg.risk_free_rate)
+                cfg.risk_free_rate + beta * (benchmark_annual - cfg.risk_free_rate)
             )
             active = aligned["portfolio"] - aligned["benchmark"]
-            tracking_error = float(
-                active.std(ddof=1) * math.sqrt(cfg.periods_per_year)
-            )
+            tracking_error = float(active.std(ddof=1) * math.sqrt(cfg.periods_per_year))
             information_ratio = None
             if tracking_error > 0:
-                information_ratio = float(
-                    active.mean() * cfg.periods_per_year / tracking_error
-                )
+                information_ratio = float(active.mean() * cfg.periods_per_year / tracking_error)
             result.update(
                 {
                     "beta": beta,
@@ -155,9 +148,7 @@ def diversification_statistics(
     normalized = clean / total if total else clean
     hhi = float((normalized**2).sum()) if len(normalized) else 0.0
     entropy = float(-(normalized * np.log(normalized)).sum()) if len(normalized) else 0.0
-    normalized_entropy = (
-        entropy / math.log(len(normalized)) if len(normalized) > 1 else 0.0
-    )
+    normalized_entropy = entropy / math.log(len(normalized)) if len(normalized) > 1 else 0.0
     average_correlation: float | None = None
     maximum_correlation: float | None = None
     if correlations is not None and len(correlations) > 1:
@@ -349,9 +340,7 @@ def _benchmark_metrics(
     benchmark_return = _annualized_geometric_return(aligned["benchmark"], TRADING_DAYS)
     alpha = None
     if beta is not None:
-        alpha = portfolio_return - (
-            risk_free_rate + beta * (benchmark_return - risk_free_rate)
-        )
+        alpha = portfolio_return - (risk_free_rate + beta * (benchmark_return - risk_free_rate))
     active = aligned["portfolio"] - aligned["benchmark"]
     tracking_error = float(active.std(ddof=1) * math.sqrt(TRADING_DAYS))
     information_ratio = _safe_ratio(
@@ -378,9 +367,7 @@ def analyze_portfolio(
     if return_coverage < 1.0:
         diagnostics.append("Historical return coverage is incomplete.")
     if len(portfolio) < settings.minimum_observations:
-        diagnostics.append(
-            "Available history is below the configured minimum observation count."
-        )
+        diagnostics.append("Available history is below the configured minimum observation count.")
 
     expected_return = (
         _annualized_geometric_return(portfolio, settings.periods_per_year)
@@ -399,9 +386,7 @@ def analyze_portfolio(
         else None
     )
     downside_deviation = (
-        _downside_deviation(portfolio, settings.periods_per_year)
-        if not portfolio.empty
-        else None
+        _downside_deviation(portfolio, settings.periods_per_year) if not portfolio.empty else None
     )
     sortino = (
         _safe_ratio(arithmetic_return - settings.risk_free_rate, downside_deviation)
@@ -439,9 +424,7 @@ def analyze_portfolio(
             settings.risk_free_rate,
         )
     else:
-        diagnostics.append(
-            "Benchmark history is unavailable; relative metrics were omitted."
-        )
+        diagnostics.append("Benchmark history is unavailable; relative metrics were omitted.")
 
     average_correlation, maximum_pair_correlation = _pair_correlation_stats(return_matrix)
     weights = {target.asset_id: target.target_weight for target in targets}
@@ -451,9 +434,7 @@ def analyze_portfolio(
         for column in return_matrix.columns
     )
     diversification_benefit = (
-        1.0 - volatility / standalone
-        if volatility is not None and standalone > 0.0
-        else None
+        1.0 - volatility / standalone if volatility is not None and standalone > 0.0 else None
     )
     position_weights = [target.target_weight for target in targets]
     concentration_hhi = sum(weight**2 for weight in position_weights)
@@ -463,9 +444,7 @@ def analyze_portfolio(
         entropy / math.log(len(position_weights)) if len(position_weights) > 1 else 0.0
     )
     crypto_weight = sum(
-        target.target_weight
-        for target in targets
-        if target.asset_class.lower() == "crypto"
+        target.target_weight for target in targets if target.asset_class.lower() == "crypto"
     )
     market_cap_exposure: dict[str, float] = {}
     market_cap_map = market_caps or {}
@@ -475,9 +454,7 @@ def analyze_portfolio(
             if target.asset_class.lower() == "crypto"
             else _market_cap_bucket(market_cap_map.get(target.asset_id))
         )
-        market_cap_exposure[bucket] = (
-            market_cap_exposure.get(bucket, 0.0) + target.target_weight
-        )
+        market_cap_exposure[bucket] = market_cap_exposure.get(bucket, 0.0) + target.target_weight
 
     return PortfolioIntelligence(
         observation_count=len(portfolio),
@@ -518,17 +495,11 @@ def build_scorecard(intelligence: PortfolioIntelligence) -> PortfolioScorecard:
     data_quality = round(100.0 * intelligence.return_coverage)
     return_score = 50
     if intelligence.sharpe_ratio is not None:
-        return_score = round(
-            max(0.0, min(100.0, 50.0 + 25.0 * intelligence.sharpe_ratio))
-        )
+        return_score = round(max(0.0, min(100.0, 50.0 + 25.0 * intelligence.sharpe_ratio)))
     risk_score = 50
     if intelligence.maximum_drawdown is not None:
-        risk_score = round(
-            max(0.0, min(100.0, 100.0 - 200.0 * abs(intelligence.maximum_drawdown)))
-        )
-    diversification_score = round(
-        max(0.0, min(100.0, 100.0 * intelligence.normalized_entropy))
-    )
+        risk_score = round(max(0.0, min(100.0, 100.0 - 200.0 * abs(intelligence.maximum_drawdown))))
+    diversification_score = round(max(0.0, min(100.0, 100.0 * intelligence.normalized_entropy)))
     concentration_score = round(
         max(
             0.0,
@@ -598,9 +569,7 @@ def write_intelligence_reports(
         encoding="utf-8",
     )
     return_matrix.corr(min_periods=20).to_csv(paths["correlation_matrix"])
-    (return_matrix.cov(min_periods=20) * TRADING_DAYS).to_csv(
-        paths["covariance_matrix"]
-    )
+    (return_matrix.cov(min_periods=20) * TRADING_DAYS).to_csv(paths["covariance_matrix"])
     payload = json.dumps(
         {"intelligence": asdict(intelligence), "scorecard": asdict(scorecard)},
         sort_keys=True,

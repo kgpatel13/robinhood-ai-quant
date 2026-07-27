@@ -101,7 +101,8 @@ def _apply_crypto_limit(
     weights: list[float], candidates: Sequence[PortfolioCandidate], config: PortfolioConfig
 ) -> list[float]:
     crypto_indexes = [
-        index for index, candidate in enumerate(candidates)
+        index
+        for index, candidate in enumerate(candidates)
         if candidate.asset_class.lower() == "crypto"
     ]
     crypto_total = sum(weights[index] for index in crypto_indexes)
@@ -164,43 +165,28 @@ class PortfolioEngine:
                 excluded[candidate.asset_id] = "below_minimum_confidence"
                 continue
             if self.config.enforce_institutional_eligibility:
-                if (
-                    candidate.asset_class.lower() == "stock"
-                    and (
-                        candidate.price is None
-                        or candidate.price < self.config.minimum_price
-                    )
+                if candidate.asset_class.lower() == "stock" and (
+                    candidate.price is None or candidate.price < self.config.minimum_price
                 ):
                     excluded[candidate.asset_id] = "price_below_minimum"
                     continue
-                if (
-                    candidate.asset_class.lower() == "stock"
-                    and (
-                        candidate.market_cap is None
-                        or candidate.market_cap < self.config.minimum_market_cap
-                    )
+                if candidate.asset_class.lower() == "stock" and (
+                    candidate.market_cap is None
+                    or candidate.market_cap < self.config.minimum_market_cap
                 ):
-                    excluded[candidate.asset_id] = (
-                        "market_cap_below_minimum_or_missing"
-                    )
+                    excluded[candidate.asset_id] = "market_cap_below_minimum_or_missing"
                     continue
                 if (
                     candidate.liquidity_score is None
-                    or candidate.liquidity_score
-                    < self.config.minimum_liquidity_score
+                    or candidate.liquidity_score < self.config.minimum_liquidity_score
                 ):
-                    excluded[candidate.asset_id] = (
-                        "liquidity_below_minimum_or_missing"
-                    )
+                    excluded[candidate.asset_id] = "liquidity_below_minimum_or_missing"
                     continue
                 if (
                     candidate.data_quality_score is None
-                    or candidate.data_quality_score
-                    < self.config.minimum_data_quality_score
+                    or candidate.data_quality_score < self.config.minimum_data_quality_score
                 ):
-                    excluded[candidate.asset_id] = (
-                        "data_quality_below_minimum_or_missing"
-                    )
+                    excluded[candidate.asset_id] = "data_quality_below_minimum_or_missing"
                     continue
             if len(eligible) >= self.config.max_positions:
                 excluded[candidate.asset_id] = "outside_position_limit"
@@ -219,14 +205,10 @@ class PortfolioEngine:
             else 0.0
         )
         sector_coverage = (
-            sum(bool(item.sector) for item in eligible) / len(eligible)
-            if eligible
-            else 0.0
+            sum(bool(item.sector) for item in eligible) / len(eligible) if eligible else 0.0
         )
         industry_coverage = (
-            sum(bool(item.industry) for item in eligible) / len(eligible)
-            if eligible
-            else 0.0
+            sum(bool(item.industry) for item in eligible) / len(eligible) if eligible else 0.0
         )
 
         effective_method = self.config.sizing_method
@@ -238,8 +220,7 @@ class PortfolioEngine:
 
         investable_weight = 1.0 - self.config.cash_reserve_pct
         raw = [
-            _raw_weight(candidate, effective_method, fallback_volatility)
-            for candidate in eligible
+            _raw_weight(candidate, effective_method, fallback_volatility) for candidate in eligible
         ]
         weights = _cap_and_redistribute(
             normalize_weights(raw, investable_weight), eligible, self.config, investable_weight
@@ -394,7 +375,8 @@ class PortfolioEngine:
         )
         hhi = sum(weight**2 for weight in normalized)
         crypto_weight = sum(
-            position.target_weight for position in targets
+            position.target_weight
+            for position in targets
             if position.asset_class.lower() == "crypto"
         )
         volatility_by_asset = {
@@ -403,9 +385,7 @@ class PortfolioEngine:
         volatility_terms = [
             (position.target_weight * volatility) ** 2
             for position in targets
-            if (
-                volatility := volatility_by_asset.get(position.asset_id)
-            ) is not None
+            if (volatility := volatility_by_asset.get(position.asset_id)) is not None
             and volatility >= 0
         ]
         estimated_volatility = math.sqrt(sum(volatility_terms)) if volatility_terms else None

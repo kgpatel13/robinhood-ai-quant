@@ -129,24 +129,33 @@ def read_metadata(path: Path) -> dict[str, AssetMetadata]:
 def write_metadata(path: Path, records: Iterable[AssetMetadata]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
-        "asset_id", "symbol", "asset_class", "sector", "industry", "country",
-        "market_cap", "source", "status",
+        "asset_id",
+        "symbol",
+        "asset_class",
+        "sector",
+        "industry",
+        "country",
+        "market_cap",
+        "source",
+        "status",
     ]
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         for item in sorted(records, key=lambda value: value.asset_id):
-            writer.writerow({
-                "asset_id": item.asset_id,
-                "symbol": item.symbol,
-                "asset_class": item.asset_class,
-                "sector": item.sector or "",
-                "industry": item.industry or "",
-                "country": item.country or "",
-                "market_cap": "" if item.market_cap is None else item.market_cap,
-                "source": item.source,
-                "status": item.status,
-            })
+            writer.writerow(
+                {
+                    "asset_id": item.asset_id,
+                    "symbol": item.symbol,
+                    "asset_class": item.asset_class,
+                    "sector": item.sector or "",
+                    "industry": item.industry or "",
+                    "country": item.country or "",
+                    "market_cap": "" if item.market_cap is None else item.market_cap,
+                    "source": item.source,
+                    "status": item.status,
+                }
+            )
 
 
 def enrich_metadata(

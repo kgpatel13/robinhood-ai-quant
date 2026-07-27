@@ -68,9 +68,7 @@ def test_institutional_run(tmp_path: Path) -> None:
         ]
     )
     features.to_csv(tmp_path / "features.csv", index=False)
-    metadata = pd.DataFrame(
-        [{"asset_id": "stock:AAA", "market_cap": 1_000_000_000.0}]
-    )
+    metadata = pd.DataFrame([{"asset_id": "stock:AAA", "market_cap": 1_000_000_000.0}])
     metadata.to_csv(tmp_path / "metadata.csv", index=False)
     history = tmp_path / "daily"
     history.mkdir()

@@ -187,9 +187,7 @@ def select_correlation_aware_candidates(
         if len(pool) >= optimizer_config.candidate_buffer:
             break
 
-    correlations = return_matrix.corr(
-        min_periods=optimizer_config.minimum_history_observations
-    )
+    correlations = return_matrix.corr(min_periods=optimizer_config.minimum_history_observations)
     selected: list[PortfolioCandidate] = []
     decisions: list[ReplacementDecision] = []
     remaining = list(pool)
@@ -205,15 +203,11 @@ def select_correlation_aware_candidates(
                     if existing.asset_id in correlations.columns:
                         value = correlations.at[candidate.asset_id, existing.asset_id]
                         if pd.notna(value):
-                            correlation_value = float(
-                                np.asarray(value, dtype=float).item()
-                            )
+                            correlation_value = float(np.asarray(value, dtype=float).item())
                             correlations_to_selected.append(abs(correlation_value))
             max_corr = max(correlations_to_selected, default=None)
             average_corr = (
-                float(np.mean(correlations_to_selected))
-                if correlations_to_selected
-                else 0.0
+                float(np.mean(correlations_to_selected)) if correlations_to_selected else 0.0
             )
             diversification_benefit = max(1.0 - average_corr, 0.0)
             score = _candidate_base_score(candidate) + 0.10 * diversification_benefit
@@ -264,9 +258,8 @@ def _volatility_vector(
     candidates: Sequence[PortfolioCandidate],
     returns: pd.DataFrame,
 ) -> FloatArray:
-    historical = (
-        returns.std(ddof=1).reindex([item.asset_id for item in candidates])
-        * math.sqrt(252)
+    historical = returns.std(ddof=1).reindex([item.asset_id for item in candidates]) * math.sqrt(
+        252
     )
     supplied = [item.volatility_60d for item in candidates]
     values: list[float] = []
@@ -384,9 +377,7 @@ def _hrp(covariance: FloatArray) -> tuple[FloatArray, bool, str]:
     np.fill_diagonal(distance, 0.0)
     order = [
         int(index)
-        for index in leaves_list(
-            linkage(squareform(distance, checks=False), method="single")
-        )
+        for index in leaves_list(linkage(squareform(distance, checks=False), method="single"))
     ]
     weights = pd.Series(1.0, index=order, dtype=float)
     clusters: list[list[int]] = [order]
@@ -475,8 +466,11 @@ def _validate_constraints(
         )
     )
     crypto = float(
-        sum(weight for weight, item in zip(weights, candidates, strict=True)
-            if item.asset_class.lower() == "crypto")
+        sum(
+            weight
+            for weight, item in zip(weights, candidates, strict=True)
+            if item.asset_class.lower() == "crypto"
+        )
     )
     rows.append(
         ConstraintViolation(
@@ -529,13 +523,11 @@ def _turnover_and_cost(
 ) -> tuple[float, float]:
     current = {item.asset_id: item.market_value / config.capital for item in current_positions}
     target = {
-        item.asset_id: float(weight)
-        for item, weight in zip(candidates, weights, strict=True)
+        item.asset_id: float(weight) for item, weight in zip(candidates, weights, strict=True)
     }
     identifiers = set(current) | set(target)
     one_way_turnover = 0.5 * sum(
-        abs(target.get(asset_id, 0.0) - current.get(asset_id, 0.0))
-        for asset_id in identifiers
+        abs(target.get(asset_id, 0.0) - current.get(asset_id, 0.0)) for asset_id in identifiers
     )
     cost = one_way_turnover * config.capital * optimizer_config.transaction_cost_bps / 10_000.0
     return float(one_way_turnover), float(cost)
@@ -577,12 +569,11 @@ def run_optimizer_suite(
 ) -> OptimizerSuiteResult:
     cfg = optimizer_config or OptimizerConfig()
     eligible_pool = [
-        item for item in sorted(candidates, key=lambda row: (row.rank, row.asset_id))
+        item
+        for item in sorted(candidates, key=lambda row: (row.rank, row.asset_id))
         if _eligible(item, portfolio_config)[0]
     ][: cfg.candidate_buffer]
-    provisional = {
-        "positions": [{"asset_id": item.asset_id} for item in eligible_pool]
-    }
+    provisional = {"positions": [{"asset_id": item.asset_id} for item in eligible_pool]}
     pool_returns, _, _ = load_return_matrix(
         provisional,
         history_directory,
@@ -597,7 +588,8 @@ def run_optimizer_suite(
     selected_ids = [item.asset_id for item in selected]
     returns = pool_returns.reindex(columns=selected_ids)
     usable_columns = [
-        column for column in returns.columns
+        column
+        for column in returns.columns
         if int(returns[column].count()) >= cfg.minimum_history_observations
     ]
     if usable_columns:

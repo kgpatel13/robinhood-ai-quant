@@ -105,9 +105,8 @@ def read_candidates(
                     "sector": _first(row, "sector", "gics_sector") or current["sector"],
                     "industry": _first(row, "industry", "gics_industry") or current["industry"],
                     "country": _first(row, "country", "domicile") or current["country"],
-                    "market_cap": finite_number(
-                        _first(row, "market_cap", "market_capitalization")
-                    ) or current["market_cap"],
+                    "market_cap": finite_number(_first(row, "market_cap", "market_capitalization"))
+                    or current["market_cap"],
                     "liquidity_score": current["liquidity_score"],
                     "data_quality_score": current["data_quality_score"],
                 }
@@ -125,9 +124,7 @@ def read_candidates(
             "confidence",
         }
         if reader.fieldnames is None or not required.issubset(reader.fieldnames):
-            raise ValueError(
-                f"Ranked assets are missing required columns: {sorted(required)}"
-            )
+            raise ValueError(f"Ranked assets are missing required columns: {sorted(required)}")
 
         for row in reader:
             asset_id = row["asset_id"]
@@ -160,42 +157,50 @@ def read_candidates(
                     volatility_60d=(
                         row_volatility
                         if row_volatility is not None
-                        else extra["volatility_60d"] if extra else None
+                        else extra["volatility_60d"]
+                        if extra
+                        else None
                     ),
                     price=(
-                        row_price
-                        if row_price is not None
-                        else extra["price"] if extra else None
+                        row_price if row_price is not None else extra["price"] if extra else None
                     ),
                     sector=(
-                        row_sector
-                        if row_sector is not None
-                        else extra["sector"] if extra else None
+                        row_sector if row_sector is not None else extra["sector"] if extra else None
                     ),
                     industry=(
                         row_industry
                         if row_industry is not None
-                        else extra["industry"] if extra else None
+                        else extra["industry"]
+                        if extra
+                        else None
                     ),
                     country=(
                         row_country
                         if row_country is not None
-                        else extra["country"] if extra else None
+                        else extra["country"]
+                        if extra
+                        else None
                     ),
                     market_cap=(
                         row_market_cap
                         if row_market_cap is not None
-                        else extra["market_cap"] if extra else None
+                        else extra["market_cap"]
+                        if extra
+                        else None
                     ),
                     liquidity_score=(
                         finite_number(row.get("liquidity_score"))
                         if finite_number(row.get("liquidity_score")) is not None
-                        else extra["liquidity_score"] if extra else None
+                        else extra["liquidity_score"]
+                        if extra
+                        else None
                     ),
                     data_quality_score=(
                         finite_number(row.get("data_quality_score"))
                         if finite_number(row.get("data_quality_score")) is not None
-                        else extra["data_quality_score"] if extra else None
+                        else extra["data_quality_score"]
+                        if extra
+                        else None
                     ),
                 )
             )
