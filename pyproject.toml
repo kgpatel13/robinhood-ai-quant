@@ -41,6 +41,7 @@ atlas-market = "scripts.atlas_v2_2_market_intelligence:main"
 atlas-history = "scripts.atlas_v2_2_1_history:main"
 atlas-rank = "scripts.atlas_v3_alpha_ranking:main"
 atlas-portfolio = "scripts.atlas_v4_portfolio:main"
+atlas-metadata = "scripts.atlas_v4_metadata:main"
 
 [tool.setuptools]
 packages = [

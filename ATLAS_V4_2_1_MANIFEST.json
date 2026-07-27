@@ -1,0 +1,23 @@
+{
+  "phase": "4.2.1",
+  "name": "Market Metadata Enrichment",
+  "paper_only": true,
+  "added": [
+    "src/atlas/portfolio/metadata.py",
+    "scripts/atlas_v4_metadata.py",
+    "tests/test_atlas_metadata.py",
+    "ATLAS_V4_2_1_INSTALL_README.txt"
+  ],
+  "modified": [
+    "src/atlas/portfolio/io.py",
+    "scripts/atlas_v4_portfolio.py",
+    "pyproject.toml",
+    "tests/test_atlas_portfolio.py"
+  ],
+  "capabilities": [
+    "resumable yfinance stock metadata enrichment",
+    "Atlas crypto taxonomy",
+    "metadata cache merge into portfolio candidates",
+    "sector and industry constraint activation"
+  ]
+}

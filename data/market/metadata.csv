@@ -1,0 +1,659 @@
+asset_id,symbol,asset_class,sector,industry,country,market_cap,source,status
+crypto:avalanche-2,AVAX,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:binancecoin,BNB,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:bitcoin,BTC,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:bitcoin-cash,BCH,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:cardano,ADA,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:chainlink,LINK,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:crypto-com-chain,CRO,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:dai,DAI,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:dogecoin,DOGE,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:ethena-usde,USDE,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:ethereum,ETH,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:global-dollar,USDG,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:hedera-hashgraph,HBAR,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:htx-dao,HTX,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:hyperliquid,HYPE,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:leo-token,LEO,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:litecoin,LTC,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:memecore,M,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:monero,XMR,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:near,NEAR,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:okb,OKB,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:ondo-finance,ONDO,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:pax-gold,PAXG,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:paypal-usd,PYUSD,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:ripple,XRP,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:ripple-usd,RLUSD,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:shiba-inu,SHIB,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:solana,SOL,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:stellar,XLM,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:tether,USDT,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:tether-gold,XAUT,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:the-open-network,GRAM,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:tron,TRX,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:uniswap,UNI,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:usd-coin,USDC,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:usd1-wlfi,USD1,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:usdd,USDD,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:whitebit,WBT,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+crypto:zcash,ZEC,crypto,Digital Assets,Cryptocurrency,Global,,atlas_taxonomy,complete
+stock:A,A,stock,Healthcare,Diagnostics & Research,United States,39136595968.0,yfinance,complete
+stock:AA,AA,stock,Basic Materials,Aluminum,United States,11674582016.0,yfinance,complete
+stock:AACB,AACB,stock,Financial Services,Shell Companies,United States,290864256.0,yfinance,complete
+stock:AACI,AACI,stock,Financial Services,Shell Companies,United States,339617696.0,yfinance,complete
+stock:AACO,AACO,stock,Financial Services,Shell Companies,United States,311107744.0,yfinance,complete
+stock:AACP,AACP,stock,Financial Services,Shell Companies,United States,291907808.0,yfinance,complete
+stock:AADX,AADX,stock,Industrials,Aerospace & Defense,United States,,yfinance,partial
+stock:AAL,AAL,stock,Industrials,Airlines,United States,9582014464.0,yfinance,complete
+stock:AAME,AAME,stock,Financial Services,Insurance - Life,United States,32023650.0,yfinance,complete
+stock:AAMI,AAMI,stock,Financial Services,Asset Management,United States,2881672448.0,yfinance,complete
+stock:AAOI,AAOI,stock,Technology,Communication Equipment,United States,8036313088.0,yfinance,complete
+stock:AAON,AAON,stock,Industrials,Building Products & Equipment,United States,8409875456.0,yfinance,complete
+stock:AAP,AAP,stock,Consumer Cyclical,Auto Parts,United States,3366369792.0,yfinance,complete
+stock:AAPG,AAPG,stock,Healthcare,Biotechnology,China,1707137792.0,yfinance,complete
+stock:AAPL,AAPL,stock,Technology,Consumer Electronics,United States,4891182891008.0,yfinance,complete
+stock:AARD,AARD,stock,Healthcare,Biotechnology,United States,138307888.0,yfinance,complete
+stock:AAT,AAT,stock,Real Estate,REIT - Diversified,United States,1885011072.0,yfinance,complete
+stock:AAUC,AAUC,stock,Basic Materials,Gold,Canada,2639789312.0,yfinance,complete
+stock:ABAT,ABAT,stock,Industrials,Waste Management,United States,301475872.0,yfinance,complete
+stock:ABBV,ABBV,stock,Healthcare,Drug Manufacturers - General,United States,458235346944.0,yfinance,complete
+stock:ABCB,ABCB,stock,Financial Services,Banks - Regional,United States,5887261184.0,yfinance,complete
+stock:ABCL,ABCL,stock,Healthcare,Biotechnology,Canada,1621543296.0,yfinance,complete
+stock:ABEO,ABEO,stock,Healthcare,Biotechnology,United States,344820640.0,yfinance,complete
+stock:ABG,ABG,stock,Consumer Cyclical,Auto & Truck Dealerships,United States,4193698560.0,yfinance,complete
+stock:ABLV,ABLV,stock,Consumer Cyclical,Specialty Retail,China,45932624.0,yfinance,complete
+stock:ABM,ABM,stock,Industrials,Specialty Business Services,United States,2795481856.0,yfinance,complete
+stock:ABNB,ABNB,stock,Consumer Cyclical,Travel Services,United States,83743547392.0,yfinance,complete
+stock:ABOS,ABOS,stock,Healthcare,Biotechnology,United States,153844768.0,yfinance,complete
+stock:ABR,ABR,stock,Real Estate,REIT - Mortgage,United States,1040571776.0,yfinance,complete
+stock:ABSI,ABSI,stock,Healthcare,Biotechnology,United States,1280666496.0,yfinance,complete
+stock:ABT,ABT,stock,Healthcare,Medical Devices,United States,179511263232.0,yfinance,complete
+stock:ABTC,ABTC,stock,Financial Services,Capital Markets,United States,697840000.0,yfinance,complete
+stock:ABTS,ABTS,stock,Financial Services,Capital Markets,Hong Kong,3376049.0,yfinance,complete
+stock:ABUS,ABUS,stock,Healthcare,Biotechnology,United States,865215232.0,yfinance,complete
+stock:ABVC,ABVC,stock,Healthcare,Biotechnology,United States,29900508.0,yfinance,complete
+stock:ABX,ABX,stock,Financial Services,Insurance - Life,United States,995674176.0,yfinance,complete
+stock:ABXL,ABXL,stock,,,,,yfinance,unavailable
+stock:ACA,ACA,stock,Industrials,Engineering & Construction,United States,7120486912.0,yfinance,complete
+stock:ACAA,ACAA,stock,Financial Services,Shell Companies,United States,356825120.0,yfinance,complete
+stock:ACAD,ACAD,stock,Healthcare,Biotechnology,United States,4253499136.0,yfinance,complete
+stock:ACB,ACB,stock,Healthcare,Drug Manufacturers - Specialty & Generic,Canada,165385536.0,yfinance,complete
+stock:ACCL,ACCL,stock,Industrials,Consulting Services,Hong Kong,29713288.0,yfinance,complete
+stock:ACCO,ACCO,stock,Industrials,Business Equipment & Supplies,United States,369031168.0,yfinance,complete
+stock:ACCS,ACCS,stock,Communication Services,Advertising Agencies,United States,25544508.0,yfinance,complete
+stock:ACDC,ACDC,stock,Energy,Oil & Gas Equipment & Services,United States,770722432.0,yfinance,complete
+stock:ACEL,ACEL,stock,Consumer Cyclical,Gambling,United States,979156544.0,yfinance,complete
+stock:ACET,ACET,stock,Healthcare,Biotechnology,United States,72822760.0,yfinance,complete
+stock:ACFN,ACFN,stock,Technology,Scientific & Technical Instruments,United States,51168464.0,yfinance,complete
+stock:ACGC,ACGC,stock,Financial Services,Shell Companies,United States,295244288.0,yfinance,complete
+stock:ACGL,ACGL,stock,Financial Services,Insurance - Diversified,Bermuda,36112908288.0,yfinance,complete
+stock:ACH,ACH,stock,Healthcare,Medical Distribution,United States,240472832.0,yfinance,complete
+stock:ACHC,ACHC,stock,Healthcare,Medical Care Facilities,United States,3173781760.0,yfinance,complete
+stock:ACHR,ACHR,stock,Industrials,Aerospace & Defense,United States,3638865664.0,yfinance,complete
+stock:ACHV,ACHV,stock,Healthcare,Biotechnology,United States,626220224.0,yfinance,complete
+stock:ACI,ACI,stock,Consumer Defensive,Grocery Stores,United States,5402255872.0,yfinance,complete
+stock:ACIC,ACIC,stock,Financial Services,Insurance - Property & Casualty,United States,498210400.0,yfinance,complete
+stock:ACIU,ACIU,stock,Healthcare,Biotechnology,Switzerland,226955072.0,yfinance,complete
+stock:ACIW,ACIW,stock,Technology,Software - Infrastructure,United States,5724562944.0,yfinance,complete
+stock:ACLS,ACLS,stock,Technology,Semiconductor Equipment & Materials,United States,4121415680.0,yfinance,complete
+stock:ACM,ACM,stock,Industrials,Engineering & Construction,United States,9068576768.0,yfinance,complete
+stock:ACMR,ACMR,stock,Technology,Semiconductor Equipment & Materials,United States,5827312128.0,yfinance,complete
+stock:ACN,ACN,stock,Technology,Information Technology Services,Ireland,89949372416.0,yfinance,complete
+stock:ACNB,ACNB,stock,Financial Services,Banks - Regional,United States,634167936.0,yfinance,complete
+stock:ACNT,ACNT,stock,Basic Materials,Chemicals,United States,136703008.0,yfinance,complete
+stock:ACOG,ACOG,stock,Healthcare,Biotechnology,United States,172015424.0,yfinance,complete
+stock:ACON,ACON,stock,Healthcare,Health Information Services,United States,5958645.0,yfinance,complete
+stock:ACP,ACP,stock,Financial Services,Asset Management,United Kingdom,639900480.0,yfinance,complete
+stock:ACR,ACR,stock,Real Estate,REIT - Mortgage,United States,128592264.0,yfinance,complete
+stock:ACRE,ACRE,stock,Real Estate,REIT - Mortgage,United States,252439072.0,yfinance,complete
+stock:ACRS,ACRS,stock,Healthcare,Biotechnology,United States,730441024.0,yfinance,complete
+stock:ACRV,ACRV,stock,Healthcare,Biotechnology,United States,68482768.0,yfinance,complete
+stock:ACT,ACT,stock,Financial Services,Insurance - Specialty,United States,6527730688.0,yfinance,complete
+stock:ACTG,ACTG,stock,Industrials,Business Equipment & Supplies,United States,450105344.0,yfinance,complete
+stock:ACTU,ACTU,stock,Healthcare,Biotechnology,United States,28232504.0,yfinance,complete
+stock:ACV,ACV,stock,Financial Services,Asset Management,United States,278405632.0,yfinance,complete
+stock:ACVA,ACVA,stock,Consumer Cyclical,Auto & Truck Dealerships,United States,1349541248.0,yfinance,complete
+stock:ACXP,ACXP,stock,Healthcare,Biotechnology,United States,6102788.0,yfinance,complete
+stock:AD,AD,stock,Communication Services,Telecom Services,United States,3015130368.0,yfinance,complete
+stock:ADAC,ADAC,stock,Financial Services,Shell Companies,United States,289512480.0,yfinance,complete
+stock:ADAG,ADAG,stock,Healthcare,Biotechnology,China,211432304.0,yfinance,complete
+stock:ADAM,ADAM,stock,Real Estate,REIT - Mortgage,United States,777298496.0,yfinance,complete
+stock:ADAMG,ADAMG,stock,,,United States,,yfinance,partial
+stock:ADAMH,ADAMH,stock,,,United States,,yfinance,partial
+stock:ADAMI,ADAMI,stock,,,,,yfinance,unavailable
+stock:ADAMO,ADAMO,stock,,,,,yfinance,unavailable
+stock:ADBE,ADBE,stock,Technology,Software - Application,United States,89481224192.0,yfinance,complete
+stock:ADC,ADC,stock,Real Estate,REIT - Retail,United States,9711922176.0,yfinance,complete
+stock:ADCT,ADCT,stock,Healthcare,Drug Manufacturers - Specialty & Generic,Switzerland,146269824.0,yfinance,complete
+stock:ADEA,ADEA,stock,Technology,Software - Application,United States,2862123008.0,yfinance,complete
+stock:ADGM,ADGM,stock,Healthcare,Medical Devices,United States,10705442.0,yfinance,complete
+stock:ADI,ADI,stock,Technology,Semiconductors,United States,181128183808.0,yfinance,complete
+stock:ADIL,ADIL,stock,Healthcare,Biotechnology,United States,6083944.0,yfinance,complete
+stock:ADM,ADM,stock,Consumer Defensive,Farm Products,United States,41409703936.0,yfinance,complete
+stock:ADMA,ADMA,stock,Healthcare,Biotechnology,United States,1916760448.0,yfinance,complete
+stock:ADNT,ADNT,stock,Consumer Cyclical,Auto Parts,Ireland,1599633024.0,yfinance,complete
+stock:ADP,ADP,stock,Technology,Software - Application,United States,99969540096.0,yfinance,complete
+stock:ADPT,ADPT,stock,Healthcare,Diagnostics & Research,United States,3564188416.0,yfinance,complete
+stock:ADSE,ADSE,stock,Industrials,Electrical Equipment & Parts,Ireland,902308032.0,yfinance,complete
+stock:ADSK,ADSK,stock,Technology,Software - Application,United States,44287717376.0,yfinance,complete
+stock:ADT,ADT,stock,Industrials,Security & Protection Services,United States,5162060800.0,yfinance,complete
+stock:ADTN,ADTN,stock,Technology,Communication Equipment,United States,797831296.0,yfinance,complete
+stock:ADUR,ADUR,stock,Industrials,Pollution & Treatment Controls,Canada,457574592.0,yfinance,complete
+stock:ADUS,ADUS,stock,Healthcare,Medical Care Facilities,United States,2138050176.0,yfinance,complete
+stock:ADV,ADV,stock,Communication Services,Advertising Agencies,United States,484480000.0,yfinance,complete
+stock:ADX,ADX,stock,Financial Services,Asset Management,United States,3170918144.0,yfinance,complete
+stock:AEC,AEC,stock,Energy,Uranium,Canada,80780944.0,yfinance,complete
+stock:AEFC,AEFC,stock,,,,,yfinance,unavailable
+stock:AEG,AEG,stock,Financial Services,Insurance - Diversified,Netherlands,13499763712.0,yfinance,complete
+stock:AEHL,AEHL,stock,Industrials,Building Products & Equipment,China,9747862.0,yfinance,complete
+stock:AEIS,AEIS,stock,Industrials,Electrical Equipment & Parts,United States,12162838528.0,yfinance,complete
+stock:AEMD,AEMD,stock,Healthcare,Medical Devices,United States,1539842.0,yfinance,complete
+stock:AENT,AENT,stock,Communication Services,Entertainment,United States,301158048.0,yfinance,complete
+stock:AEO,AEO,stock,Consumer Cyclical,Apparel Retail,United States,2848746496.0,yfinance,complete
+stock:AEON,AEON,stock,Healthcare,Biotechnology,United States,11070613.0,yfinance,complete
+stock:AEP,AEP,stock,Utilities,Utilities - Regulated Electric,United States,73747988480.0,yfinance,complete
+stock:AER,AER,stock,Industrials,Rental & Leasing Services,Ireland,23857756160.0,yfinance,complete
+stock:AERT,AERT,stock,Industrials,Consulting Services,Singapore,37707524.0,yfinance,complete
+stock:AES,AES,stock,Utilities,Utilities - Diversified,United States,10583260160.0,yfinance,complete
+stock:AEVA,AEVA,stock,Technology,Software - Infrastructure,United States,1002897728.0,yfinance,complete
+stock:AEYE,AEYE,stock,Technology,Software - Application,United States,70837664.0,yfinance,complete
+stock:AFCG,AFCG,stock,Financial Services,Asset Management,United States,58619292.0,yfinance,complete
+stock:AFG,AFG,stock,Financial Services,Insurance - Property & Casualty,United States,11944454144.0,yfinance,complete
+stock:AFGB,AFGB,stock,,,,,yfinance,unavailable
+stock:AFGC,AFGC,stock,,,,,yfinance,unavailable
+stock:AFGE,AFGE,stock,,,,,yfinance,unavailable
+stock:AFL,AFL,stock,Financial Services,Insurance - Life,United States,63928500224.0,yfinance,complete
+stock:AFRM,AFRM,stock,Financial Services,Credit Services,United States,23519926272.0,yfinance,complete
+stock:AFYA,AFYA,stock,Consumer Defensive,Education & Training Services,Brazil,1271191424.0,yfinance,complete
+stock:AG,AG,stock,Basic Materials,Silver,Canada,8053381632.0,yfinance,complete
+stock:AGCC,AGCC,stock,Consumer Defensive,Beverages - Wineries & Distilleries,Taiwan,339746720.0,yfinance,complete
+stock:AGCO,AGCO,stock,Industrials,Farm & Heavy Construction Machinery,United States,8776637440.0,yfinance,complete
+stock:AGD,AGD,stock,Financial Services,Asset Management,United Kingdom,314730912.0,yfinance,complete
+stock:AGL,AGL,stock,Healthcare,Medical Care Facilities,United States,1635011072.0,yfinance,complete
+stock:AGM,AGM,stock,Financial Services,Credit Services,United States,2272973568.0,yfinance,complete
+stock:AGMB,AGMB,stock,Healthcare,Biotechnology,Belgium,616092160.0,yfinance,complete
+stock:AGMH,AGMH,stock,Technology,Computer Hardware,Hong Kong,2526755.0,yfinance,complete
+stock:AGNT,AGNT,stock,Real Estate,Real Estate Services,United States,664690240.0,yfinance,complete
+stock:AGO,AGO,stock,Financial Services,Insurance - Specialty,Bermuda,3779951104.0,yfinance,complete
+stock:AGRO,AGRO,stock,Consumer Defensive,Farm Products,Luxembourg,1526783488.0,yfinance,complete
+stock:AGX,AGX,stock,Industrials,Engineering & Construction,United States,7975830016.0,yfinance,complete
+stock:AHL-D,AHL-D,stock,,,,,yfinance,unavailable
+stock:AHMA,AHMA,stock,Consumer Cyclical,Travel Services,United Arab Emirates,47262752.0,yfinance,complete
+stock:AHR,AHR,stock,Real Estate,REIT - Healthcare Facilities,United States,11874128896.0,yfinance,complete
+stock:AHRT,AHRT,stock,Real Estate,REIT - Diversified,United States,683819456.0,yfinance,complete
+stock:AHT,AHT,stock,Real Estate,REIT - Hotel & Motel,United States,21715202.0,yfinance,complete
+stock:AIB,AIB,stock,Technology,Software - Application,United States,134483648.0,yfinance,complete
+stock:AIBZ,AIBZ,stock,Technology,Software - Infrastructure,Canada,323180640.0,yfinance,complete
+stock:AIFA,AIFA,stock,Technology,Software - Infrastructure,United States,12244840.0,yfinance,complete
+stock:AIFF,AIFF,stock,Technology,Software - Application,United States,17322462.0,yfinance,complete
+stock:AIFU,AIFU,stock,Financial Services,Insurance Brokers,China,201414752.0,yfinance,complete
+stock:AIG,AIG,stock,Financial Services,Insurance - Diversified,United States,41918103552.0,yfinance,complete
+stock:AII,AII,stock,Financial Services,Insurance - Property & Casualty,United States,365760544.0,yfinance,complete
+stock:AIIA,AIIA,stock,Financial Services,Shell Companies,United States,196950896.0,yfinance,complete
+stock:AIIO,AIIO,stock,Consumer Cyclical,Auto Manufacturers,United Arab Emirates,435727424.0,yfinance,complete
+stock:AIM,AIM,stock,Healthcare,Biotechnology,United States,6903336.0,yfinance,complete
+stock:AIMD,AIMD,stock,Technology,Scientific & Technical Instruments,United States,10310359.0,yfinance,complete
+stock:AIN,AIN,stock,Consumer Cyclical,Textile Manufacturing,United States,2140516224.0,yfinance,complete
+stock:AIP,AIP,stock,Technology,Semiconductors,United States,1397164288.0,yfinance,complete
+stock:AIRG,AIRG,stock,Technology,Communication Equipment,United States,74280072.0,yfinance,complete
+stock:AIRI,AIRI,stock,Industrials,Aerospace & Defense,United States,13193790.0,yfinance,complete
+stock:AIRJ,AIRJ,stock,Industrials,Building Products & Equipment,United States,301910464.0,yfinance,complete
+stock:AIRO,AIRO,stock,Industrials,Aerospace & Defense,United States,213830384.0,yfinance,complete
+stock:AIRT,AIRT,stock,Industrials,Conglomerates,United States,72944096.0,yfinance,complete
+stock:AISP,AISP,stock,Technology,Software - Infrastructure,United States,69223512.0,yfinance,complete
+stock:AIT,AIT,stock,Industrials,Industrial Distribution,United States,12827177984.0,yfinance,complete
+stock:AIZ,AIZ,stock,Financial Services,Insurance - Property & Casualty,United States,13721722880.0,yfinance,complete
+stock:AIZN,AIZN,stock,,,,,yfinance,unavailable
+stock:AJG,AJG,stock,Financial Services,Insurance Brokers,United States,63662522368.0,yfinance,complete
+stock:AKAM,AKAM,stock,Technology,Software - Infrastructure,United States,16773120000.0,yfinance,complete
+stock:AKAN,AKAN,stock,Healthcare,Drug Manufacturers - Specialty & Generic,Canada,4180701.0,yfinance,complete
+stock:AKO.A,AKO.A,stock,,,,,yfinance,unavailable
+stock:AKO.B,AKO.B,stock,,,,,yfinance,unavailable
+stock:AKTS,AKTS,stock,Healthcare,Biotechnology,United States,1320578176.0,yfinance,complete
+stock:ALAB,ALAB,stock,Technology,Semiconductors,United States,49979121664.0,yfinance,complete
+stock:ALB,ALB,stock,Basic Materials,Specialty Chemicals,United States,13544794112.0,yfinance,complete
+stock:ALDF,ALDF,stock,Financial Services,Shell Companies,United States,320784608.0,yfinance,complete
+stock:ALF,ALF,stock,Financial Services,Shell Companies,United States,391000000.0,yfinance,complete
+stock:ALGM,ALGM,stock,Technology,Semiconductors,United States,8575805440.0,yfinance,complete
+stock:ALGS,ALGS,stock,Healthcare,Biotechnology,United States,25247950.0,yfinance,complete
+stock:ALGT,ALGT,stock,Industrials,Airlines,United States,2636145152.0,yfinance,complete
+stock:ALH,ALH,stock,Consumer Cyclical,"Furnishings, Fixtures & Appliances",United States,5094311936.0,yfinance,complete
+stock:ALHC,ALHC,stock,Healthcare,Healthcare Plans,United States,4016838144.0,yfinance,complete
+stock:ALL,ALL,stock,Financial Services,Insurance - Property & Casualty,United States,66921717760.0,yfinance,complete
+stock:ALLE,ALLE,stock,Industrials,Security & Protection Services,Ireland,13041241088.0,yfinance,complete
+stock:ALLY,ALLY,stock,Financial Services,Credit Services,United States,13056249856.0,yfinance,complete
+stock:ALMR,ALMR,stock,Healthcare,Medical Devices,United States,1793773440.0,yfinance,complete
+stock:ALOY,ALOY,stock,Basic Materials,Other Industrial Metals & Mining,United States,479323072.0,yfinance,complete
+stock:ALP,ALP,stock,Financial Services,Asset Management,British Virgin Islands,5083428.0,yfinance,complete
+stock:ALRM,ALRM,stock,Technology,Software - Application,United States,2561069056.0,yfinance,complete
+stock:ALRS,ALRS,stock,Financial Services,Banks - Regional,United States,821706752.0,yfinance,complete
+stock:ALTI,ALTI,stock,Financial Services,Asset Management,United States,517016832.0,yfinance,complete
+stock:ALTO,ALTO,stock,Basic Materials,Specialty Chemicals,United States,359535264.0,yfinance,complete
+stock:ALUB,ALUB,stock,Financial Services,Shell Companies,United States,360812512.0,yfinance,complete
+stock:ALV,ALV,stock,Consumer Cyclical,Auto Parts,Sweden,8604640256.0,yfinance,complete
+stock:ALXO,ALXO,stock,Healthcare,Biotechnology,United States,273162720.0,yfinance,complete
+stock:AMAL,AMAL,stock,Financial Services,Banks - Regional,United States,1476641664.0,yfinance,complete
+stock:AMBO,AMBO,stock,Consumer Defensive,Education & Training Services,United States,6407121.0,yfinance,complete
+stock:AMBQ,AMBQ,stock,Technology,Semiconductors,United States,1696941312.0,yfinance,complete
+stock:AMC,AMC,stock,Communication Services,Entertainment,United States,2026212480.0,yfinance,complete
+stock:AMCR,AMCR,stock,Consumer Cyclical,Packaging & Containers,Switzerland,20592877568.0,yfinance,complete
+stock:AMCX,AMCX,stock,Communication Services,Entertainment,United States,430052288.0,yfinance,complete
+stock:AME,AME,stock,Industrials,Specialty Industrial Machinery,United States,55460253696.0,yfinance,complete
+stock:AMGN,AMGN,stock,Healthcare,Drug Manufacturers - General,United States,202951901184.0,yfinance,complete
+stock:AMH,AMH,stock,Real Estate,REIT - Residential,United States,13680098304.0,yfinance,complete
+stock:AMIX,AMIX,stock,Healthcare,Medical Devices,United States,1585560.0,yfinance,complete
+stock:AMLX,AMLX,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,2046940160.0,yfinance,complete
+stock:AMOD,AMOD,stock,Technology,Software - Application,United States,18433522.0,yfinance,complete
+stock:AMPG,AMPG,stock,Technology,Communication Equipment,United States,136956224.0,yfinance,complete
+stock:AMPH,AMPH,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,825419456.0,yfinance,complete
+stock:AMPX,AMPX,stock,Industrials,Electrical Equipment & Parts,United States,1308635008.0,yfinance,complete
+stock:AMPY,AMPY,stock,Energy,Oil & Gas E&P,United States,162672496.0,yfinance,complete
+stock:AMRC,AMRC,stock,Industrials,Engineering & Construction,United States,1151693312.0,yfinance,complete
+stock:AMRX,AMRX,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,5722418176.0,yfinance,complete
+stock:AMRZ,AMRZ,stock,Basic Materials,Building Materials,Switzerland,27261679616.0,yfinance,complete
+stock:AMS,AMS,stock,Healthcare,Medical Care Facilities,United States,9672500.0,yfinance,complete
+stock:AMSC,AMSC,stock,Industrials,Specialty Industrial Machinery,United States,1479069696.0,yfinance,complete
+stock:AMSF,AMSF,stock,Financial Services,Insurance - Specialty,United States,568781696.0,yfinance,complete
+stock:AMT,AMT,stock,Real Estate,REIT - Specialty,United States,77650395136.0,yfinance,complete
+stock:AMTM,AMTM,stock,Industrials,Specialty Business Services,United States,5509332992.0,yfinance,complete
+stock:AMTX,AMTX,stock,Basic Materials,Specialty Chemicals,United States,118567512.0,yfinance,complete
+stock:AMZE,AMZE,stock,Technology,Software - Application,United States,678978.0,yfinance,complete
+stock:AMZN,AMZN,stock,Consumer Cyclical,Internet Retail,United States,2496832733184.0,yfinance,complete
+stock:AN,AN,stock,Consumer Cyclical,Auto & Truck Dealerships,United States,6966013952.0,yfinance,complete
+stock:ANDE,ANDE,stock,Consumer Defensive,Food Distribution,United States,2646340608.0,yfinance,complete
+stock:ANDG,ANDG,stock,Consumer Cyclical,Personal Services,United States,4816639488.0,yfinance,complete
+stock:ANF,ANF,stock,Consumer Cyclical,Apparel Retail,United States,4168138752.0,yfinance,complete
+stock:ANGH,ANGH,stock,Communication Services,Entertainment,United Arab Emirates,30729700.0,yfinance,complete
+stock:ANGI,ANGI,stock,Communication Services,Internet Content & Information,United States,223677536.0,yfinance,complete
+stock:ANGO,ANGO,stock,Healthcare,Medical Instruments & Supplies,United States,561707136.0,yfinance,complete
+stock:ANIK,ANIK,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,198919072.0,yfinance,complete
+stock:ANIX,ANIX,stock,Healthcare,Biotechnology,United States,125885336.0,yfinance,complete
+stock:ANSC,ANSC,stock,Financial Services,Shell Companies,United States,475715840.0,yfinance,complete
+stock:ANTX,ANTX,stock,Healthcare,Biotechnology,United States,177199504.0,yfinance,complete
+stock:ANY,ANY,stock,Financial Services,Capital Markets,United States,14595775.0,yfinance,complete
+stock:AOD,AOD,stock,Financial Services,Asset Management,United Kingdom,1096643456.0,yfinance,complete
+stock:AOMD,AOMD,stock,,,,,yfinance,unavailable
+stock:AOMN,AOMN,stock,,,,,yfinance,unavailable
+stock:AOMR,AOMR,stock,Real Estate,REIT - Mortgage,United States,219248912.0,yfinance,complete
+stock:AON,AON,stock,Financial Services,Insurance Brokers,Ireland,77250781184.0,yfinance,complete
+stock:AOSL,AOSL,stock,Technology,Semiconductors,United States,923327488.0,yfinance,complete
+stock:AOUT,AOUT,stock,Consumer Cyclical,Leisure,United States,161967200.0,yfinance,complete
+stock:AP,AP,stock,Industrials,Metal Fabrication,United States,166676384.0,yfinance,complete
+stock:APA,APA,stock,Energy,Oil & Gas E&P,United States,12777950208.0,yfinance,complete
+stock:APAC,APAC,stock,Financial Services,Shell Companies,United States,81872744.0,yfinance,complete
+stock:APAM,APAM,stock,Financial Services,Asset Management,United States,2792874752.0,yfinance,complete
+stock:APC,APC,stock,Energy,Oil & Gas Refining & Marketing,United States,1719937792.0,yfinance,complete
+stock:APGE,APGE,stock,Healthcare,Biotechnology,United States,10155169792.0,yfinance,complete
+stock:API,API,stock,Technology,Software - Application,United States,325516672.0,yfinance,complete
+stock:APLD,APLD,stock,Technology,Information Technology Services,United States,7770073600.0,yfinance,complete
+stock:APLM,APLM,stock,Healthcare,Biotechnology,United States,39990104.0,yfinance,complete
+stock:APO,APO,stock,Financial Services,Asset Management,United States,70686810112.0,yfinance,complete
+stock:APOG,APOG,stock,Industrials,Building Products & Equipment,United States,850174336.0,yfinance,complete
+stock:APP,APP,stock,Communication Services,Advertising Agencies,United States,131681574912.0,yfinance,complete
+stock:APPF,APPF,stock,Technology,Software - Application,United States,5845574656.0,yfinance,complete
+stock:APPN,APPN,stock,Technology,Software - Infrastructure,United States,1743537792.0,yfinance,complete
+stock:APT,APT,stock,Industrials,Building Products & Equipment,Canada,50369472.0,yfinance,complete
+stock:APTV,APTV,stock,Consumer Cyclical,Auto Parts,Switzerland,11967140864.0,yfinance,complete
+stock:APUR,APUR,stock,Financial Services,Shell Companies,United States,146599344.0,yfinance,complete
+stock:APUS,APUS,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,8526511.0,yfinance,complete
+stock:APXT,APXT,stock,Financial Services,Shell Companies,United States,465533440.0,yfinance,complete
+stock:APYX,APYX,stock,Healthcare,Medical Devices,United States,165072576.0,yfinance,complete
+stock:AQB,AQB,stock,Consumer Defensive,Farm Products,United States,4683956.0,yfinance,complete
+stock:AQMS,AQMS,stock,Industrials,Waste Management,United States,9633833.0,yfinance,complete
+stock:AQNB,AQNB,stock,,,,,yfinance,unavailable
+stock:ARAY,ARAY,stock,Healthcare,Medical Devices,United States,28360944.0,yfinance,complete
+stock:ARBB,ARBB,stock,Technology,Information Technology Services,Singapore,7361117.0,yfinance,complete
+stock:ARBE,ARBE,stock,Technology,Scientific & Technical Instruments,Israel,83119728.0,yfinance,complete
+stock:ARCB,ARCB,stock,Industrials,Trucking,United States,3435301376.0,yfinance,complete
+stock:ARCC,ARCC,stock,Financial Services,Asset Management,United States,13484469248.0,yfinance,complete
+stock:ARCL,ARCL,stock,Financial Services,Shell Companies,United States,177536688.0,yfinance,complete
+stock:ARCO,ARCO,stock,Consumer Cyclical,Restaurants,Uruguay,1731650432.0,yfinance,complete
+stock:ARCT,ARCT,stock,Healthcare,Biotechnology,United States,157179568.0,yfinance,complete
+stock:ARDX,ARDX,stock,Healthcare,Biotechnology,United States,1242557952.0,yfinance,complete
+stock:ARE,ARE,stock,Real Estate,REIT - Office,United States,8877286400.0,yfinance,complete
+stock:AREC,AREC,stock,Basic Materials,Coking Coal,United States,186130016.0,yfinance,complete
+stock:ARES,ARES,stock,Financial Services,Asset Management,United States,41728897024.0,yfinance,complete
+stock:ARIS,ARIS,stock,Basic Materials,Gold,Canada,3025824000.0,yfinance,complete
+stock:ARKO,ARKO,stock,Consumer Cyclical,Specialty Retail,United States,889632768.0,yfinance,complete
+stock:ARLO,ARLO,stock,Industrials,Building Products & Equipment,United States,1397808256.0,yfinance,complete
+stock:ARMK,ARMK,stock,Industrials,Specialty Business Services,United States,15035684864.0,yfinance,complete
+stock:AROW,AROW,stock,Financial Services,Banks - Regional,United States,652069824.0,yfinance,complete
+stock:ARQ,ARQ,stock,Industrials,Pollution & Treatment Controls,United States,86925672.0,yfinance,complete
+stock:ARQT,ARQT,stock,Healthcare,Biotechnology,United States,3421030400.0,yfinance,complete
+stock:ARR,ARR,stock,Real Estate,REIT - Mortgage,United States,2018230272.0,yfinance,complete
+stock:ARTC,ARTC,stock,,,United States,,yfinance,partial
+stock:ARTL,ARTL,stock,Healthcare,Biotechnology,United States,3555250.0,yfinance,complete
+stock:ARTV,ARTV,stock,Healthcare,Biotechnology,United States,487339648.0,yfinance,complete
+stock:ARTW,ARTW,stock,Industrials,Farm & Heavy Construction Machinery,United States,11391036.0,yfinance,complete
+stock:ARWR,ARWR,stock,Healthcare,Biotechnology,United States,12057361408.0,yfinance,complete
+stock:ARXS,ARXS,stock,Industrials,Aerospace & Defense,United States,17398192128.0,yfinance,complete
+stock:ASA,ASA,stock,Financial Services,Asset Management,United States,948228160.0,yfinance,complete
+stock:ASAN,ASAN,stock,Technology,Software - Application,United States,1581297408.0,yfinance,complete
+stock:ASBP,ASBP,stock,Healthcare,Biotechnology,United States,9403399.0,yfinance,complete
+stock:ASC,ASC,stock,Industrials,Marine Shipping,Bermuda,677731456.0,yfinance,complete
+stock:ASH,ASH,stock,Basic Materials,Specialty Chemicals,United States,3040308480.0,yfinance,complete
+stock:ASIX,ASIX,stock,Basic Materials,Chemicals,United States,567487680.0,yfinance,complete
+stock:ASM,ASM,stock,Basic Materials,Other Precious Metals & Mining,Canada,986775872.0,yfinance,complete
+stock:ASMB,ASMB,stock,Healthcare,Biotechnology,United States,506330720.0,yfinance,complete
+stock:ASML,ASML,stock,Technology,Semiconductor Equipment & Materials,Netherlands,674898247680.0,yfinance,complete
+stock:ASO,ASO,stock,Consumer Cyclical,Specialty Retail,United States,2888815872.0,yfinance,complete
+stock:ASPN,ASPN,stock,Industrials,Building Products & Equipment,United States,387037728.0,yfinance,complete
+stock:ASPS,ASPS,stock,Real Estate,Real Estate Services,Luxembourg,65417908.0,yfinance,complete
+stock:ASR,ASR,stock,Industrials,Airports & Air Services,Mexico,8041387008.0,yfinance,complete
+stock:ASST,ASST,stock,Financial Services,Asset Management,United States,961368000.0,yfinance,complete
+stock:ASTC,ASTC,stock,Technology,Scientific & Technical Instruments,United States,14465160.0,yfinance,complete
+stock:ASTH,ASTH,stock,Healthcare,Medical Care Facilities,United States,1998707584.0,yfinance,complete
+stock:ASTI,ASTI,stock,Technology,Solar,United States,28958472.0,yfinance,complete
+stock:ASTS,ASTS,stock,Technology,Communication Equipment,United States,21812600832.0,yfinance,complete
+stock:ATAI,ATAI,stock,Healthcare,Biotechnology,United States,2656272640.0,yfinance,complete
+stock:ATCX,ATCX,stock,,,,14942364.0,yfinance,partial
+stock:ATEC,ATEC,stock,Healthcare,Medical Devices,United States,1270299776.0,yfinance,complete
+stock:ATER,ATER,stock,Consumer Cyclical,"Furnishings, Fixtures & Appliances",United States,4350613.0,yfinance,complete
+stock:ATHR,ATHR,stock,Technology,Software - Application,United States,50522076.0,yfinance,complete
+stock:ATII,ATII,stock,Financial Services,Shell Companies,United States,316169152.0,yfinance,complete
+stock:ATKR,ATKR,stock,Industrials,Electrical Equipment & Parts,United States,2587585280.0,yfinance,complete
+stock:ATLCL,ATLCL,stock,,,,,yfinance,unavailable
+stock:ATLCZ,ATLCZ,stock,,,,,yfinance,unavailable
+stock:ATLX,ATLX,stock,Basic Materials,Other Industrial Metals & Mining,Brazil,82279576.0,yfinance,complete
+stock:ATMP,ATMP,stock,,,,,yfinance,unavailable
+stock:ATMU,ATMU,stock,Consumer Cyclical,Auto Parts,United States,4374375424.0,yfinance,complete
+stock:ATNI,ATNI,stock,Communication Services,Telecom Services,United States,360681024.0,yfinance,complete
+stock:ATOM,ATOM,stock,Technology,Semiconductor Equipment & Materials,United States,200551456.0,yfinance,complete
+stock:ATRC,ATRC,stock,Healthcare,Medical Instruments & Supplies,United States,1774459520.0,yfinance,complete
+stock:ATS,ATS,stock,Industrials,Specialty Industrial Machinery,Canada,2562928640.0,yfinance,complete
+stock:ATXG,ATXG,stock,Industrials,Integrated Freight & Logistics,China,3816309.0,yfinance,complete
+stock:ATYR,ATYR,stock,Healthcare,Biotechnology,United States,46407640.0,yfinance,complete
+stock:AU,AU,stock,Basic Materials,Gold,United States,40292794368.0,yfinance,complete
+stock:AUB,AUB,stock,Financial Services,Banks - Regional,United States,5993457152.0,yfinance,complete
+stock:AUC,AUC,stock,Financial Services,Capital Markets,United States,82403848.0,yfinance,complete
+stock:AUST,AUST,stock,Basic Materials,Gold,Canada,13008351.0,yfinance,complete
+stock:AVA,AVA,stock,Utilities,Utilities - Diversified,United States,3474946048.0,yfinance,complete
+stock:AVAH,AVAH,stock,Healthcare,Medical Care Facilities,United States,2057786624.0,yfinance,complete
+stock:AVAV,AVAV,stock,Industrials,Aerospace & Defense,United States,7566406656.0,yfinance,complete
+stock:AVBH,AVBH,stock,Financial Services,Banks - Regional,United States,349031616.0,yfinance,complete
+stock:AVBP,AVBP,stock,Healthcare,Biotechnology,United States,1477822464.0,yfinance,complete
+stock:AVEX,AVEX,stock,Industrials,Aerospace & Defense,United States,806961024.0,yfinance,complete
+stock:AVLN,AVLN,stock,Healthcare,Biotechnology,United States,1239110016.0,yfinance,complete
+stock:AVNS,AVNS,stock,Healthcare,Medical Devices,United States,1170726912.0,yfinance,complete
+stock:AVNT,AVNT,stock,Basic Materials,Specialty Chemicals,United States,3448302080.0,yfinance,complete
+stock:AVNW,AVNW,stock,Technology,Communication Equipment,United States,262024128.0,yfinance,complete
+stock:AVPT,AVPT,stock,Technology,Software - Infrastructure,United States,2595090432.0,yfinance,complete
+stock:AVT,AVT,stock,Technology,Electronics & Computer Distribution,United States,7334593024.0,yfinance,complete
+stock:AVTR,AVTR,stock,Healthcare,Medical Instruments & Supplies,United States,7810721280.0,yfinance,complete
+stock:AVX,AVX,stock,Technology,Software - Infrastructure,United States,25839342.0,yfinance,complete
+stock:AVY,AVY,stock,Consumer Cyclical,Packaging & Containers,United States,12307302400.0,yfinance,complete
+stock:AWF,AWF,stock,Financial Services,Asset Management,United States,867470592.0,yfinance,complete
+stock:AWI,AWI,stock,Industrials,Building Products & Equipment,United States,6858915840.0,yfinance,complete
+stock:AWX,AWX,stock,Industrials,Waste Management,United States,10060145.0,yfinance,complete
+stock:AX,AX,stock,Financial Services,Banks - Regional,United States,5451254784.0,yfinance,complete
+stock:AXG,AXG,stock,Financial Services,Capital Markets,Hong Kong,601834112.0,yfinance,complete
+stock:AXON,AXON,stock,Industrials,Aerospace & Defense,United States,40489648128.0,yfinance,complete
+stock:AXP,AXP,stock,Financial Services,Credit Services,United States,222554439680.0,yfinance,complete
+stock:AXR,AXR,stock,Real Estate,Real Estate - Development,United States,134805104.0,yfinance,complete
+stock:AXS,AXS,stock,Financial Services,Insurance - Specialty,Bermuda,8588756480.0,yfinance,complete
+stock:AXSM,AXSM,stock,Healthcare,Biotechnology,United States,12401804288.0,yfinance,complete
+stock:AYA,AYA,stock,Basic Materials,Silver,Canada,2823990016.0,yfinance,complete
+stock:AYTU,AYTU,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,23183730.0,yfinance,complete
+stock:AZ,AZ,stock,Technology,Software - Application,Canada,248934800.0,yfinance,complete
+stock:AZIO,AZIO,stock,Technology,Software - Infrastructure,United States,25703086.0,yfinance,complete
+stock:AZN,AZN,stock,Healthcare,Drug Manufacturers - General,United Kingdom,262501416960.0,yfinance,complete
+stock:AZO,AZO,stock,Consumer Cyclical,Auto Parts,United States,48280768512.0,yfinance,complete
+stock:AZZ,AZZ,stock,Industrials,Specialty Business Services,United States,4504719872.0,yfinance,complete
+stock:B,B,stock,Basic Materials,Gold,Canada,62327672832.0,yfinance,complete
+stock:BA,BA,stock,Industrials,Aerospace & Defense,United States,165165105152.0,yfinance,complete
+stock:BAC,BAC,stock,Financial Services,Banks - Diversified,United States,440343461888.0,yfinance,complete
+stock:BAER,BAER,stock,Industrials,Security & Protection Services,United States,106629632.0,yfinance,complete
+stock:BALY,BALY,stock,Consumer Cyclical,Resorts & Casinos,United States,671577472.0,yfinance,complete
+stock:BAM,BAM,stock,Financial Services,Asset Management,United States,74011049984.0,yfinance,complete
+stock:BAND,BAND,stock,Technology,Software - Infrastructure,United States,1914635008.0,yfinance,complete
+stock:BANF,BANF,stock,Financial Services,Banks - Regional,United States,3915501056.0,yfinance,complete
+stock:BANL,BANL,stock,Energy,Oil & Gas Midstream,Malaysia,10599208.0,yfinance,complete
+stock:BANX,BANX,stock,Financial Services,Asset Management,United States,190324800.0,yfinance,complete
+stock:BAOS,BAOS,stock,Communication Services,Advertising Agencies,China,1795349.0,yfinance,complete
+stock:BAR,BAR,stock,,,,,yfinance,unavailable
+stock:BARK,BARK,stock,Consumer Cyclical,Specialty Retail,United States,74827656.0,yfinance,complete
+stock:BATL,BATL,stock,Energy,Oil & Gas E&P,United States,35890724.0,yfinance,complete
+stock:BATRA,BATRA,stock,Communication Services,Entertainment,United States,3530476032.0,yfinance,complete
+stock:BATRK,BATRK,stock,Communication Services,Entertainment,United States,3225151232.0,yfinance,complete
+stock:BBAI,BBAI,stock,Technology,Information Technology Services,United States,1321900416.0,yfinance,complete
+stock:BBAR,BBAR,stock,Financial Services,Banks - Regional,Argentina,3851904000.0,yfinance,complete
+stock:BBBY,BBBY,stock,,,,472510784.0,yfinance,partial
+stock:BBCQ,BBCQ,stock,Financial Services,Shell Companies,United States,392916640.0,yfinance,complete
+stock:BBDC,BBDC,stock,Financial Services,Asset Management,United States,861737600.0,yfinance,complete
+stock:BBGI,BBGI,stock,Communication Services,Broadcasting,United States,37138944.0,yfinance,complete
+stock:BBLG,BBLG,stock,Healthcare,Biotechnology,United States,1920928.0,yfinance,complete
+stock:BBOT,BBOT,stock,Healthcare,Biotechnology,United States,706544640.0,yfinance,complete
+stock:BBSI,BBSI,stock,Industrials,Staffing & Employment Services,United States,976123200.0,yfinance,complete
+stock:BBT,BBT,stock,Financial Services,Banks - Regional,United States,2526216960.0,yfinance,complete
+stock:BBUC,BBUC,stock,Industrials,Conglomerates,Bermuda,6423986176.0,yfinance,complete
+stock:BBW,BBW,stock,Consumer Cyclical,Specialty Retail,United States,422511840.0,yfinance,complete
+stock:BC,BC,stock,Consumer Cyclical,Recreational Vehicles,United States,5192757248.0,yfinance,complete
+stock:BCAB,BCAB,stock,Healthcare,Biotechnology,United States,5592697.0,yfinance,complete
+stock:BCAR,BCAR,stock,Financial Services,Shell Companies,United States,426420000.0,yfinance,complete
+stock:BCAX,BCAX,stock,Healthcare,Biotechnology,United States,1775318400.0,yfinance,complete
+stock:BCBP,BCBP,stock,Financial Services,Banks - Regional,United States,176062400.0,yfinance,complete
+stock:BCH,BCH,stock,Financial Services,Banks - Regional,Chile,20567078912.0,yfinance,complete
+stock:BCHT,BCHT,stock,Industrials,Pollution & Treatment Controls,United States,36828352.0,yfinance,complete
+stock:BCIC,BCIC,stock,Financial Services,Asset Management,United States,86889920.0,yfinance,complete
+stock:BCML,BCML,stock,Financial Services,Banks - Regional,United States,345825344.0,yfinance,complete
+stock:BCO,BCO,stock,Industrials,Security & Protection Services,United States,5024085504.0,yfinance,complete
+stock:BCRX,BCRX,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,2373879296.0,yfinance,complete
+stock:BCSF,BCSF,stock,Financial Services,Asset Management,United States,801774720.0,yfinance,complete
+stock:BCSS,BCSS,stock,Financial Services,Shell Companies,United States,597140032.0,yfinance,complete
+stock:BCV,BCV,stock,Financial Services,Asset Management,United States,136467168.0,yfinance,complete
+stock:BDC,BDC,stock,Technology,Communication Equipment,United States,4001889536.0,yfinance,complete
+stock:BDCI,BDCI,stock,Financial Services,Shell Companies,United States,350246400.0,yfinance,complete
+stock:BDCZ,BDCZ,stock,,,,,yfinance,unavailable
+stock:BDL,BDL,stock,Consumer Cyclical,Restaurants,United States,73305032.0,yfinance,complete
+stock:BDN,BDN,stock,Real Estate,REIT - Office,United States,550666560.0,yfinance,complete
+stock:BDTX,BDTX,stock,Healthcare,Biotechnology,United States,100851128.0,yfinance,complete
+stock:BDX,BDX,stock,Healthcare,Medical Instruments & Supplies,United States,43083501568.0,yfinance,complete
+stock:BEAG,BEAG,stock,Financial Services,Shell Companies,United States,334166208.0,yfinance,complete
+stock:BEAM,BEAM,stock,Healthcare,Biotechnology,United States,2582268416.0,yfinance,complete
+stock:BEEM,BEEM,stock,Technology,Solar,United States,22423602.0,yfinance,complete
+stock:BEEP,BEEP,stock,Industrials,Infrastructure Operations,United States,71262960.0,yfinance,complete
+stock:BENF,BENF,stock,Financial Services,Asset Management,United States,47087820.0,yfinance,complete
+stock:BEPC,BEPC,stock,Utilities,Utilities - Renewable,United States,6115254272.0,yfinance,complete
+stock:BEPH,BEPH,stock,,,,,yfinance,unavailable
+stock:BEPI,BEPI,stock,,,,,yfinance,unavailable
+stock:BEPJ,BEPJ,stock,,,,,yfinance,unavailable
+stock:BETA,BETA,stock,Industrials,Aerospace & Defense,United States,4356878848.0,yfinance,complete
+stock:BETR,BETR,stock,Financial Services,Mortgage Finance,United States,411550848.0,yfinance,complete
+stock:BFC,BFC,stock,Financial Services,Banks - Regional,United States,1670829952.0,yfinance,complete
+stock:BFH,BFH,stock,Financial Services,Credit Services,United States,4214860800.0,yfinance,complete
+stock:BFRI,BFRI,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,13955645.0,yfinance,complete
+stock:BFS,BFS,stock,Real Estate,REIT - Retail,United States,1232660096.0,yfinance,complete
+stock:BFST,BFST,stock,Financial Services,Banks - Regional,United States,1018245504.0,yfinance,complete
+stock:BG,BG,stock,Consumer Defensive,Farm Products,United States,23579021312.0,yfinance,complete
+stock:BGB,BGB,stock,Financial Services,Asset Management,United States,500401888.0,yfinance,complete
+stock:BGC,BGC,stock,Financial Services,Capital Markets,United States,5581009920.0,yfinance,complete
+stock:BGH,BGH,stock,Financial Services,Asset Management,United States,280551296.0,yfinance,complete
+stock:BGIN,BGIN,stock,Technology,Computer Hardware,Singapore,226271888.0,yfinance,complete
+stock:BGL,BGL,stock,Basic Materials,Gold,Cayman Islands,9006759.0,yfinance,complete
+stock:BGM,BGM,stock,Healthcare,Drug Manufacturers - Specialty & Generic,China,116060584.0,yfinance,complete
+stock:BGMS,BGMS,stock,Healthcare,Biotechnology,Malaysia,5050302.0,yfinance,complete
+stock:BGS,BGS,stock,Consumer Defensive,Packaged Foods,United States,284896160.0,yfinance,complete
+stock:BGX,BGX,stock,Financial Services,Asset Management,United States,135343120.0,yfinance,complete
+stock:BH.A,BH.A,stock,,,,,yfinance,unavailable
+stock:BHC,BHC,stock,Healthcare,Drug Manufacturers - Specialty & Generic,Canada,1654497024.0,yfinance,complete
+stock:BHE,BHE,stock,Technology,Electronic Components,United States,2909627648.0,yfinance,complete
+stock:BHM,BHM,stock,Real Estate,REIT - Residential,United States,95928936.0,yfinance,complete
+stock:BHR,BHR,stock,Real Estate,REIT - Hotel & Motel,United States,164871312.0,yfinance,complete
+stock:BHRB,BHRB,stock,Financial Services,Banks - Regional,United States,1419956864.0,yfinance,complete
+stock:BHV,BHV,stock,Financial Services,Asset Management,United States,19902112.0,yfinance,complete
+stock:BIAF,BIAF,stock,Healthcare,Diagnostics & Research,United States,4146192.0,yfinance,complete
+stock:BILL,BILL,stock,Technology,Software - Application,United States,4333453312.0,yfinance,complete
+stock:BIO,BIO,stock,Healthcare,Medical Devices,United States,8415451648.0,yfinance,complete
+stock:BIPC,BIPC,stock,Utilities,Utilities - Regulated Gas,United States,5111492608.0,yfinance,complete
+stock:BIPI,BIPI,stock,,,,,yfinance,unavailable
+stock:BIPJ,BIPJ,stock,,,,,yfinance,unavailable
+stock:BIRD,BIRD,stock,Consumer Cyclical,Apparel Retail,United States,21662886.0,yfinance,complete
+stock:BIT,BIT,stock,Financial Services,Asset Management,United States,695594368.0,yfinance,complete
+stock:BIXI,BIXI,stock,Financial Services,Shell Companies,United States,301334368.0,yfinance,complete
+stock:BJ,BJ,stock,Consumer Defensive,Discount Stores,United States,11867879424.0,yfinance,complete
+stock:BJDX,BJDX,stock,Healthcare,Medical Devices,United States,1065756.0,yfinance,complete
+stock:BKD,BKD,stock,Healthcare,Medical Care Facilities,United States,3618103552.0,yfinance,complete
+stock:BKE,BKE,stock,Consumer Cyclical,Apparel Retail,United States,2187973376.0,yfinance,complete
+stock:BKKT,BKKT,stock,Technology,Software - Infrastructure,United States,332619520.0,yfinance,complete
+stock:BKNG,BKNG,stock,Consumer Cyclical,Travel Services,United States,137509945344.0,yfinance,complete
+stock:BKR,BKR,stock,Energy,Oil & Gas Equipment & Services,United States,56795930624.0,yfinance,complete
+stock:BKSY,BKSY,stock,Industrials,Specialty Business Services,United States,800441664.0,yfinance,complete
+stock:BKTI,BKTI,stock,Technology,Communication Equipment,United States,291710464.0,yfinance,complete
+stock:BKYI,BKYI,stock,Industrials,Security & Protection Services,United States,4933938.0,yfinance,complete
+stock:BL,BL,stock,Technology,Software - Application,United States,1685914752.0,yfinance,complete
+stock:BLBD,BLBD,stock,Industrials,Farm & Heavy Construction Machinery,United States,2411469824.0,yfinance,complete
+stock:BLDP,BLDP,stock,Industrials,Electrical Equipment & Parts,Canada,874279936.0,yfinance,complete
+stock:BLDR,BLDR,stock,Industrials,Building Products & Equipment,United States,7836812288.0,yfinance,complete
+stock:BLFS,BLFS,stock,Healthcare,Medical Instruments & Supplies,United States,1464745344.0,yfinance,complete
+stock:BLKB,BLKB,stock,Technology,Software - Application,United States,1502439040.0,yfinance,complete
+stock:BLLN,BLLN,stock,Healthcare,Diagnostics & Research,United States,5799110656.0,yfinance,complete
+stock:BLMN,BLMN,stock,Consumer Cyclical,Restaurants,United States,679777472.0,yfinance,complete
+stock:BLND,BLND,stock,Technology,Software - Application,United States,409177152.0,yfinance,complete
+stock:BLX,BLX,stock,Financial Services,Banks - Regional,Panama,2220409600.0,yfinance,complete
+stock:BLZR,BLZR,stock,Financial Services,Shell Companies,United States,348390624.0,yfinance,complete
+stock:BMA,BMA,stock,Financial Services,Banks - Regional,Argentina,5697607168.0,yfinance,complete
+stock:BMBL,BMBL,stock,Communication Services,Internet Content & Information,United States,426219712.0,yfinance,complete
+stock:BMGL,BMGL,stock,Healthcare,Medical Care Facilities,Singapore,9064129.0,yfinance,complete
+stock:BMHL,BMHL,stock,Financial Services,Capital Markets,Hong Kong,143678432.0,yfinance,complete
+stock:BMM,BMM,stock,Basic Materials,Other Industrial Metals & Mining,Canada,559968448.0,yfinance,complete
+stock:BMNR,BMNR,stock,Financial Services,Capital Markets,United States,9524943872.0,yfinance,complete
+stock:BMO,BMO,stock,Financial Services,Banks - Diversified,Canada,124513067008.0,yfinance,complete
+stock:BMR,BMR,stock,Technology,Software - Application,Israel,19257020.0,yfinance,complete
+stock:BMRA,BMRA,stock,Healthcare,Medical Devices,United States,4898076.0,yfinance,complete
+stock:BMRC,BMRC,stock,Financial Services,Banks - Regional,United States,465777888.0,yfinance,complete
+stock:BMRN,BMRN,stock,Healthcare,Biotechnology,United States,11467566080.0,yfinance,complete
+stock:BMY,BMY,stock,Healthcare,Drug Manufacturers - General,United States,126792204288.0,yfinance,complete
+stock:BN,BN,stock,Financial Services,Asset Management,Canada,93073924096.0,yfinance,complete
+stock:BNAI,BNAI,stock,Technology,Software - Infrastructure,United States,75565712.0,yfinance,complete
+stock:BNED,BNED,stock,Consumer Cyclical,Specialty Retail,United States,411563264.0,yfinance,complete
+stock:BNH,BNH,stock,,,,,yfinance,unavailable
+stock:BNJ,BNJ,stock,,,,,yfinance,unavailable
+stock:BNKK,BNKK,stock,Financial Services,Asset Management,United States,8961053.0,yfinance,complete
+stock:BNL,BNL,stock,Real Estate,REIT - Diversified,United States,4473398784.0,yfinance,complete
+stock:BNZI,BNZI,stock,Technology,Software - Application,United States,7291695.0,yfinance,complete
+stock:BOBS,BOBS,stock,Consumer Cyclical,Specialty Retail,United States,1973781248.0,yfinance,complete
+stock:BOC,BOC,stock,Industrials,Conglomerates,United States,429352256.0,yfinance,complete
+stock:BOE,BOE,stock,Financial Services,Asset Management,United States,662197440.0,yfinance,complete
+stock:BOF,BOF,stock,Consumer Defensive,Packaged Foods,United States,60498320.0,yfinance,complete
+stock:BOKF,BOKF,stock,Financial Services,Banks - Regional,United States,8644931584.0,yfinance,complete
+stock:BOLD,BOLD,stock,Healthcare,Biotechnology,United States,57760172.0,yfinance,complete
+stock:BOLT,BOLT,stock,Healthcare,Biotechnology,United States,7359601.0,yfinance,complete
+stock:BON,BON,stock,Basic Materials,Specialty Chemicals,China,11594540.0,yfinance,complete
+stock:BOOT,BOOT,stock,Consumer Cyclical,Apparel Retail,United States,4549147648.0,yfinance,complete
+stock:BOT,BOT,stock,Financial Services,Asset Management,United States,619107648.0,yfinance,complete
+stock:BOW,BOW,stock,Financial Services,Insurance - Property & Casualty,United States,1021591296.0,yfinance,complete
+stock:BOX,BOX,stock,Technology,Software - Infrastructure,United States,4018831872.0,yfinance,complete
+stock:BOXL,BOXL,stock,Technology,Consumer Electronics,United States,2368052.0,yfinance,complete
+stock:BP,BP,stock,Energy,Oil & Gas Integrated,United Kingdom,112842203136.0,yfinance,complete
+stock:BPOP,BPOP,stock,,,,,yfinance,error
+stock:BPRE,BPRE,stock,Financial Services,Asset Management,United States,,yfinance,partial
+stock:BQ,BQ,stock,Consumer Cyclical,Specialty Retail,China,6195186.0,yfinance,complete
+stock:BRAG,BRAG,stock,Consumer Cyclical,Gambling,Canada,43004948.0,yfinance,complete
+stock:BRBR,BRBR,stock,Consumer Defensive,Packaged Foods,United States,1505798144.0,yfinance,complete
+stock:BRC,BRC,stock,Industrials,Security & Protection Services,United States,4452158976.0,yfinance,complete
+stock:BREZ,BREZ,stock,,,United States,,yfinance,partial
+stock:BRID,BRID,stock,Consumer Defensive,Packaged Foods,United States,58364028.0,yfinance,complete
+stock:BRK.A,BRK.A,stock,,,,,yfinance,unavailable
+stock:BRK.B,BRK.B,stock,,,,,yfinance,unavailable
+stock:BRN,BRN,stock,Energy,Oil & Gas E&P,United States,15403250.0,yfinance,complete
+stock:BRO,BRO,stock,Financial Services,Insurance Brokers,United States,22933211136.0,yfinance,complete
+stock:BROS,BROS,stock,Consumer Cyclical,Restaurants,United States,11179738112.0,yfinance,complete
+stock:BRR,BRR,stock,Financial Services,Capital Markets,United States,161220864.0,yfinance,complete
+stock:BRT,BRT,stock,Real Estate,REIT - Residential,United States,282146560.0,yfinance,complete
+stock:BSAC,BSAC,stock,Financial Services,Banks - Regional,Chile,15768230912.0,yfinance,complete
+stock:BSBK,BSBK,stock,Financial Services,Banks - Regional,United States,116203776.0,yfinance,complete
+stock:BSET,BSET,stock,Consumer Cyclical,"Furnishings, Fixtures & Appliances",United States,168749664.0,yfinance,complete
+stock:BSL,BSL,stock,Financial Services,Asset Management,United States,168347808.0,yfinance,complete
+stock:BSVN,BSVN,stock,Financial Services,Banks - Regional,United States,470635968.0,yfinance,complete
+stock:BSX,BSX,stock,Healthcare,Medical Devices,United States,65771216896.0,yfinance,complete
+stock:BTAI,BTAI,stock,Healthcare,Drug Manufacturers - Specialty & Generic,United States,26168770.0,yfinance,complete
+stock:BTBD,BTBD,stock,Consumer Cyclical,Restaurants,United States,6926891.0,yfinance,complete
+stock:BTDR,BTDR,stock,Technology,Software - Application,Singapore,2812705792.0,yfinance,complete
+stock:BTE,BTE,stock,Energy,Oil & Gas E&P,Canada,3078404096.0,yfinance,complete
+stock:BTG,BTG,stock,Basic Materials,Gold,Canada,5156456448.0,yfinance,complete
+stock:BTI,BTI,stock,Consumer Defensive,Tobacco,United Kingdom,131524968448.0,yfinance,complete
+stock:BTMD,BTMD,stock,Healthcare,Medical Care Facilities,United States,81061024.0,yfinance,complete
+stock:BTOC,BTOC,stock,Industrials,Integrated Freight & Logistics,United States,11615251.0,yfinance,complete
+stock:BTT,BTT,stock,Financial Services,Asset Management,United States,1427754240.0,yfinance,complete
+stock:BTU,BTU,stock,Energy,Thermal Coal,United States,2777815808.0,yfinance,complete
+stock:BTX,BTX,stock,Financial Services,Asset Management,United States,957024384.0,yfinance,complete
+stock:BUD,BUD,stock,Consumer Defensive,Beverages - Brewers,Belgium,157732552704.0,yfinance,complete
+stock:BULL,BULL,stock,Technology,Software - Application,United States,3983321600.0,yfinance,complete
+stock:BUR,BUR,stock,Financial Services,Asset Management,Guernsey,906946944.0,yfinance,complete
+stock:BUSE,BUSE,stock,Financial Services,Banks - Regional,United States,2524628224.0,yfinance,complete
+stock:BVC,BVC,stock,Technology,Software - Application,Hong Kong,1758960000.0,yfinance,complete
+stock:BVFL,BVFL,stock,Financial Services,Banks - Regional,United States,177335600.0,yfinance,complete
+stock:BVN,BVN,stock,Basic Materials,Other Precious Metals & Mining,Peru,7850734080.0,yfinance,complete
+stock:BWA,BWA,stock,Consumer Cyclical,Auto Parts,United States,13207351296.0,yfinance,complete
+stock:BWB,BWB,stock,Financial Services,Banks - Regional,United States,579363648.0,yfinance,complete
+stock:BWFG,BWFG,stock,Financial Services,Banks - Regional,United States,496011520.0,yfinance,complete
+stock:BWIN,BWIN,stock,Financial Services,Insurance Brokers,United States,2580558848.0,yfinance,complete
+stock:BWMN,BWMN,stock,Industrials,Engineering & Construction,United States,454413248.0,yfinance,complete
+stock:BWMX,BWMX,stock,Consumer Cyclical,Specialty Retail,Mexico,623090752.0,yfinance,complete
+stock:BWNB,BWNB,stock,,,,,yfinance,unavailable
+stock:BWXT,BWXT,stock,Industrials,Aerospace & Defense,United States,15988588544.0,yfinance,complete
+stock:BX,BX,stock,Financial Services,Asset Management,United States,161798963200.0,yfinance,complete
+stock:BXBL,BXBL,stock,Consumer Cyclical,Residential Construction,United States,1733845504.0,yfinance,complete
+stock:BXMT,BXMT,stock,Real Estate,REIT - Mortgage,United States,2815328000.0,yfinance,complete
+stock:BY,BY,stock,Financial Services,Banks - Regional,United States,1752797312.0,yfinance,complete
+stock:BYD,BYD,stock,Consumer Cyclical,Resorts & Casinos,United States,6469697024.0,yfinance,complete
+stock:BYND,BYND,stock,Consumer Defensive,Packaged Foods,United States,288024864.0,yfinance,complete
+stock:BYRN,BYRN,stock,Industrials,Aerospace & Defense,United States,80334480.0,yfinance,complete
+stock:BZAI,BZAI,stock,Technology,Software - Application,United States,128567560.0,yfinance,complete
+stock:BZFD,BZFD,stock,Communication Services,Internet Content & Information,United States,92389064.0,yfinance,complete
+stock:BZH,BZH,stock,Consumer Cyclical,Residential Construction,United States,907209600.0,yfinance,complete
+stock:C,C,stock,Financial Services,Banks - Diversified,United States,221735518208.0,yfinance,complete
+stock:CABA,CABA,stock,Healthcare,Biotechnology,United States,438617408.0,yfinance,complete
+stock:CABO,CABO,stock,Communication Services,Telecom Services,United States,213469472.0,yfinance,complete
+stock:CAC,CAC,stock,Financial Services,Banks - Regional,United States,924048960.0,yfinance,complete
+stock:CACI,CACI,stock,Technology,Information Technology Services,United States,10753383424.0,yfinance,complete
+stock:CADL,CADL,stock,Healthcare,Biotechnology,United States,700463552.0,yfinance,complete
+stock:CAE,CAE,stock,Industrials,Aerospace & Defense,Canada,8097376256.0,yfinance,complete
+stock:CAES,CAES,stock,Financial Services,Shell Companies,United States,321048000.0,yfinance,complete
+stock:CAH,CAH,stock,Healthcare,Medical Distribution,United States,53405962240.0,yfinance,complete
+stock:CAI,CAI,stock,Healthcare,Biotechnology,United States,4387204608.0,yfinance,complete
+stock:CAKE,CAKE,stock,Consumer Cyclical,Restaurants,United States,4209344000.0,yfinance,complete
+stock:CAL,CAL,stock,Consumer Cyclical,Apparel Retail,United States,395687168.0,yfinance,complete
+stock:CALC,CALC,stock,Healthcare,Biotechnology,United States,12004923.0,yfinance,complete
+stock:CALM,CALM,stock,Consumer Defensive,Farm Products,United States,4279053312.0,yfinance,complete
+stock:CANG,CANG,stock,Financial Services,Capital Markets,United States,69327128.0,yfinance,complete
+stock:CAPN,CAPN,stock,Financial Services,Shell Companies,United States,58697824.0,yfinance,complete
+stock:CAPR,CAPR,stock,Healthcare,Biotechnology,United States,1140864256.0,yfinance,complete
+stock:CAR,CAR,stock,Industrials,Rental & Leasing Services,United States,5633628160.0,yfinance,complete
+stock:CARG,CARG,stock,Consumer Cyclical,Auto & Truck Dealerships,United States,3009543424.0,yfinance,complete
+stock:CARL,CARL,stock,Healthcare,Health Information Services,United States,293597280.0,yfinance,complete
+stock:CARR,CARR,stock,Industrials,Building Products & Equipment,United States,57210376192.0,yfinance,complete
+stock:CART,CART,stock,Consumer Cyclical,Internet Retail,United States,9920608256.0,yfinance,complete
+stock:CASH,CASH,stock,Financial Services,Banks - Regional,United States,1813351936.0,yfinance,complete
+stock:CAST,CAST,stock,Communication Services,Broadcasting,United States,91831448.0,yfinance,complete
+stock:CASY,CASY,stock,Consumer Cyclical,Specialty Retail,United States,31884541952.0,yfinance,complete
+stock:CATO,CATO,stock,Consumer Cyclical,Apparel Retail,United States,65864232.0,yfinance,complete
+stock:CATX,CATX,stock,Healthcare,Medical Devices,United States,331874464.0,yfinance,complete
+stock:CAVA,CAVA,stock,Consumer Cyclical,Restaurants,United States,7222543360.0,yfinance,complete
+stock:CBAN,CBAN,stock,Financial Services,Banks - Regional,United States,462098400.0,yfinance,complete
+stock:CBAT,CBAT,stock,Industrials,Electrical Equipment & Parts,China,46317448.0,yfinance,complete
+stock:CBC,CBC,stock,Financial Services,Banks - Regional,United States,7682171904.0,yfinance,complete
+stock:CBIO,CBIO,stock,Healthcare,Biotechnology,United States,602492288.0,yfinance,complete
+stock:CBLL,CBLL,stock,Healthcare,Medical Devices,United States,641611072.0,yfinance,complete
+stock:CBNK,CBNK,stock,Financial Services,Banks - Regional,United States,588487424.0,yfinance,complete
+stock:CBOE,CBOE,stock,Financial Services,Financial Data & Stock Exchanges,United States,29833654272.0,yfinance,complete
+stock:CBRL,CBRL,stock,Consumer Cyclical,Restaurants,United States,1200496896.0,yfinance,complete
+stock:CBRS,CBRS,stock,Technology,Semiconductors,United States,44374003712.0,yfinance,complete
+stock:CBT,CBT,stock,Basic Materials,Specialty Chemicals,United States,4653670912.0,yfinance,complete
+stock:CBUS,CBUS,stock,Healthcare,Biotechnology,United States,137656272.0,yfinance,complete
+stock:CBZ,CBZ,stock,Industrials,Specialty Business Services,United States,2287045376.0,yfinance,complete
+stock:CC,CC,stock,Basic Materials,Specialty Chemicals,United States,2589504000.0,yfinance,complete
+stock:CCAQ,CCAQ,stock,Financial Services,Shell Companies,United States,212039856.0,yfinance,complete
+stock:CCBG,CCBG,stock,Financial Services,Banks - Regional,United States,882432640.0,yfinance,complete
+stock:CCC,CCC,stock,Technology,Software - Application,United States,3415994112.0,yfinance,complete
+stock:CCCC,CCCC,stock,Healthcare,Biotechnology,United States,375928576.0,yfinance,complete
+stock:CCEC,CCEC,stock,Industrials,Marine Shipping,Greece,1403648896.0,yfinance,complete
+stock:CCEL,CCEL,stock,Healthcare,Medical Care Facilities,United States,27896770.0,yfinance,complete
+stock:CCEP,CCEP,stock,Consumer Defensive,Beverages - Non-Alcoholic,United Kingdom,46488825856.0,yfinance,complete
+stock:CCHH,CCHH,stock,Consumer Cyclical,Restaurants,Malaysia,5265869.0,yfinance,complete
+stock:CCI,CCI,stock,Real Estate,REIT - Specialty,United States,32731299840.0,yfinance,complete
+stock:CCII,CCII,stock,Financial Services,Shell Companies,United States,358729056.0,yfinance,complete
+stock:CCIX,CCIX,stock,Financial Services,Shell Companies,United States,398888000.0,yfinance,complete
+stock:CCL,CCL,stock,Consumer Cyclical,Travel Services,United States,36062863360.0,yfinance,complete
+stock:CCLD,CCLD,stock,Healthcare,Health Information Services,United States,94334344.0,yfinance,complete

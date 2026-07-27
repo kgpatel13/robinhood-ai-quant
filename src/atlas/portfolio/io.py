@@ -35,6 +35,7 @@ def _first(row: dict[str, str], *names: str) -> str | None:
 def read_candidates(
     ranked_assets_path: Path,
     feature_store_path: Path | None = None,
+    metadata_path: Path | None = None,
 ) -> list[PortfolioCandidate]:
     features: dict[str, FeatureRecord] = {}
     if feature_store_path and feature_store_path.exists():
@@ -76,6 +77,32 @@ def read_candidates(
                             )
                         ),
                     }
+
+    if metadata_path and metadata_path.exists():
+        with metadata_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            for row in csv.DictReader(handle):
+                asset_id = row.get("asset_id", "").strip()
+                if not asset_id:
+                    continue
+                current = features.get(asset_id)
+                if current is None:
+                    current = {
+                        "volatility_60d": None,
+                        "price": None,
+                        "sector": None,
+                        "industry": None,
+                        "country": None,
+                        "market_cap": None,
+                    }
+                features[asset_id] = {
+                    **current,
+                    "sector": _first(row, "sector", "gics_sector") or current["sector"],
+                    "industry": _first(row, "industry", "gics_industry") or current["industry"],
+                    "country": _first(row, "country", "domicile") or current["country"],
+                    "market_cap": finite_number(
+                        _first(row, "market_cap", "market_capitalization")
+                    ) or current["market_cap"],
+                }
 
     candidates: list[PortfolioCandidate] = []
     with ranked_assets_path.open("r", encoding="utf-8-sig", newline="") as handle:

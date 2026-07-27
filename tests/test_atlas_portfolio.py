@@ -173,3 +173,32 @@ def test_sector_limit_applies_when_metadata_exists() -> None:
         position.target_weight for position in result.targets if position.sector == "Technology"
     )
     assert tech_weight <= 0.60 + 1e-9
+
+
+def test_read_candidates_merges_metadata_file(tmp_path: Path) -> None:
+    from src.atlas.portfolio import read_candidates
+
+    ranked = tmp_path / "ranked.csv"
+    ranked.write_text(
+        "rank,asset_id,symbol,asset_class,alpha_score,alpha_percentile,confidence\n"
+        "1,stock:AAA,AAA,stock,1.0,0.99,high\n",
+        encoding="utf-8",
+    )
+    features = tmp_path / "features.csv"
+    features.write_text(
+        "asset_id,close,volatility_20d\nstock:AAA,125.0,0.22\n",
+        encoding="utf-8",
+    )
+    metadata = tmp_path / "metadata.csv"
+    metadata.write_text(
+        "asset_id,symbol,asset_class,sector,industry,country,market_cap,source,status\n"
+        "stock:AAA,AAA,stock,Technology,Software,United States,1000000000,test,complete\n",
+        encoding="utf-8",
+    )
+    candidate = read_candidates(ranked, features, metadata)[0]
+    assert candidate.price == 125.0
+    assert candidate.volatility_60d == 0.22
+    assert candidate.sector == "Technology"
+    assert candidate.industry == "Software"
+    assert candidate.country == "United States"
+    assert candidate.market_cap == 1_000_000_000.0

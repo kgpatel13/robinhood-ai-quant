@@ -23,6 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("reports/atlas_v3/ranked_assets.csv"),
     )
     parser.add_argument("--features", type=Path, default=Path("data/market/features.csv"))
+    parser.add_argument("--metadata", type=Path, default=Path("data/market/metadata.csv"))
     parser.add_argument("--existing-portfolio", type=Path)
     parser.add_argument("--output", type=Path, default=Path("reports/atlas_v4"))
     parser.add_argument("--capital", type=float, default=100_000.0)
@@ -60,7 +61,7 @@ def main() -> int:
         rebalance_threshold_pct=args.rebalance_threshold_pct,
         fractional_shares=not args.whole_shares,
     )
-    candidates = read_candidates(args.ranked_assets, args.features)
+    candidates = read_candidates(args.ranked_assets, args.features, args.metadata)
     current = read_current_positions(args.existing_portfolio)
     result = PortfolioEngine(config).construct(candidates, current)
     artifacts = write_reports(result, args.output)
