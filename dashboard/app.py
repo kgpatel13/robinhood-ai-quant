@@ -29,6 +29,13 @@ from src.control_center import (  # noqa: E402
     ProfileStore,
     RiskLimits,
 )
+from src.intelligence import (  # noqa: E402
+    AssistantContext,
+    AtlasAssistant,
+    ExplanationJournal,
+    MultiTimeframeAnalyzer,
+    TradeExplanationBuilder,
+)
 from src.paper_trading import (  # noqa: E402
     AutomatedPaperConfig,
     AutomatedPaperTrader,
@@ -115,7 +122,7 @@ def load_research_bars(
 
 st.title("Atlas AI Trading Control Center")
 st.caption(
-    "Phase 7.9–8.5 · Professional Analytics · Multi-strategy backtesting · "
+    "Phase 9.4–9.6 · Multi-Timeframe Intelligence · Explainable AI · Atlas Assistant · "
     "Regime intelligence · Display timezone: America/New_York (ET)"
 )
 st.error("MODE: PAPER ONLY · LIVE BROKER: DISABLED · ORDER SUBMISSION: UNAVAILABLE")
@@ -177,6 +184,7 @@ tabs = st.tabs(
         "Positions",
         "Profiles",
         "System Health",
+        "Atlas Intelligence",
     ]
 )
 
@@ -583,7 +591,7 @@ with tabs[10]:
     st.success("Research Lab, real-market paper services, and control-center services operational")
     st.write(
         {
-            "version": "3.8.5",
+            "version": "3.9.6",
             "as_of_et": snapshot.as_of.astimezone(EASTERN_TIME).isoformat(),
             "timezone": "America/New_York",
             "halted": snapshot.halted,
@@ -591,3 +599,96 @@ with tabs[10]:
             "strategy_plugins": len(available_strategies()),
         }
     )
+
+
+with tabs[11]:
+    st.subheader("Multi-Timeframe Intelligence and Explainable AI")
+    st.caption(
+        "Local deterministic analysis only. This tab does not submit broker orders "
+        "and does not call an external language model."
+    )
+    intelligence_symbol = st.text_input(
+        "Intelligence symbol", "SPY", key="intelligence_symbol"
+    ).upper()
+    base = synthetic_daily_bars(400)
+    frames = {
+        "monthly": base.resample("ME").last().dropna(),
+        "weekly": base.resample("W-FRI").last().dropna(),
+        "daily": base,
+        "hourly": synthetic_daily_bars(300),
+        "intraday": synthetic_daily_bars(300),
+    }
+    assessment = MultiTimeframeAnalyzer().assess(intelligence_symbol, frames)
+    intelligence_cols = st.columns(5)
+    intelligence_cols[0].metric("Direction", assessment.direction.value.replace("_", " ").upper())
+    intelligence_cols[1].metric("Entry quality", assessment.entry_quality.value.upper())
+    intelligence_cols[2].metric("Aggregate score", f"{assessment.aggregate_score:+.3f}")
+    intelligence_cols[3].metric("Confirmation", f"{assessment.confirmation_score:.0%}")
+    intelligence_cols[4].metric("Conflict", f"{assessment.conflict_score:.0%}")
+    st.dataframe(
+        pd.DataFrame(
+            [
+                {
+                    "Timeframe": item.timeframe,
+                    "Direction": item.direction.value,
+                    "Score": item.score,
+                    "Trend strength": item.trend_strength,
+                    "Momentum": item.momentum,
+                    "Volatility": item.volatility,
+                    "Observations": item.observations,
+                }
+                for item in assessment.signals
+            ]
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+    explanation = TradeExplanationBuilder().build(
+        assessment,
+        regime="research_demo",
+        model_probability=0.65,
+        risk_reward_ratio=2.0,
+    )
+    st.markdown(f"**{explanation.summary}**")
+    st.write("Reasons", assessment.reasons)
+    st.write("Risk notes", explanation.risks)
+    if st.button("Save explanation to audit journal"):
+        ExplanationJournal(ROOT / "reports" / "intelligence" / "explanations.jsonl").append(
+            explanation
+        )
+        st.success("Explanation saved")
+
+    st.subheader("Atlas Assistant")
+    question = st.text_input(
+        "Ask about positions, losses, performance, strategies, or recorded explanations",
+        "What is performance?",
+    )
+    if st.button("Ask Atlas Assistant", use_container_width=True):
+        assistant_account = PaperAccountStore(ROOT / "reports" / "paper" / "account.json").load(
+            paper_capital
+        )
+        position_rows = [
+            {
+                "symbol": position.symbol,
+                "quantity": position.quantity,
+                "unrealized_pnl": position.unrealized_pnl,
+            }
+            for position in assistant_account.positions.values()
+        ]
+        explanation_rows = ExplanationJournal(
+            ROOT / "reports" / "intelligence" / "explanations.jsonl"
+        ).load(limit=50)
+        answer = AtlasAssistant().answer(
+            question,
+            AssistantContext(
+                positions=position_rows,
+                explanations=explanation_rows,
+                performance={
+                    "paper equity": f"${assistant_account.equity:,.2f}",
+                    "cash": f"${assistant_account.cash:,.2f}",
+                    "open positions": len(assistant_account.positions),
+                },
+            ),
+        )
+        st.info(answer.answer)
+        st.caption(f"Intent: {answer.intent} · Evidence records: {answer.evidence_count}")

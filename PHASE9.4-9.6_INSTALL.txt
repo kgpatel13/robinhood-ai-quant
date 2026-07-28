@@ -1,0 +1,15 @@
+Atlas v3.9.6 — Phase 9.4–9.6
+
+Extract into C:\Projects\robinhood-ai-quant and replace existing files.
+
+Validation:
+python -m pip install -e ".[dev,dashboard]"
+python -m ruff format .
+python -m ruff check . --fix
+python -m mypy .
+python -m pytest
+
+Run dashboard:
+python -m streamlit run dashboard/app.py
+
+Safety: PAPER ONLY. Live broker submission remains unavailable.

@@ -1,0 +1,13 @@
+{
+  "phase": "9.1-9.3",
+  "name": "Atlas Intelligence Foundation",
+  "version": "3.9.3",
+  "live_trading": false,
+  "components": [
+    "technical feature engineering",
+    "time-series model training",
+    "model artifact versioning",
+    "market regime intelligence",
+    "portfolio optimization"
+  ]
+}

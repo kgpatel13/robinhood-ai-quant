@@ -1,13 +1,22 @@
-Atlas Phase 7.9-8.5 compatibility patch
+Atlas Phase 9.4-9.6 Ruff/MyPy replacement patch
 
-Replace:
-  src/analytics/performance.py
+Replace these files in C:\Projects\robinhood-ai-quant:
 
-This restores calculate_metrics() for the original backtest and portfolio engines
-and fixes the covariance scalar typing issue in compare_benchmark().
+src\intelligence\__init__.py
+src\intelligence\assistant.py
+src\intelligence\explainability.py
+src\intelligence\multitimeframe.py
 
-After extraction run:
-  python -m ruff format .
-  python -m ruff check . --fix
-  python -m mypy .
-  python -m pytest
+Fixes:
+- Exports the Phase 9.4-9.6 public APIs through __all__.
+- Wraps all lines to the configured 100-character Ruff limit.
+- Removes the unused timeframe loop variable.
+- Adds safe object-to-float conversion for assistant records.
+- Narrows explanation risks before iteration.
+- Preserves existing deterministic assistant and intelligence behavior.
+
+Validation commands:
+python -m ruff format .
+python -m ruff check . --fix
+python -m mypy .
+python -m pytest
