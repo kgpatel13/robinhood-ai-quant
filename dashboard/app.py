@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -18,6 +19,16 @@ from src.control_center import (  # noqa: E402
     IntradaySessionState,
     ProfileStore,
     RiskLimits,
+)
+from src.paper_trading import (  # noqa: E402
+    PaperAccountStore,
+    PaperBroker,
+    PaperBrokerConfig,
+    PaperSessionConfig,
+    RealMarketPaperSession,
+    SessionStatus,
+    YahooMarketDataFeed,
+    build_daily_report,
 )
 from src.research_lab import (  # noqa: E402
     BacktestSettings,
@@ -39,6 +50,7 @@ from src.strategies.registry import (  # noqa: E402
 st.set_page_config(page_title="Atlas Research Lab", page_icon="📈", layout="wide")
 PROFILE_DIR = ROOT / "config" / "profiles"
 store = ProfileStore(PROFILE_DIR)
+EASTERN_TIME = ZoneInfo("America/New_York")
 
 
 def synthetic_intraday_bars(symbols: tuple[str, ...]) -> dict[str, pd.DataFrame]:
@@ -90,7 +102,10 @@ def load_research_bars(
 
 
 st.title("Atlas AI Trading Control Center")
-st.caption("Phase 6.6–7.2 · Research Lab · Multi-strategy backtesting · Regime intelligence")
+st.caption(
+    "Phase 6.6–7.2 · Research Lab · Multi-strategy backtesting · "
+    "Regime intelligence · Display timezone: America/New_York (ET)"
+)
 st.error("MODE: PAPER ONLY · LIVE BROKER: DISABLED · ORDER SUBMISSION: UNAVAILABLE")
 
 with st.sidebar:
@@ -143,6 +158,7 @@ tabs = st.tabs(
         "Strategy Registry",
         "Backtest Lab",
         "Regime & Ensemble",
+        "Real-Market Paper",
         "Risk Controls",
         "Positions",
         "Profiles",
@@ -199,7 +215,9 @@ with tabs[2]:
     )
     research_symbol = middle.text_input("Backtest symbol", "SPY").upper()
     selected_strategies = right.multiselect(
-        "Strategies", available_strategies(), default=["moving_average_cross", "rsi_mean_reversion"]
+        "Strategies",
+        available_strategies(),
+        default=["moving_average_cross", "rsi_mean_reversion"],
     )
     date_left, date_right = st.columns(2)
     start_date = date_left.date_input("Start date", date.today() - timedelta(days=1095))
@@ -316,6 +334,85 @@ with tabs[3]:
         st.info("Select at least one strategy to construct an ensemble")
 
 with tabs[4]:
+    st.subheader("Real-Market Paper Trading")
+    st.warning(
+        "This page uses real market quotes but only simulated fills. "
+        "Live broker submission is unavailable."
+    )
+    paper_state_path = ROOT / "reports" / "paper" / "account.json"
+    account_store = PaperAccountStore(paper_state_path)
+    account = account_store.load(paper_capital)
+    broker = PaperBroker(account, PaperBrokerConfig(commission_per_order=0.0, slippage_bps=2.0))
+    feed = YahooMarketDataFeed(spread_bps=2.0)
+    paper_session = RealMarketPaperSession(PaperSessionConfig(symbols), feed, broker, account_store)
+    session_cols = st.columns(5)
+    if session_cols[0].button("Start paper session", use_container_width=True):
+        paper_session.start()
+        st.session_state["paper_status"] = SessionStatus.RUNNING.value
+    if session_cols[1].button("Pause", use_container_width=True):
+        st.session_state["paper_status"] = SessionStatus.PAUSED.value
+    if session_cols[2].button("Resume", use_container_width=True):
+        st.session_state["paper_status"] = SessionStatus.RUNNING.value
+    if session_cols[3].button("Refresh quotes", use_container_width=True):
+        try:
+            status = SessionStatus(
+                st.session_state.get("paper_status", SessionStatus.STOPPED.value)
+            )
+            paper_session.status = status
+            paper_snapshot = paper_session.cycle()
+            st.session_state["paper_snapshot"] = paper_snapshot
+            st.success("Real-market quotes refreshed; paper account marked to market")
+        except Exception as exc:
+            st.error(f"Market-data refresh failed: {exc}")
+    if session_cols[4].button("Flatten paper positions", use_container_width=True):
+        try:
+            results = paper_session.flatten()
+            st.success(f"Processed {len(results)} simulated flatten orders")
+        except Exception as exc:
+            st.error(f"Paper flatten failed: {exc}")
+
+    paper_snapshot = st.session_state.get("paper_snapshot")
+    if paper_snapshot is not None:
+        metrics = st.columns(5)
+        metrics[0].metric("Status", paper_snapshot.status.value.upper())
+        metrics[1].metric("Paper equity", f"${paper_snapshot.equity:,.2f}")
+        metrics[2].metric("Cash", f"${paper_snapshot.cash:,.2f}")
+        metrics[3].metric("Unrealized P&L", f"${paper_snapshot.unrealized_pnl:,.2f}")
+        metrics[4].metric("Open positions", paper_snapshot.open_positions)
+        quote_rows = [
+            {
+                "Symbol": quote.symbol,
+                "Bid": quote.bid,
+                "Ask": quote.ask,
+                "Last": quote.last,
+                "Source": quote.source,
+                "Timestamp (ET)": quote.timestamp.astimezone(EASTERN_TIME),
+            }
+            for quote in paper_snapshot.quotes.values()
+        ]
+        st.dataframe(pd.DataFrame(quote_rows), use_container_width=True, hide_index=True)
+        if paper_snapshot.messages:
+            st.code("\n".join(paper_snapshot.messages))
+    else:
+        st.info(
+            "Click Refresh quotes to load current Yahoo minute data and mark the "
+            "persisted paper account to market."
+        )
+
+    report = build_daily_report(account, datetime.now(UTC))
+    st.subheader("Persisted paper account")
+    st.json(report.summary)
+    if not report.positions.empty:
+        st.dataframe(report.positions, use_container_width=True, hide_index=True)
+    st.download_button(
+        "Download paper order journal",
+        report.orders.to_csv(index=False),
+        "atlas_paper_orders.csv",
+        "text/csv",
+        disabled=report.orders.empty,
+    )
+
+with tabs[5]:
     st.json(
         {
             "maximum_deployed_fraction": risk.maximum_deployed_fraction,
@@ -328,17 +425,21 @@ with tabs[4]:
             "cooldown_minutes": risk.cooldown_minutes,
         }
     )
-with tabs[5]:
-    st.info("No paper positions are open in this demonstration session.")
 with tabs[6]:
+    st.info(
+        "No control-center demonstration positions are open in this session. "
+        "Real paper positions appear in the Real-Market Paper tab."
+    )
+with tabs[7]:
     st.write("Saved profile files")
     st.code("\n".join(store.list_profiles()) or "No profiles saved yet")
-with tabs[7]:
-    st.success("Research Lab and control-center services operational")
+with tabs[8]:
+    st.success("Research Lab, real-market paper services, and control-center services operational")
     st.write(
         {
-            "version": "3.7.2",
-            "as_of": snapshot.as_of.isoformat(),
+            "version": "3.7.8",
+            "as_of_et": snapshot.as_of.astimezone(EASTERN_TIME).isoformat(),
+            "timezone": "America/New_York",
             "halted": snapshot.halted,
             "paper_only": profile.paper_only,
             "strategy_plugins": len(available_strategies()),
