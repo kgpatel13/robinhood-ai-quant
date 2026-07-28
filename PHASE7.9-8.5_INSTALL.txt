@@ -1,0 +1,21 @@
+ATLAS PHASE 7.9-8.5 — PROFESSIONAL ANALYTICS + AUTOMATED PAPER EXECUTION
+
+1. Extract this archive over the robinhood-ai-quant project root.
+2. Activate the existing virtual environment.
+3. Run:
+   python -m pip install -e ".[dev,dashboard]"
+   python -m ruff format .
+   python -m ruff check .
+   python -m mypy .
+   python -m pytest
+4. Launch:
+   python -m streamlit run dashboard/app.py
+
+New dashboard tabs:
+- Automated Paper
+- Professional Analytics
+
+Safety boundary:
+- The automated cycle submits orders only to the persistent simulated PaperBroker.
+- No live broker adapter or live order submission is included.
+- UTC remains the persistence standard; America/New_York is used for market display/session logic.

@@ -13,6 +13,15 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from src.analytics import (  # noqa: E402
+    EquityJournal,
+    compare_benchmark,
+    position_exposure,
+    rolling_metrics,
+    strategy_attribution,
+    summarize_equity,
+    trade_replay,
+)
 from src.control_center import (  # noqa: E402
     AtlasControlCenterService,
     ControlCenterProfile,
@@ -21,6 +30,8 @@ from src.control_center import (  # noqa: E402
     RiskLimits,
 )
 from src.paper_trading import (  # noqa: E402
+    AutomatedPaperConfig,
+    AutomatedPaperTrader,
     PaperAccountStore,
     PaperBroker,
     PaperBrokerConfig,
@@ -28,6 +39,7 @@ from src.paper_trading import (  # noqa: E402
     RealMarketPaperSession,
     SessionStatus,
     YahooMarketDataFeed,
+    YahooSignalDataProvider,
     build_daily_report,
 )
 from src.research_lab import (  # noqa: E402
@@ -103,7 +115,7 @@ def load_research_bars(
 
 st.title("Atlas AI Trading Control Center")
 st.caption(
-    "Phase 6.6–7.2 · Research Lab · Multi-strategy backtesting · "
+    "Phase 7.9–8.5 · Professional Analytics · Multi-strategy backtesting · "
     "Regime intelligence · Display timezone: America/New_York (ET)"
 )
 st.error("MODE: PAPER ONLY · LIVE BROKER: DISABLED · ORDER SUBMISSION: UNAVAILABLE")
@@ -159,6 +171,8 @@ tabs = st.tabs(
         "Backtest Lab",
         "Regime & Ensemble",
         "Real-Market Paper",
+        "Automated Paper",
+        "Professional Analytics",
         "Risk Controls",
         "Positions",
         "Profiles",
@@ -413,6 +427,138 @@ with tabs[4]:
     )
 
 with tabs[5]:
+    st.subheader("Automated Strategy-to-Paper Execution")
+    st.warning(
+        "Automated cycles create simulated orders only. Live brokerage connectivity remains locked."
+    )
+    automated_strategy = st.selectbox(
+        "Active automated strategy",
+        available_strategies(),
+        index=available_strategies().index("moving_average_cross"),
+    )
+    auto_cols = st.columns(4)
+    target_fraction = auto_cols[0].number_input(
+        "Target position (%)", min_value=0.5, max_value=20.0, value=5.0, step=0.5
+    )
+    auto_max_positions = auto_cols[1].number_input(
+        "Maximum positions", min_value=1, max_value=20, value=5
+    )
+    auto_max_trades = auto_cols[2].number_input(
+        "Maximum trades/day", min_value=1, max_value=100, value=12
+    )
+    auto_max_deployed = auto_cols[3].number_input(
+        "Maximum deployed (%)", min_value=5.0, max_value=100.0, value=40.0, step=5.0
+    )
+    st.caption(
+        "One cycle downloads recent strategy bars, evaluates the selected plugin, "
+        "applies portfolio "
+        "limits, submits simulated fills, persists the account, and journals portfolio equity."
+    )
+    if st.button("Run one automated paper cycle", type="primary", use_container_width=True):
+        try:
+            quotes = feed.latest_quotes(symbols)
+            automated_account = account_store.load(paper_capital)
+            automated_broker = PaperBroker(
+                automated_account,
+                PaperBrokerConfig(commission_per_order=0.0, slippage_bps=2.0),
+            )
+            automated = AutomatedPaperTrader(
+                AutomatedPaperConfig(
+                    symbols=symbols,
+                    strategy_name=automated_strategy,
+                    target_position_fraction=target_fraction / 100.0,
+                    maximum_deployed_fraction=auto_max_deployed / 100.0,
+                    maximum_open_positions=int(auto_max_positions),
+                    maximum_trades_per_day=int(auto_max_trades),
+                ),
+                create_strategy(automated_strategy, **strategy_defaults(automated_strategy)),
+                YahooSignalDataProvider(),
+                automated_broker,
+                account_store,
+                EquityJournal(ROOT / "reports" / "paper" / "equity.jsonl"),
+            )
+            cycle_result = automated.cycle(quotes)
+            st.session_state["automated_cycle_result"] = cycle_result
+            st.success(
+                f"Cycle completed: {len(cycle_result.orders)} simulated orders, "
+                f"{cycle_result.open_positions} open positions"
+            )
+        except Exception as exc:
+            st.error(f"Automated cycle failed safely: {exc}")
+    automated_result = st.session_state.get("automated_cycle_result")
+    if automated_result is not None:
+        result_cols = st.columns(4)
+        result_cols[0].metric("Equity", f"${automated_result.equity:,.2f}")
+        result_cols[1].metric("Open positions", automated_result.open_positions)
+        result_cols[2].metric("Orders this cycle", len(automated_result.orders))
+        result_cols[3].metric("Signals evaluated", len(automated_result.signals))
+        st.write("Latest signals", automated_result.signals)
+        if automated_result.rejected:
+            st.write("Rejected or skipped", automated_result.rejected)
+
+with tabs[6]:
+    st.subheader("Professional Paper-Trading Analytics")
+    analytics_account = account_store.load(paper_capital)
+    equity_frame = EquityJournal(ROOT / "reports" / "paper" / "equity.jsonl").load()
+    if equity_frame.empty:
+        st.info("Run automated paper cycles to build the persistent equity journal.")
+    else:
+        summary = summarize_equity(equity_frame["equity"])
+        summary_cols = st.columns(6)
+        summary_cols[0].metric("Total return", f"{summary.total_return:.2%}")
+        summary_cols[1].metric("Annualized return", f"{summary.annualized_return:.2%}")
+        summary_cols[2].metric("Volatility", f"{summary.annualized_volatility:.2%}")
+        summary_cols[3].metric("Sharpe", f"{summary.sharpe_ratio:.2f}")
+        summary_cols[4].metric("Maximum drawdown", f"{summary.maximum_drawdown:.2%}")
+        summary_cols[5].metric("Observations", summary.observations)
+        st.line_chart(equity_frame[["equity", "cash"]])
+        rolling = rolling_metrics(equity_frame["equity"], window=min(20, len(equity_frame)))
+        st.subheader("Rolling risk")
+        st.line_chart(rolling[["rolling_sharpe", "drawdown"]])
+        try:
+            benchmark = HistoricalDataService.from_yahoo(
+                HistoricalDataRequest(
+                    "SPY",
+                    equity_frame.index.min().date() - timedelta(days=7),
+                    datetime.now(EASTERN_TIME).date() + timedelta(days=1),
+                )
+            )
+            daily_equity = equity_frame["equity"].resample("1D").last().dropna()
+            benchmark_close = benchmark["close"].reindex(daily_equity.index, method="ffill")
+            comparison = compare_benchmark(daily_equity, benchmark_close)
+            st.write(
+                {
+                    "portfolio_return": comparison.portfolio_return,
+                    "SPY_return": comparison.benchmark_return,
+                    "excess_return": comparison.excess_return,
+                    "beta": comparison.beta,
+                    "annualized_alpha": comparison.alpha_annualized,
+                    "correlation": comparison.correlation,
+                }
+            )
+        except Exception as exc:
+            st.info(f"Benchmark comparison unavailable: {exc}")
+    st.subheader("Current exposure")
+    exposure = position_exposure(analytics_account)
+    if exposure.empty:
+        st.caption("No open paper positions")
+    else:
+        st.dataframe(exposure, use_container_width=True, hide_index=True)
+    st.subheader("Strategy attribution")
+    attribution = strategy_attribution(analytics_account)
+    st.dataframe(attribution, use_container_width=True, hide_index=True)
+    st.subheader("Trade replay")
+    replay = trade_replay(analytics_account)
+    st.dataframe(replay, use_container_width=True, hide_index=True)
+    st.download_button(
+        "Download trade replay",
+        replay.to_csv(index=False),
+        "atlas_trade_replay.csv",
+        "text/csv",
+        disabled=replay.empty,
+    )
+
+with tabs[7]:
     st.json(
         {
             "maximum_deployed_fraction": risk.maximum_deployed_fraction,
@@ -425,19 +571,19 @@ with tabs[5]:
             "cooldown_minutes": risk.cooldown_minutes,
         }
     )
-with tabs[6]:
+with tabs[8]:
     st.info(
         "No control-center demonstration positions are open in this session. "
         "Real paper positions appear in the Real-Market Paper tab."
     )
-with tabs[7]:
+with tabs[9]:
     st.write("Saved profile files")
     st.code("\n".join(store.list_profiles()) or "No profiles saved yet")
-with tabs[8]:
+with tabs[10]:
     st.success("Research Lab, real-market paper services, and control-center services operational")
     st.write(
         {
-            "version": "3.7.8",
+            "version": "3.8.5",
             "as_of_et": snapshot.as_of.astimezone(EASTERN_TIME).isoformat(),
             "timezone": "America/New_York",
             "halted": snapshot.halted,

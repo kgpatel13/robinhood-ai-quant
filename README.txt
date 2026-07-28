@@ -1,11 +1,13 @@
-Atlas Phase 4.4 optimizer console/type-check fix
+Atlas Phase 7.9-8.5 compatibility patch
 
-Replace these files in C:\Projects\robinhood-ai-quant:
-  src\atlas\portfolio\optimizer.py
-  scripts\atlas_v4_optimizer.py
+Replace:
+  src/analytics/performance.py
 
-Then run:
-  python -m ruff check src tests scripts
-  python -m mypy src
+This restores calculate_metrics() for the original backtest and portfolio engines
+and fixes the covariance scalar typing issue in compare_benchmark().
+
+After extraction run:
+  python -m ruff format .
+  python -m ruff check . --fix
+  python -m mypy .
   python -m pytest
-  python -m scripts.atlas_v4_optimizer --capital 100000

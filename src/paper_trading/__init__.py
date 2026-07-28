@@ -1,3 +1,9 @@
+from src.paper_trading.automation import (
+    AutomatedCycleResult,
+    AutomatedPaperConfig,
+    AutomatedPaperTrader,
+    SignalDataProvider,
+)
 from src.paper_trading.broker import PaperBroker, PaperBrokerConfig
 from src.paper_trading.feed import MarketDataFeed, StaticMarketDataFeed, YahooMarketDataFeed
 from src.paper_trading.models import (
@@ -18,8 +24,15 @@ from src.paper_trading.session import (
     RealMarketPaperSession,
     SessionStatus,
 )
+from src.paper_trading.signal_data import StaticSignalDataProvider, YahooSignalDataProvider
 
 __all__ = [
+    "AutomatedCycleResult",
+    "AutomatedPaperConfig",
+    "AutomatedPaperTrader",
+    "SignalDataProvider",
+    "StaticSignalDataProvider",
+    "YahooSignalDataProvider",
     "DailyPaperReport",
     "MarketDataFeed",
     "MarketQuote",
