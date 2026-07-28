@@ -1,0 +1,175 @@
+Run started:2026-07-28 00:48:16.408702+00:00
+
+Test results:
+>> Issue: [B404:blacklist] Consider possible security implications associated with the subprocess module.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess
+   Location: src\atlas\research.py:5:0
+4	import json
+5	import subprocess
+6	from dataclasses import asdict
+
+--------------------------------------------------
+>> Issue: [B607:start_process_with_partial_path] Starting a process with a partial executable path
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b607_start_process_with_partial_path.html
+   Location: src\atlas\research.py:33:17
+32	    try:
+33	        commit = subprocess.run(
+34	            ["git", "rev-parse", "HEAD"],
+35	            cwd=project_root,
+36	            check=True,
+37	            capture_output=True,
+38	            text=True,
+39	        ).stdout.strip()
+40	        dirty = bool(
+
+--------------------------------------------------
+>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src\atlas\research.py:33:17
+32	    try:
+33	        commit = subprocess.run(
+34	            ["git", "rev-parse", "HEAD"],
+35	            cwd=project_root,
+36	            check=True,
+37	            capture_output=True,
+38	            text=True,
+39	        ).stdout.strip()
+40	        dirty = bool(
+
+--------------------------------------------------
+>> Issue: [B607:start_process_with_partial_path] Starting a process with a partial executable path
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b607_start_process_with_partial_path.html
+   Location: src\atlas\research.py:41:12
+40	        dirty = bool(
+41	            subprocess.run(
+42	                ["git", "status", "--porcelain"],
+43	                cwd=project_root,
+44	                check=True,
+45	                capture_output=True,
+46	                text=True,
+47	            ).stdout.strip()
+48	        )
+
+--------------------------------------------------
+>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: src\atlas\research.py:41:12
+40	        dirty = bool(
+41	            subprocess.run(
+42	                ["git", "status", "--porcelain"],
+43	                cwd=project_root,
+44	                check=True,
+45	                capture_output=True,
+46	                text=True,
+47	            ).stdout.strip()
+48	        )
+
+--------------------------------------------------
+>> Issue: [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b101_assert_used.html
+   Location: src\execution\paper.py:100:8
+99	    def _is_marketable(order: OrderRequest, market_price: float) -> bool:
+100	        assert order.limit_price is not None
+101	        if order.side is OrderSide.BUY:
+
+--------------------------------------------------
+>> Issue: [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b101_assert_used.html
+   Location: src\execution\paper.py:241:16
+240	            for raw in orders:
+241	                assert isinstance(raw, dict)
+242	                request_raw = raw["request"]
+
+--------------------------------------------------
+>> Issue: [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b101_assert_used.html
+   Location: src\execution\paper.py:243:16
+242	                request_raw = raw["request"]
+243	                assert isinstance(request_raw, dict)
+244	                request = OrderRequest(
+
+--------------------------------------------------
+>> Issue: [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b101_assert_used.html
+   Location: src\execution\paper.py:279:16
+278	            for raw in fills:
+279	                assert isinstance(raw, dict)
+280	                self._fills.append(
+
+--------------------------------------------------
+>> Issue: [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b101_assert_used.html
+   Location: src\execution\paper.py:294:12
+293	            holdings = state.get("holdings", {})
+294	            assert isinstance(holdings, dict)
+295	            self._holdings = {
+
+--------------------------------------------------
+>> Issue: [B101:assert_used] Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b101_assert_used.html
+   Location: src\research\phase15\engine.py:552:8
+551	                    best = candidate
+552	        assert best is not None
+553	        _, probability_threshold, _, ev_threshold = best
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: src\research\phase8\search_space.py:64:14
+63	    if method in {"random", "hybrid"} and len(selected) < maximum:
+64	        rng = random.Random(seed + sum(ord(char) for char in strategy))
+65	        remaining = [item for item in combinations if item not in [row[0] for row in selected]]
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: src\research\search.py:19:10
+18	        return combinations
+19	    rng = random.Random(config.seed)
+20	    rng.shuffle(combinations)
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 21921
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 13
+		Medium: 0
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 0
+		High: 13
+Files skipped (0):

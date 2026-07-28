@@ -1,5 +1,10 @@
 from src.execution.broker import Broker
 from src.execution.calendar import MarketSession
+from src.execution.intraday import (
+    IntradayAction,
+    IntradayPaperDecision,
+    IntradayPaperOrchestrator,
+)
 from src.execution.manager import BrokerManager
 from src.execution.models import (
     AccountSnapshot,
@@ -82,6 +87,9 @@ __all__ = [
     "ExecutionSummary",
     "Fill",
     "InvalidOrderTransition",
+    "IntradayPaperOrchestrator",
+    "IntradayPaperDecision",
+    "IntradayAction",
     "OrderReceipt",
     "OrderRequest",
     "OrderRouter",

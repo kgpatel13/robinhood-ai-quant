@@ -4,6 +4,12 @@ from src.strategies.adaptive_portfolio import (
 )
 from src.strategies.base import Strategy, StrategyMetadata, StrategyParameter
 from src.strategies.ensemble import EnsembleStrategy
+from src.strategies.intraday import (
+    IntradayAssessment,
+    IntradayMomentumStrategy,
+    IntradaySignal,
+    IntradayStrategyConfig,
+)
 from src.strategies.opportunity import (
     MLOpportunityRanker,
     OpportunityRankingConfig,
@@ -38,6 +44,10 @@ __all__ = [
     "RegimeAssessment",
     "DynamicSizingConfig",
     "EnsembleStrategy",
+    "IntradayStrategyConfig",
+    "IntradaySignal",
+    "IntradayMomentumStrategy",
+    "IntradayAssessment",
     "MLOpportunityRanker",
     "OpportunityRankingConfig",
     "OpportunityTrainingRow",
