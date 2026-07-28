@@ -1,0 +1,8 @@
+{
+  "version": "4.0.3",
+  "phase": "10.1-10.3",
+  "name": "Broker Abstraction Foundation",
+  "live_trading": false,
+  "new_package": "src/brokers",
+  "tests": "tests/unit/test_phase101_103_broker_abstraction.py"
+}
