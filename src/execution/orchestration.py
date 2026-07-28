@@ -8,6 +8,11 @@ from zoneinfo import ZoneInfo
 
 from src.execution.calendar import MarketSession
 from src.execution.models import AccountSnapshot, OrderReceipt
+from src.execution.protection import (
+    AccountProtectionEngine,
+    AccountProtectionState,
+    ProtectionDecision,
+)
 from src.execution.rebalance import RebalancePlanner
 from src.execution.risk import PreTradeRiskEngine, RiskDecision
 from src.execution.router import OrderRouter
@@ -60,6 +65,7 @@ class DailyWorkflowResult:
     runtime: RuntimeCycleResult | None
     account: AccountSnapshot
     details: str = ""
+    protection: ProtectionDecision | None = None
 
 
 class DataRefresher(Protocol):
@@ -68,6 +74,10 @@ class DataRefresher(Protocol):
 
 class TargetPortfolioProvider(Protocol):
     def generate(self, as_of: datetime, account: AccountSnapshot) -> TargetPortfolio: ...
+
+
+class ProtectionStateProvider(Protocol):
+    def __call__(self, as_of: datetime, account: AccountSnapshot) -> AccountProtectionState: ...
 
 
 PriceSnapshotProvider = Callable[[set[str], datetime], Mapping[str, float]]
@@ -91,6 +101,8 @@ class DailyPaperTradingOrchestrator:
         config: DailyWorkflowConfig | None = None,
         reporter: WorkflowReporter | None = None,
         risk_engine: PreTradeRiskEngine | None = None,
+        protection_engine: AccountProtectionEngine | None = None,
+        protection_state_provider: ProtectionStateProvider | None = None,
     ) -> None:
         self.runtime = runtime
         self.router = router
@@ -101,6 +113,12 @@ class DailyPaperTradingOrchestrator:
         self.config = config or DailyWorkflowConfig()
         self.reporter = reporter
         self.risk_engine = risk_engine or PreTradeRiskEngine()
+        self.protection_engine = protection_engine
+        self.protection_state_provider = protection_state_provider
+        if (protection_engine is None) != (protection_state_provider is None):
+            raise ValueError(
+                "protection_engine and protection_state_provider must be configured together"
+            )
 
     def run(self, now: datetime, *, force: bool = False) -> DailyWorkflowResult:
         local_now = now.astimezone(ZoneInfo(self.session.timezone))
@@ -178,6 +196,46 @@ class DailyPaperTradingOrchestrator:
             )
 
         try:
+            protection: ProtectionDecision | None = None
+            if self.protection_engine is not None and self.protection_state_provider is not None:
+                protection_state = self.protection_state_provider(now, account_before)
+                protection = self.protection_engine.evaluate(account_before, protection_state)
+                self.runtime.journal.append_event(
+                    event_id=f"protection:{trading_date.isoformat()}:{protection.reason.value}",
+                    event_type="account_protection",
+                    entity_id=trading_date.isoformat(),
+                    payload={
+                        "status": protection.status.value,
+                        "reason": protection.reason.value,
+                        "daily_return": protection.daily_return,
+                        "weekly_return": protection.weekly_return,
+                        "drawdown": protection.drawdown,
+                        "portfolio_heat": protection.portfolio_heat,
+                    },
+                )
+                if not protection.trading_allowed:
+                    return self._finish(
+                        DailyWorkflowResult(
+                            trading_date=trading_date,
+                            status="SKIPPED_ACCOUNT_PROTECTION",
+                            data_refreshed=False,
+                            rows_updated=0,
+                            model_name="",
+                            target_count=0,
+                            planned_orders=0,
+                            accepted_orders=0,
+                            rejected_orders=0,
+                            risk_resized_orders=0,
+                            risk_rejected_orders=0,
+                            risk_decisions=(),
+                            ignored_symbols=(),
+                            receipts=(),
+                            runtime=None,
+                            account=account_before,
+                            details=protection.details,
+                            protection=protection,
+                        )
+                    )
             refresh = self.data_refresher.refresh(now)
             target = self.target_provider.generate(now, account_before)
             normalized_weights = {
@@ -238,6 +296,7 @@ class DailyPaperTradingOrchestrator:
                 runtime=runtime_result,
                 account=account_after,
                 details="; ".join(part for part in (refresh.details, target.details) if part),
+                protection=protection,
             )
             self.runtime.journal.save_checkpoint(
                 checkpoint_key,

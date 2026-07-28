@@ -21,12 +21,22 @@ from src.execution.orchestration import (
     DataRefresher,
     DataRefreshResult,
     PriceSnapshotProvider,
+    ProtectionStateProvider,
     TargetPortfolio,
     TargetPortfolioProvider,
     WorkflowReporter,
 )
 from src.execution.paper import PaperBroker, PriceProvider
 from src.execution.persistence import ExecutionJournal
+from src.execution.protection import (
+    AccountProtectionConfig,
+    AccountProtectionEngine,
+    AccountProtectionState,
+    AccountProtectionStore,
+    ProtectionDecision,
+    ProtectionReason,
+    ProtectionStatus,
+)
 from src.execution.rebalance import RebalancePlan, RebalancePlanner
 from src.execution.reconciliation import PortfolioSync, ReconciliationReport
 from src.execution.risk import (
@@ -39,10 +49,27 @@ from src.execution.risk import (
 )
 from src.execution.router import OrderRouter, RetryPolicy
 from src.execution.runtime import PaperTradingRuntime, RuntimeCycleResult
+from src.execution.short_swing_provider import (
+    RegimeRecorder,
+    ShortSwingBarsProvider,
+    ShortSwingTargetProvider,
+)
 from src.execution.state_machine import InvalidOrderTransition, OrderStateMachine
+from src.execution.swing import (
+    ShortSwingConfig,
+    ShortSwingLifecycle,
+    SwingExitDecision,
+    SwingExitReason,
+    SwingPositionState,
+    SwingPositionStore,
+)
 
 __all__ = [
     "AccountSnapshot",
+    "AccountProtectionConfig",
+    "AccountProtectionEngine",
+    "AccountProtectionState",
+    "AccountProtectionStore",
     "Broker",
     "BrokerManager",
     "DailyPaperTradingOrchestrator",
@@ -68,6 +95,10 @@ __all__ = [
     "Position",
     "PriceProvider",
     "PriceSnapshotProvider",
+    "ProtectionDecision",
+    "ProtectionReason",
+    "ProtectionStateProvider",
+    "ProtectionStatus",
     "RiskReason",
     "RiskEvaluation",
     "RiskDecisionType",
@@ -75,11 +106,20 @@ __all__ = [
     "PreTradeRiskEngine",
     "PreTradeRiskConfig",
     "ReconciliationReport",
+    "RegimeRecorder",
     "MarketSession",
     "PaperTradingRuntime",
     "RebalancePlan",
     "RebalancePlanner",
     "RuntimeCycleResult",
+    "ShortSwingBarsProvider",
+    "ShortSwingConfig",
+    "ShortSwingLifecycle",
+    "ShortSwingTargetProvider",
+    "SwingExitDecision",
+    "SwingExitReason",
+    "SwingPositionState",
+    "SwingPositionStore",
     "RetryPolicy",
     "TargetPortfolio",
     "TargetPortfolioProvider",
