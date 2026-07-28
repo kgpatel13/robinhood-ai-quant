@@ -1,0 +1,8 @@
+{
+  "version": "4.0.6",
+  "phase": "10.4-10.6",
+  "title": "Production Operations Foundation",
+  "packages_added": ["src.runtime", "src.session", "src.operations"],
+  "safety": "paper_only_live_order_routing_disabled",
+  "dedicated_tests": 4
+}
