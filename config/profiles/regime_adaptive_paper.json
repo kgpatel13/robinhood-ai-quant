@@ -1,0 +1,19 @@
+{
+  "enabled_strategies": ["intraday_momentum"],
+  "max_ranked_candidates": 20,
+  "minimum_candidate_score": 0.55,
+  "name": "Regime-Adaptive Paper",
+  "paper_capital": 100000.0,
+  "paper_only": true,
+  "risk": {
+    "cooldown_minutes": 30,
+    "maximum_consecutive_losses": 4,
+    "maximum_daily_loss_fraction": 0.015,
+    "maximum_deployed_fraction": 0.4,
+    "maximum_open_positions": 5,
+    "maximum_position_fraction": 0.08,
+    "maximum_sector_fraction": 0.2,
+    "maximum_trades_per_day": 12
+  },
+  "symbols": ["SPY", "QQQ", "AAPL", "MSFT", "NVDA"]
+}

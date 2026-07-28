@@ -1,0 +1,16 @@
+Phase 6.0-6.2 validation patch
+
+Fixed:
+1. Added intraday public symbols to __all__ in:
+   - src/backtest/__init__.py
+   - src/data/__init__.py
+   - src/execution/__init__.py
+   - src/strategies/__init__.py
+2. Narrowed the normalized bar index to pandas.DatetimeIndex before tz_convert
+   in src/data/intraday.py for MyPy compatibility.
+
+Validate:
+python -m ruff format .
+python -m ruff check .
+python -m mypy .
+python -m pytest
