@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "robinhood-ai-quant"
-version = "6.5.0"
+version = "9.0.0"
 description = "Broker-independent AI-assisted quantitative research platform"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -95,6 +95,9 @@ packages = [
   "src.alpha_engine",
   "src.alpha_intelligence",
   "src.market_intelligence",
+  "src.multi_agent_ai",
+  "src.production_platform",
+  "src.self_improving_ai",
   "src.microstructure",
   "src.paper_analytics",
   "src.research_journal",

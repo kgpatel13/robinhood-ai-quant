@@ -1,6 +1,8 @@
-Replace the two included files at the same project-relative paths.
+Atlas v9.0.0 cleanup fix
 
-Fixes:
-- Ruff UP046: PEP 695 generic class syntax
-- Ruff UP034: removes extraneous parentheses
-- MyPy: uses numpy.typing.NDArray[np.float64]
+1. Extract this ZIP directly into C:\Projects\robinhood-ai-quant.
+2. From the project root run:
+   .\APPLY_FIX.ps1
+3. Then run Ruff, MyPy, and PyTest.
+
+The script removes only the accidental src\src duplicate folder and copies the corrected files into the real src folder.
