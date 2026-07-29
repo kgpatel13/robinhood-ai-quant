@@ -1,0 +1,8 @@
+{
+  "release": "Atlas v5.0.3",
+  "phases": ["20.1", "20.2", "20.3"],
+  "packages": ["operations_dashboard", "alerting", "audit_log"],
+  "new_tests": 10,
+  "expected_total_tests": 376,
+  "live_trading_default": false
+}
