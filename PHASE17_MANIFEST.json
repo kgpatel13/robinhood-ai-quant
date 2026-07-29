@@ -1,0 +1,6 @@
+{
+  "version": "4.7.3",
+  "phase": "17.1-17.3",
+  "packages": ["src.feature_store", "src.ml_platform", "src.model_monitor"],
+  "live_trading": false
+}
