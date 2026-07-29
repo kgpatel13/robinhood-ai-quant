@@ -63,9 +63,8 @@ class MicrostructureEvaluator:
         midpoint = (snapshot.bid + snapshot.ask) / 2.0
         spread_bps = (snapshot.ask - snapshot.bid) / midpoint * 10_000.0
         relative_volume = snapshot.current_volume / snapshot.average_daily_volume
-        participation = snapshot.order_notional / (
-            snapshot.average_daily_volume * snapshot.last_price
-        )
+        daily_notional = snapshot.average_daily_volume * snapshot.last_price
+        participation = snapshot.order_notional / daily_notional
         open_penalty = max(0.0, (15 - snapshot.minutes_from_open) / 15.0) * 3.0
         expected_slippage = (
             spread_bps / 2.0
@@ -100,14 +99,14 @@ class MicrostructureEvaluator:
             decision = MarketQualityDecision.APPROVE
             multiplier = 1.0
         return MarketQualityReport(
-            decision,
-            quality,
-            float(spread_bps),
-            float(relative_volume),
-            float(participation),
-            float(expected_slippage),
-            float(multiplier),
-            tuple(reasons),
+            decision=decision,
+            quality_score=quality,
+            spread_bps=float(spread_bps),
+            relative_volume=float(relative_volume),
+            participation_rate=float(participation),
+            expected_slippage_bps=float(expected_slippage),
+            size_multiplier=float(multiplier),
+            reasons=tuple(reasons),
         )
 
     @staticmethod

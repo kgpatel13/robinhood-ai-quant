@@ -63,7 +63,9 @@ class StrategyLaboratory:
                     parameters=parameters,
                     metrics=metrics,
                     score=self._score(metrics),
-                    status=(CandidateStatus.REJECTED if reasons else CandidateStatus.CHALLENGER),
+                    status=(
+                        CandidateStatus.REJECTED if reasons else CandidateStatus.CHALLENGER
+                    ),
                     rejection_reasons=reasons,
                 )
             )
@@ -89,7 +91,9 @@ class StrategyLaboratory:
         values = tuple(tuple(search_space[key]) for key in keys)
         if any(not options for options in values):
             raise ValueError("search-space values cannot be empty")
-        return tuple(dict(zip(keys, combination, strict=True)) for combination in product(*values))
+        return tuple(
+            dict(zip(keys, combination, strict=True)) for combination in product(*values)
+        )
 
     def _rejection_reasons(self, metrics: StrategyMetrics) -> tuple[str, ...]:
         reasons: list[str] = []

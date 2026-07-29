@@ -105,12 +105,15 @@ class AlphaEngine:
         ordered = sorted(signals, key=lambda item: item.score)
         denominator = max(len(ordered) - 1, 1)
         return {
-            signal.symbol: (index / denominator) * 2.0 - 1.0 for index, signal in enumerate(ordered)
+            signal.symbol: (index / denominator) * 2.0 - 1.0
+            for index, signal in enumerate(ordered)
         }
 
     @staticmethod
     def factor_decay(
-        scores: pd.Series, forward_returns: pd.Series, max_lag: int = 10
+        scores: pd.Series,
+        forward_returns: pd.Series,
+        max_lag: int = 10,
     ) -> dict[int, float]:
         if max_lag < 1:
             raise ValueError("max_lag must be positive")

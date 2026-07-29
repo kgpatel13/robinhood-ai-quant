@@ -1,23 +1,10 @@
-PHASE 15.0-15.9 — AI ALPHA ENGINE
-Version: 0.15.0
+Atlas v4.5.3 - Phase 15.1-15.3
 
-Capabilities
-- Leakage-safe expanding walk-forward meta-labeling
-- Champion/challenger model tournament
-- Logistic, Random Forest, Extra Trees, and Histogram Gradient Boosting models
-- Chronological model selection using validation data only
-- Out-of-sample probability scoring and calibration diagnostics
-- Adaptive threshold economics
-- Asset-class, symbol, and market-regime policy reports
-- Feature-importance explainability
-- Serialized champion model
-- Phase 16 promotion gate
-- Paper and live trading remain disabled
+1. Extract over the prior project or use this ZIP as the complete project.
+2. Activate the Python 3.12 virtual environment.
+3. Run: pip install -e ".[dev,dashboard]"
+4. Run: python -m ruff check src tests scripts
+5. Run: python -m mypy src
+6. Run: python -m pytest
 
-Run
-python .\scripts\phase15_alpha_engine.py `
-  --trades .\reports\phase12_research_validation\simulated_trades.csv `
-  --output .\reports\phase15_alpha_engine
-
-Quality gate
-powershell -ExecutionPolicy Bypass -File .\scripts\phase15_smoke_test.ps1
+New modules remain broker-independent. No live trade can be submitted by this release.

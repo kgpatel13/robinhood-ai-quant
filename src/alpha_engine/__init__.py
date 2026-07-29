@@ -6,4 +6,10 @@ from src.alpha_engine.core import (
     AlphaSignal,
 )
 
-__all__ = ["AlphaConfig", "AlphaEngine", "AlphaFactorScore", "AlphaHorizon", "AlphaSignal"]
+__all__ = [
+    "AlphaConfig",
+    "AlphaEngine",
+    "AlphaFactorScore",
+    "AlphaHorizon",
+    "AlphaSignal",
+]

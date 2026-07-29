@@ -35,7 +35,9 @@ class MarketRegimeClassifier:
         volume = pd.to_numeric(bars["volume"], errors="coerce").dropna()
         returns = close.pct_change().dropna()
         trend_return = float(close.iloc[-1] / close.iloc[-self.config.trend_window] - 1.0)
-        volatility = float(returns.tail(self.config.volatility_window).std(ddof=0) * math.sqrt(252))
+        volatility = float(
+            returns.tail(self.config.volatility_window).std(ddof=0) * math.sqrt(252)
+        )
         recent_volume = float(volume.tail(5).mean())
         baseline_volume = float(volume.tail(self.config.trend_window).mean())
         relative_volume = recent_volume / baseline_volume if baseline_volume > 0 else 0.0

@@ -106,7 +106,8 @@ class FeatureDiagnostics:
     @staticmethod
     def _rank(names: Sequence[str], values: NDArray[np.float64]) -> tuple[FeatureScore, ...]:
         items = [
-            FeatureScore(str(name), float(value)) for name, value in zip(names, values, strict=True)
+            FeatureScore(str(name), float(value))
+            for name, value in zip(names, values, strict=True)
         ]
         return tuple(sorted(items, key=lambda item: abs(item.score), reverse=True))
 
