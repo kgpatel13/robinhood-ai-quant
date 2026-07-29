@@ -1,0 +1,16 @@
+{
+  "release": "Atlas v10.0.0",
+  "baseline": "Atlas v9.0.0",
+  "milestone": "Integrated Controlled Paper Release",
+  "new_modules": [
+    "src/trading_orchestrator/integration_models.py",
+    "src/trading_orchestrator/translator.py",
+    "src/trading_orchestrator/persistence.py",
+    "src/trading_orchestrator/feedback.py",
+    "src/trading_orchestrator/unified.py"
+  ],
+  "new_tests": "tests/unit/test_v100_unified_orchestration.py",
+  "new_test_count": 20,
+  "existing_files_removed": false,
+  "live_trading_enabled_automatically": false
+}
