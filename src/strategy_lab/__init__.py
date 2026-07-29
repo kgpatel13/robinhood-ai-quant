@@ -10,7 +10,7 @@ __all__ = [
     "CandidateStatus",
     "LaboratoryResult",
     "StrategyCandidate",
-    "StrategyLabPolicy",
     "StrategyLaboratory",
+    "StrategyLabPolicy",
     "StrategyMetrics",
 ]
