@@ -1,0 +1,20 @@
+{
+  "version": "4.1.6",
+  "phase": "11.4-11.6",
+  "title": "Advanced Intelligence and Portfolio Risk",
+  "packages": [
+    "src/decision",
+    "src/position_sizing",
+    "src/portfolio_intelligence"
+  ],
+  "safety": {
+    "live_order_submission": false,
+    "pipeline_mode": "paper_order_proposal_only"
+  },
+  "validation": {
+    "compileall": "passed",
+    "new_tests": "5 passed",
+    "ruff": "not available in build environment; validate locally",
+    "mypy": "not available in build environment; validate locally"
+  }
+}
