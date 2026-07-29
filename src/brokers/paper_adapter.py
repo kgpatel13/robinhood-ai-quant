@@ -4,6 +4,8 @@ from collections.abc import Sequence
 
 from src.brokers.audit import BrokerAuditLog
 from src.brokers.capabilities import BrokerCapabilities
+from src.brokers.errors import BrokerError, BrokerErrorCategory
+from src.brokers.models import BrokerConnectionStatus, BrokerHealth
 from src.brokers.safety import TradingMode, TradingSafetyPolicy
 from src.execution.models import (
     AccountSnapshot,
@@ -11,6 +13,7 @@ from src.execution.models import (
     OrderReceipt,
     OrderRequest,
     OrderSnapshot,
+    Position,
 )
 from src.execution.paper import PaperBroker
 
@@ -32,6 +35,12 @@ class PaperBrokerAdapter:
         self._broker = broker
         self._audit = audit_log
         self._safety = safety_policy or TradingSafetyPolicy()
+
+    def connect(self) -> None:
+        return None
+
+    def health_check(self) -> BrokerHealth:
+        return BrokerHealth(BrokerConnectionStatus.CONNECTED, "paper broker ready")
 
     def submit_order(self, order: OrderRequest) -> OrderReceipt:
         self._safety.validate(self.mode, adapter_supports_live=self.capabilities.live_trading)
@@ -55,6 +64,12 @@ class PaperBrokerAdapter:
         self._record("order_cancelled", order_id, {"cancelled": result})
         return result
 
+    def replace_order(self, order_id: str, order: OrderRequest) -> OrderReceipt:
+        raise BrokerError(
+            "paper adapter does not support order replacement",
+            category=BrokerErrorCategory.UNSUPPORTED,
+        )
+
     def get_order(self, order_id: str) -> OrderSnapshot | None:
         return self._broker.get_order(order_id)
 
@@ -63,6 +78,9 @@ class PaperBrokerAdapter:
 
     def list_fills(self, order_id: str | None = None) -> Sequence[Fill]:
         return self._broker.list_fills(order_id)
+
+    def get_positions(self) -> tuple[Position, ...]:
+        return tuple(self.get_account().positions)
 
     def get_account(self) -> AccountSnapshot:
         account = self._broker.get_account()

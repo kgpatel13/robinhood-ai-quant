@@ -1,14 +1,8 @@
-Phase 18.4 Adaptive Portfolio Optimization
+Atlas v4.8.3 - Phase 18.1-18.3
 
-Copy these files into the matching project paths and replace pyproject.toml.
+1. Replace the existing project with this release.
+2. Activate the virtual environment.
+3. Run: pip install -e ".[dev,dashboard]"
+4. Run Ruff, MyPy, and PyTest.
 
-Run:
-pip install -e ".[dev]"
-python -m ruff format .
-python -m ruff check .
-python -m mypy .
-python -m pytest
-python scripts/phase18_adaptive_optimizer.py
-
-Reports are written to reports/phase18_adaptive_optimizer.
-Research only. Paper trading and live trading remain disabled.
+Live trading remains disabled by default. External adapters require an injected transport.
