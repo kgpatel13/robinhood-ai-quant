@@ -1,0 +1,10 @@
+{
+  "version": "11.0.0",
+  "name": "Robinhood Institutional Platform",
+  "baseline": "10.0.0",
+  "scope": "Robinhood only",
+  "new_package": "src.robinhood_platform",
+  "live_trading_enabled_automatically": false,
+  "existing_files_removed": false,
+  "validation_target": "Ruff clean, MyPy clean, 494 tests"
+}
