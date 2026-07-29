@@ -1,0 +1,13 @@
+{
+  "version": "4.2.6",
+  "phase": "12.4-12.6",
+  "title": "Strategy Performance Intelligence",
+  "new_packages": [
+    "src.feature_intelligence",
+    "src.execution_costs",
+    "src.strategy_intelligence"
+  ],
+  "new_tests": 6,
+  "expected_total_tests": 304,
+  "live_trading": false
+}
