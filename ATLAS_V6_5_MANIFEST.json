@@ -1,0 +1,17 @@
+{
+  "version": "6.5.0",
+  "milestone": "Market Intelligence Platform",
+  "preservation_policy": "No existing files intentionally removed",
+  "new_package": "src.market_intelligence",
+  "new_tests": 20,
+  "capabilities": [
+    "cross_asset_state",
+    "regime_integration",
+    "volatility_forecast",
+    "sector_rotation",
+    "event_risk",
+    "strategy_category_selection",
+    "position_size_multiplier"
+  ],
+  "live_trading_enabled": false
+}
