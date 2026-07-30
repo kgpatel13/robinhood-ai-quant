@@ -8,11 +8,15 @@ manual_approval_required = true
 [stocks]
 provider = "robinhood_mcp"
 account_nickname = "Agentic"
-order_submission_enabled = false
 
 [crypto]
 provider = "robinhood_crypto"
+credentials_enabled = false
+read_only_enabled = true
+order_submission_enabled = false
 base_url = "https://trading.robinhood.com"
 timeout_seconds = 10.0
-credentials_enabled = false
-order_submission_enabled = false
+retry_total = 3
+retry_backoff_seconds = 0.4
+api_key_env = "ROBINHOOD_CRYPTO_API_KEY"
+private_key_path_env = "ROBINHOOD_CRYPTO_PRIVATE_KEY_PATH"
