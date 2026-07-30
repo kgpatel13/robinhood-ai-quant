@@ -212,9 +212,7 @@ def test_integrated_platform_recommends_canary() -> None:
 
 
 def test_integrated_platform_blocks_bad_operations() -> None:
-    health = HealthSnapshot(
-        datetime.now(UTC), True, False, True, False, 0, 0, 0
-    )
+    health = HealthSnapshot(datetime.now(UTC), True, False, True, False, 0, 0, 0)
     report = AtlasFinalizationPlatform().assess("strategy", good_validation(), health, good_paper())
     assert not report.canary_recommended
     assert report.operations.status is OperationStatus.HALTED

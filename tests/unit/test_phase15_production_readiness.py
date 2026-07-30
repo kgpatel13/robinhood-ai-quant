@@ -84,9 +84,7 @@ def test_governor_promotes_eligible_research_strategy() -> None:
 
 
 def test_governor_never_auto_promotes_to_live() -> None:
-    review = StrategyPromotionGovernor().review(
-        _evidence(current_stage="paper")
-    )
+    review = StrategyPromotionGovernor().review(_evidence(current_stage="paper"))
     assert review.decision is PromotionDecision.HOLD
     assert review.target_stage == "paper"
     assert "manual_approval_required_for_live_execution" in review.reasons

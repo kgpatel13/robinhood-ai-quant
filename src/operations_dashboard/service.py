@@ -32,8 +32,7 @@ class OperationsDashboardService:
 
         component_down = any(item.state is ComponentState.DOWN for item in components)
         component_degraded = any(
-            item.state in {ComponentState.DEGRADED, ComponentState.UNKNOWN}
-            for item in components
+            item.state in {ComponentState.DEGRADED, ComponentState.UNKNOWN} for item in components
         )
         halted = (
             safety.state is SafetyState.HALTED

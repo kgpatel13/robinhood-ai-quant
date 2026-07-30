@@ -51,16 +51,13 @@ class StrategyRanker:
         components = {
             "profitability": self._clamp(metrics.annual_return / 0.30) * 22,
             "sharpe": self._clamp(metrics.sharpe_ratio / 2.0) * 18,
-            "drawdown": self._clamp(
-                1.0 - metrics.maximum_drawdown / self.policy.maximum_drawdown
-            )
+            "drawdown": self._clamp(1.0 - metrics.maximum_drawdown / self.policy.maximum_drawdown)
             * 18,
             "consistency": self._clamp(metrics.consistency) * 15,
             "regime_stability": self._clamp(metrics.regime_stability) * 10,
             "turnover": self._clamp(1.0 - metrics.turnover / 10.0) * 5,
             "execution_cost": self._clamp(
-                1.0
-                - metrics.execution_cost_bps / self.policy.maximum_execution_cost_bps
+                1.0 - metrics.execution_cost_bps / self.policy.maximum_execution_cost_bps
             )
             * 7,
             "prediction_quality": self._clamp(metrics.prediction_quality) * 5,

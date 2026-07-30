@@ -1,0 +1,20 @@
+{
+  "version": "13.0.0",
+  "name": "Atlas Autonomous Rotation Research Engine",
+  "objective": "Shared-capital 1-to-30-day stock, ETF, and crypto opportunity rotation research",
+  "new_package": "src.rotation_engine",
+  "new_cli": "rotation-backtest-run",
+  "strategy_families": [
+    "time_series_momentum",
+    "donchian_breakout",
+    "pullback_continuation",
+    "short_term_reversal",
+    "relative_strength"
+  ],
+  "safety": {
+    "planned_minimum_hold": "overnight",
+    "emergency_exit": "any time",
+    "maximum_hold_days": 30,
+    "execution_status": "historical research only; live trading remains gated"
+  }
+}

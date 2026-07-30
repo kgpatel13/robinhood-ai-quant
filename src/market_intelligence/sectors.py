@@ -13,9 +13,7 @@ class SectorRotationAnalyzer:
         scored: list[tuple[SectorObservation, float, float, float]] = []
         for row in rows:
             relative_strength = row.return_1m - row.benchmark_return_1m
-            risk_adjusted = (0.6 * row.return_1m + 0.4 * row.return_3m) / max(
-                row.volatility, 0.01
-            )
+            risk_adjusted = (0.6 * row.return_1m + 0.4 * row.return_3m) / max(row.volatility, 0.01)
             score = 0.65 * relative_strength + 0.35 * risk_adjusted
             scored.append((row, score, relative_strength, risk_adjusted))
         scored.sort(key=lambda item: (-item[1], item[0].sector))
@@ -27,7 +25,5 @@ class SectorRotationAnalyzer:
                 relative_strength=float(relative_strength),
                 risk_adjusted_momentum=float(risk_adjusted),
             )
-            for index, (row, score, relative_strength, risk_adjusted) in enumerate(
-                scored, start=1
-            )
+            for index, (row, score, relative_strength, risk_adjusted) in enumerate(scored, start=1)
         )

@@ -99,9 +99,7 @@ class PaperAnalyticsTracker:
             win_rate=len(wins) / len(pnls) if len(pnls) else 0.0,
             expectancy=float(pnls.mean()) if len(pnls) else 0.0,
             profit_factor=(
-                gross_profit / gross_loss
-                if gross_loss
-                else (float("inf") if gross_profit else 0.0)
+                gross_profit / gross_loss if gross_loss else (float("inf") if gross_profit else 0.0)
             ),
             total_pnl=total,
             average_slippage_bps=float(np.mean(slippages)) if slippages else 0.0,

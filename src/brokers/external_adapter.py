@@ -48,11 +48,7 @@ class GuardedExternalBrokerAdapter:
         except Exception as exc:
             return BrokerHealth(BrokerConnectionStatus.DEGRADED, str(exc))
         healthy = bool(payload.get("healthy", True))
-        status = (
-            BrokerConnectionStatus.CONNECTED
-            if healthy
-            else BrokerConnectionStatus.DEGRADED
-        )
+        status = BrokerConnectionStatus.CONNECTED if healthy else BrokerConnectionStatus.DEGRADED
         return BrokerHealth(status, str(payload.get("message", "")))
 
     def submit_order(self, order: OrderRequest) -> OrderReceipt:

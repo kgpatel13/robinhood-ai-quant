@@ -37,9 +37,7 @@ class FakeRobinhoodAdapter:
 
     def health_check(self) -> BrokerHealth:
         status = (
-            BrokerConnectionStatus.CONNECTED
-            if self._healthy
-            else BrokerConnectionStatus.DEGRADED
+            BrokerConnectionStatus.CONNECTED if self._healthy else BrokerConnectionStatus.DEGRADED
         )
         return BrokerHealth(status)
 

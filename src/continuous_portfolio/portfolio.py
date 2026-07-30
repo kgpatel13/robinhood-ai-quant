@@ -58,9 +58,7 @@ class ContinuousPaperPortfolio:
             aggregate_equity=aggregate_equity,
         )
 
-    def _health(
-        self, strategy: str, history: list[StrategyObservation]
-    ) -> StrategyHealth:
+    def _health(self, strategy: str, history: list[StrategyObservation]) -> StrategyHealth:
         initial = history[0].equity
         latest = history[-1]
         total_return = latest.equity / initial - 1.0
@@ -69,14 +67,10 @@ class ContinuousPaperPortfolio:
         for observation in history:
             peak = max(peak, observation.equity)
             maximum_drawdown = min(maximum_drawdown, observation.equity / peak - 1.0)
-        slippage_gap = max(
-            latest.realized_slippage_bps - latest.expected_slippage_bps, 0.0
-        )
+        slippage_gap = max(latest.realized_slippage_bps - latest.expected_slippage_bps, 0.0)
         slippage_quality = max(0.0, 1.0 - slippage_gap / 20.0)
         return_quality = min(1.0, max(0.0, 0.5 + total_return * 2.0))
-        drawdown_quality = max(
-            0.0, 1.0 - abs(maximum_drawdown) / self.policy.maximum_drawdown
-        )
+        drawdown_quality = max(0.0, 1.0 - abs(maximum_drawdown) / self.policy.maximum_drawdown)
         trade_quality = min(1.0, latest.trade_count / self.policy.minimum_trades_for_promotion)
         score = 100.0 * (
             0.40 * return_quality

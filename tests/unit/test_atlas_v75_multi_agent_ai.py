@@ -29,9 +29,7 @@ def test_threshold_agent_holds() -> None:
 
 
 def test_risk_agent_vetoes() -> None:
-    opinion = RiskAgent(maximum_risk_score=0.6).evaluate(
-        AgentContext("AAPL", {"risk_score": 0.9})
-    )
+    opinion = RiskAgent(maximum_risk_score=0.6).evaluate(AgentContext("AAPL", {"risk_score": 0.9}))
     assert opinion.action is AgentAction.BLOCK
     assert opinion.proposed_size_multiplier == 0.0
 
@@ -62,9 +60,7 @@ def test_supervisor_combines_votes_and_size() -> None:
         ],
         SupervisorPolicy(minimum_confidence=0.5),
     )
-    context = AgentContext(
-        "AAPL", {"momentum": 1.0, "trend": 1.0, "risk_score": 0.2}
-    )
+    context = AgentContext("AAPL", {"momentum": 1.0, "trend": 1.0, "risk_score": 0.2})
     decision = supervisor.decide(context)
     assert decision.action is AgentAction.BUY
     assert decision.size_multiplier == 0.8

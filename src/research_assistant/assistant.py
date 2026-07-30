@@ -30,10 +30,7 @@ class AIResearchAssistant:
         evidence = tuple(candidate_source(request))[: request.candidate_limit]
         assessments = tuple(
             sorted(
-                (
-                    self.evaluator.assess(item, request.constraints)
-                    for item in evidence
-                ),
+                (self.evaluator.assess(item, request.constraints) for item in evidence),
                 key=lambda item: item.score,
                 reverse=True,
             )

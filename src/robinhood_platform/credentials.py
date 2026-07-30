@@ -29,8 +29,7 @@ class RobinhoodCredentialManager:
     def available(self) -> bool:
         environment = self._get_environment()
         return bool(
-            environment.get(self._refs.api_key_env)
-            and environment.get(self._refs.private_key_env)
+            environment.get(self._refs.api_key_env) and environment.get(self._refs.private_key_env)
         )
 
     def resolve(self) -> ResolvedRobinhoodCredentials:

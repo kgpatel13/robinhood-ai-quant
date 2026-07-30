@@ -33,15 +33,23 @@ class MarketFeatureBuilder:
         volume = pd.to_numeric(output[self.config.volume_column], errors="coerce")
         for window in self.config.return_windows:
             output[f"return_{window}"] = close.pct_change(window)
-        output["rolling_volatility"] = close.pct_change().rolling(
-            self.config.volatility_window,
-            min_periods=self.config.volatility_window,
-        ).std()
+        output["rolling_volatility"] = (
+            close.pct_change()
+            .rolling(
+                self.config.volatility_window,
+                min_periods=self.config.volatility_window,
+            )
+            .std()
+        )
         output["momentum"] = close / close.shift(self.config.momentum_window) - 1.0
-        output["mean_reversion"] = close / close.rolling(
-            self.config.momentum_window,
-            min_periods=self.config.momentum_window,
-        ).mean() - 1.0
+        output["mean_reversion"] = (
+            close
+            / close.rolling(
+                self.config.momentum_window,
+                min_periods=self.config.momentum_window,
+            ).mean()
+            - 1.0
+        )
         output["rsi"] = rsi(close, self.config.rsi_window)
         output["atr"] = atr(high, low, close, self.config.rsi_window)
         macd_line, macd_signal = macd(close)

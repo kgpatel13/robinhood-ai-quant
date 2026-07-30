@@ -31,6 +31,12 @@ from src.research import (
     ParameterSpec,
     write_optimization_report,
 )
+from src.rotation_engine import (
+    AssetClass,
+    RotationBacktestEngine,
+    RotationConfig,
+    write_rotation_report,
+)
 from src.strategies import available_strategies, create_strategy
 
 LOGGER = logging.getLogger(__name__)
@@ -146,6 +152,36 @@ def build_parser() -> argparse.ArgumentParser:
     optimize.add_argument("--commission", type=float, default=None)
     optimize.add_argument("--slippage-bps", type=float, default=None)
     optimize.add_argument("--report-name", default="phase5a_optimization")
+
+    rotation = sub.add_parser("rotation-backtest-run")
+    rotation.add_argument(
+        "--asset",
+        action="append",
+        type=key_value,
+        required=True,
+        metavar="SYMBOL=PATH",
+        help="Repeat for each stock, ETF, or crypto dataset.",
+    )
+    rotation.add_argument(
+        "--asset-class",
+        action="append",
+        type=key_value,
+        default=[],
+        metavar="SYMBOL=stock|etf|crypto",
+    )
+    rotation.add_argument("--initial-cash", type=float, default=5000.0)
+    rotation.add_argument("--min-hold-days", type=int, default=1)
+    rotation.add_argument("--preferred-max-hold-days", type=int, default=10)
+    rotation.add_argument("--max-hold-days", type=int, default=30)
+    rotation.add_argument("--max-positions", type=int, default=4)
+    rotation.add_argument("--risk-per-trade-pct", type=float, default=0.5)
+    rotation.add_argument("--max-position-pct", type=float, default=25.0)
+    rotation.add_argument("--max-crypto-position-pct", type=float, default=12.0)
+    rotation.add_argument("--total-crypto-pct", type=float, default=25.0)
+    rotation.add_argument("--cash-reserve-pct", type=float, default=10.0)
+    rotation.add_argument("--min-entry-score", type=float, default=62.0)
+    rotation.add_argument("--rotation-score-improvement", type=float, default=12.0)
+    rotation.add_argument("--report-name", default="rotation_portfolio")
     return parser
 
 
@@ -275,6 +311,52 @@ def _run_optimization(
     return 0
 
 
+def _run_rotation_backtest(args: argparse.Namespace, reports_dir: Path) -> int:
+    asset_paths = {symbol.upper(): Path(path) for symbol, path in args.asset}
+    if len(asset_paths) < 2:
+        raise ValueError("Provide at least two unique --asset SYMBOL=PATH values")
+    datasets = {symbol: pd.read_parquet(path) for symbol, path in asset_paths.items()}
+    raw_classes = {symbol.upper(): value.lower() for symbol, value in args.asset_class}
+    asset_classes: dict[str, AssetClass] = {}
+    for symbol, path in asset_paths.items():
+        inferred = (
+            "crypto"
+            if "crypto" in {part.lower() for part in path.parts} or "-USD" in symbol
+            else "stock"
+        )
+        try:
+            asset_classes[symbol] = AssetClass(raw_classes.get(symbol, inferred))
+        except ValueError as exc:
+            raise ValueError(f"Invalid asset class for {symbol}") from exc
+    config = RotationConfig(
+        initial_cash=float(args.initial_cash),
+        min_hold_days=int(args.min_hold_days),
+        preferred_max_hold_days=int(args.preferred_max_hold_days),
+        max_hold_days=int(args.max_hold_days),
+        max_positions=int(args.max_positions),
+        risk_per_trade_pct=float(args.risk_per_trade_pct) / 100.0,
+        max_position_pct=float(args.max_position_pct) / 100.0,
+        max_crypto_position_pct=float(args.max_crypto_position_pct) / 100.0,
+        total_crypto_pct=float(args.total_crypto_pct) / 100.0,
+        cash_reserve_pct=float(args.cash_reserve_pct) / 100.0,
+        min_entry_score=float(args.min_entry_score) / 100.0,
+        rotation_score_improvement=float(args.rotation_score_improvement) / 100.0,
+    )
+    result = RotationBacktestEngine().run(datasets, asset_classes, config)
+    paths = write_rotation_report(result, reports_dir / "rotation", args.report_name)
+    print(
+        json.dumps(
+            {
+                "assets": sorted(asset_paths),
+                "metrics": result.metrics,
+                "reports": {key: str(value) for key, value in paths.items()},
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
 def _resolve_report_root(configured: Path, reports_dir: Path) -> Path:
     if not configured.is_absolute() and configured.parts and configured.parts[0] == "reports":
         return reports_dir / Path(*configured.parts[1:])
@@ -326,6 +408,8 @@ def run(args: argparse.Namespace) -> int:
         return code
     if args.command == "optimize-run":
         return _run_optimization(args, settings.config_dir, settings.reports_dir)
+    if args.command == "rotation-backtest-run":
+        return _run_rotation_backtest(args, settings.reports_dir)
     data_config = load_yaml(settings.config_dir / "data_sources.yaml")
     storage_config = data_config["storage"]
     validated_root = Path(str(storage_config["validated_directory"]))

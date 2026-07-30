@@ -157,10 +157,7 @@ def test_reconciliation_halts_on_position_quantity_difference() -> None:
 
 def test_reconciliation_detects_cash_difference() -> None:
     report = BrokerReconciliationEngine().reconcile(_account(500.0), _account(450.0))
-    assert any(
-        item.discrepancy_type is DiscrepancyType.CASH
-        for item in report.discrepancies
-    )
+    assert any(item.discrepancy_type is DiscrepancyType.CASH for item in report.discrepancies)
 
 
 def test_reconciliation_detects_duplicate_client_order_id() -> None:

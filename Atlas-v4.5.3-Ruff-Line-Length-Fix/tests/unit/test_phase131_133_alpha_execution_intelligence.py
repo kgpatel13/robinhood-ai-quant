@@ -94,9 +94,7 @@ def test_microstructure_approves_liquid_market() -> None:
 def test_paper_analytics_tracks_fill_and_pnl() -> None:
     tracker = PaperAnalyticsTracker()
     base = datetime(2026, 1, 1, tzinfo=UTC)
-    tracker.record(
-        PaperTradeEvent("t1", PaperEventType.SIGNAL, base, "AAPL", "swing")
-    )
+    tracker.record(PaperTradeEvent("t1", PaperEventType.SIGNAL, base, "AAPL", "swing"))
     tracker.record(
         PaperTradeEvent(
             "t1",

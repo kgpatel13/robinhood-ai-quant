@@ -105,8 +105,7 @@ class AlphaEngine:
         ordered = sorted(signals, key=lambda item: item.score)
         denominator = max(len(ordered) - 1, 1)
         return {
-            signal.symbol: (index / denominator) * 2.0 - 1.0
-            for index, signal in enumerate(ordered)
+            signal.symbol: (index / denominator) * 2.0 - 1.0 for index, signal in enumerate(ordered)
         }
 
     @staticmethod

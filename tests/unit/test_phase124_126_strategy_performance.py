@@ -38,9 +38,7 @@ def test_feature_diagnostics_finds_signal_and_redundancy() -> None:
 
 
 def test_feature_stability_rewards_consistency() -> None:
-    stable = FeatureDiagnostics.stability(
-        [{"a": 1.0, "b": 1.0}, {"a": 1.0, "b": -1.0}, {"a": 1.0}]
-    )
+    stable = FeatureDiagnostics.stability([{"a": 1.0, "b": 1.0}, {"a": 1.0, "b": -1.0}, {"a": 1.0}])
     assert stable["a"] > stable["b"]
 
 

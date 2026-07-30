@@ -34,25 +34,34 @@ class StubBroker:
 
     def connect(self) -> None:
         return None
+
     def health_check(self) -> BrokerHealth:
         return BrokerHealth(BrokerConnectionStatus.CONNECTED)
+
     def submit_order(self, order: OrderRequest) -> OrderReceipt:
         order_id = f"order-{len(self.orders) + 1}"
         self.orders.append(OrderSnapshot(order_id, order, OrderStatus.ACCEPTED))
         return OrderReceipt(order_id, True, client_order_id=order.client_order_id)
+
     def cancel_order(self, order_id: str) -> bool:
         return True
+
     def replace_order(self, order_id: str, order: OrderRequest) -> OrderReceipt:
         return OrderReceipt(order_id, True, client_order_id=order.client_order_id)
+
     def get_order(self, order_id: str) -> OrderSnapshot | None:
         return next((item for item in self.orders if item.order_id == order_id), None)
+
     def list_orders(self, *, include_terminal: bool = True) -> tuple[OrderSnapshot, ...]:
         orders = self.orders if include_terminal else [o for o in self.orders if not o.terminal]
         return tuple(orders)
+
     def list_fills(self, order_id: str | None = None) -> tuple[()]:
         return ()
+
     def get_account(self) -> AccountSnapshot:
         return AccountSnapshot(1_000, 1_000, 1_000, ())
+
     def get_positions(self) -> tuple[()]:
         return ()
 

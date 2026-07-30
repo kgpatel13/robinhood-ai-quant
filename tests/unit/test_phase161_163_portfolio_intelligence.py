@@ -112,8 +112,7 @@ def test_correlation_engine_detects_cluster_and_sector_concentration() -> None:
         ),
     )
     assert any(
-        {pair.left, pair.right} == {"AAPL", "MSFT"}
-        for pair in report.highly_correlated_pairs
+        {pair.left, pair.right} == {"AAPL", "MSFT"} for pair in report.highly_correlated_pairs
     )
     assert "sector_technology_weight_exceeds_limit" in report.warnings
     assert 0.0 <= report.diversification_score <= 100.0
