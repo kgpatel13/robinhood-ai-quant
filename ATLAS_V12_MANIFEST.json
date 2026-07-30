@@ -1,0 +1,17 @@
+{
+  "release": "Atlas v12.0.0",
+  "scope": "Robinhood-only final framework",
+  "baseline": "Atlas v11.0.0",
+  "package": "src.atlas_finalization",
+  "capabilities": [
+    "strategy validation scorecards",
+    "Monte Carlo robustness",
+    "paper readiness",
+    "operational health gates",
+    "performance attribution",
+    "experiment registry",
+    "approval-gated learning governance",
+    "integrated canary recommendation"
+  ],
+  "live_trading_enabled_automatically": false
+}
