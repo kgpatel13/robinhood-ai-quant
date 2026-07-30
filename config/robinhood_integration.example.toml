@@ -1,0 +1,18 @@
+[execution]
+mode = "paper"
+live_enabled = false
+shadow_enabled = false
+kill_switch = true
+manual_approval_required = true
+
+[stocks]
+provider = "robinhood_mcp"
+account_nickname = "Agentic"
+order_submission_enabled = false
+
+[crypto]
+provider = "robinhood_crypto"
+base_url = "https://trading.robinhood.com"
+timeout_seconds = 10.0
+credentials_enabled = false
+order_submission_enabled = false
