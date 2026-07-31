@@ -77,8 +77,10 @@ def test_credential_manager_rejects_ambiguous_private_key_sources() -> None:
 
 
 class _FakeResponse:
-    def raise_for_status(self) -> None:
-        return None
+    ok = True
+    status_code = 200
+    reason = "OK"
+    text = ""
 
     def json(self) -> dict[str, Any]:
         return {"ok": True}
@@ -157,3 +159,64 @@ def test_client_requires_explicit_mutating_enablement() -> None:
 
     assert result == {"ok": True}
     assert session.last_request["data"] == '{"symbol":"BTC-USD"}'
+
+
+def test_client_encodes_repeated_symbol_parameters_in_signature_and_request() -> None:
+    credentials = RobinhoodCryptoCredentialManager(
+        environment={
+            "ROBINHOOD_CRYPTO_API_KEY": API_KEY,
+            "ROBINHOOD_CRYPTO_PRIVATE_KEY": PRIVATE_KEY,
+        }
+    ).resolve()
+    session = _FakeSession()
+    client = RobinhoodCryptoClient(
+        RobinhoodCryptoSigner(credentials, clock=lambda: 123.0),
+        session=session,
+    )
+
+    client.get(
+        "/api/v1/crypto/trading/trading_pairs/",
+        params=[("symbol", "BTC-USD"), ("symbol", "ETH-USD")],
+    )
+
+    assert session.last_request["params"] == [
+        ("symbol", "BTC-USD"),
+        ("symbol", "ETH-USD"),
+    ]
+
+
+def test_client_follows_same_host_pagination() -> None:
+    class PaginatedSession(_FakeSession):
+        def __init__(self) -> None:
+            super().__init__()
+            self.requests: list[dict[str, Any]] = []
+
+        def request(self, method: str, url: str, **kwargs: Any) -> _FakeResponse:
+            self.requests.append({"method": method, "url": url, **kwargs})
+            page = len(self.requests)
+            response = _FakeResponse()
+            response.json = lambda: (  # type: ignore[method-assign]
+                {
+                    "results": [{"page": 1}],
+                    "next": "https://trading.robinhood.com/api/v1/items/?cursor=abc",
+                }
+                if page == 1
+                else {"results": [{"page": 2}], "next": None}
+            )
+            return response
+
+    credentials = RobinhoodCryptoCredentialManager(
+        environment={
+            "ROBINHOOD_CRYPTO_API_KEY": API_KEY,
+            "ROBINHOOD_CRYPTO_PRIVATE_KEY": PRIVATE_KEY,
+        }
+    ).resolve()
+    session = PaginatedSession()
+    client = RobinhoodCryptoClient(
+        RobinhoodCryptoSigner(credentials, clock=lambda: 123.0), session=session
+    )
+
+    pages = client.get_pages("/api/v1/items/", params={"limit": 1})
+
+    assert len(pages) == 2
+    assert session.requests[1]["params"] == [("cursor", "abc")]

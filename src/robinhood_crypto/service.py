@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Any, TypeVar
 
 from src.robinhood_crypto.client import RobinhoodCryptoClient
@@ -36,23 +35,22 @@ class RobinhoodCryptoReadService:
 
     def list_holdings(self, *, asset_code: str | None = None) -> list[CryptoHolding]:
         params = {"asset_code": asset_code.strip().upper()} if asset_code else None
-        payload = self._client.get(self._endpoints.holdings, params=params)
-        return [CryptoHolding.from_api(item) for item in self._items(payload)]
+        pages = self._client.get_pages(self._endpoints.holdings, params=params)
+        return [CryptoHolding.from_api(item) for page in pages for item in self._items(page)]
 
     def list_trading_pairs(self, *, symbols: list[str] | None = None) -> list[TradingPair]:
-        params: Mapping[str, str] | None = None
+        params = None
         if symbols:
-            normalized = [self._normalize_symbol(symbol) for symbol in symbols]
-            params = {"symbol": ",".join(normalized)}
-        payload = self._client.get(self._endpoints.trading_pairs, params=params)
-        return [TradingPair.from_api(item) for item in self._items(payload)]
+            params = [("symbol", self._normalize_symbol(symbol)) for symbol in symbols]
+        pages = self._client.get_pages(self._endpoints.trading_pairs, params=params)
+        return [TradingPair.from_api(item) for page in pages for item in self._items(page)]
 
     def get_best_bid_ask(self, symbols: list[str]) -> list[BestBidAsk]:
         if not symbols:
             raise ValueError("at least one symbol is required")
-        params = {"symbol": ",".join(self._normalize_symbol(symbol) for symbol in symbols)}
-        payload = self._client.get(self._endpoints.best_bid_ask, params=params)
-        return [BestBidAsk.from_api(item) for item in self._items(payload)]
+        params = [("symbol", self._normalize_symbol(symbol)) for symbol in symbols]
+        pages = self._client.get_pages(self._endpoints.best_bid_ask, params=params)
+        return [BestBidAsk.from_api(item) for page in pages for item in self._items(page)]
 
     def get_estimated_price(
         self,
@@ -83,8 +81,8 @@ class RobinhoodCryptoReadService:
         )
 
     def list_orders(self) -> list[CryptoOrder]:
-        payload = self._client.get(self._endpoints.orders)
-        return [CryptoOrder.from_api(item) for item in self._items(payload)]
+        pages = self._client.get_pages(self._endpoints.orders)
+        return [CryptoOrder.from_api(item) for page in pages for item in self._items(page)]
 
     def get_order(self, client_order_id: str) -> CryptoOrder:
         payload = self._client.get(self._endpoints.order(client_order_id))

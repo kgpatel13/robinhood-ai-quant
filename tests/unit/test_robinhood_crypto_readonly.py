@@ -12,16 +12,20 @@ from src.robinhood_crypto.service import RobinhoodCryptoReadService
 class FakeClient:
     def __init__(self, responses: dict[str, dict[str, Any]]) -> None:
         self.responses = responses
-        self.calls: list[tuple[str, dict[str, str | int | float] | None]] = []
+        self.calls: list[tuple[str, object]] = []
 
     def get(
         self,
         path: str,
         *,
-        params: dict[str, str | int | float] | None = None,
+        params: object = None,
     ) -> dict[str, Any]:
         self.calls.append((path, params))
         return self.responses[path]
+
+    def get_pages(self, path: str, *, params: object = None) -> list[dict[str, Any]]:
+        self.calls.append((path, params))
+        return [self.responses[path]]
 
 
 def service(responses: dict[str, dict[str, Any]]) -> tuple[RobinhoodCryptoReadService, FakeClient]:
@@ -60,7 +64,7 @@ def test_trading_pairs_symbol_normalization() -> None:
     endpoint = RobinhoodCryptoEndpoints().trading_pairs
     api, client = service({endpoint: {"results": []}})
     api.list_trading_pairs(symbols=["btc", "ETH-USD"])
-    assert client.calls == [(endpoint, {"symbol": "BTC-USD,ETH-USD"})]
+    assert client.calls == [(endpoint, [("symbol", "BTC-USD"), ("symbol", "ETH-USD")])]
 
 
 def test_best_bid_ask_parses_spread_prices() -> None:

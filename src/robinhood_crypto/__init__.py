@@ -1,4 +1,8 @@
-from src.robinhood_crypto.client import RobinhoodCryptoClient, RobinhoodCryptoClientConfig
+from src.robinhood_crypto.client import (
+    RobinhoodCryptoClient,
+    RobinhoodCryptoClientConfig,
+    RobinhoodCryptoHTTPError,
+)
 from src.robinhood_crypto.credentials import (
     RobinhoodCryptoCredentialManager,
     RobinhoodCryptoCredentialRefs,
@@ -30,6 +34,7 @@ __all__ = [
     "RobinhoodCryptoCredentials",
     "RobinhoodCryptoDiagnostics",
     "RobinhoodCryptoEndpoints",
+    "RobinhoodCryptoHTTPError",
     "RobinhoodCryptoReadService",
     "RobinhoodCryptoSigner",
     "SignedHeaders",
