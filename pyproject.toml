@@ -127,6 +127,7 @@ packages = [
   "src.robinhood_crypto",
   "src.atlas_finalization",
   "src.rotation_engine",
+  "src.atlas_v18",
 ]
 
 [tool.pytest.ini_options]

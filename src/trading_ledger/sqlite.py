@@ -269,10 +269,8 @@ class SQLiteTradingLedger:
         inventory: dict[str, tuple[float, float]] = {}
         with self._connection() as connection:
             detailed = connection.execute(
-                
-                    "SELECT symbol, side, quantity, price, commission "
-                    "FROM fills ORDER BY timestamp, fill_id"
-                
+                "SELECT symbol, side, quantity, price, commission "
+                "FROM fills ORDER BY timestamp, fill_id"
             ).fetchall()
         for row in detailed:
             symbol = str(row["symbol"]).upper()
